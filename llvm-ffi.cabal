@@ -38,6 +38,19 @@ Flag developer
   Description: developer mode - warnings let compilation fail
   Default: False
 
+Flag buildTools
+  Description: build tools for managing this package
+  Default: False
+
+Source-Repository head
+  Type:     darcs
+  Location: http://code.haskell.org/~thielema/llvm-ffi/
+
+Source-Repository this
+  Tag:      3.0.0
+  Type:     darcs
+  Location: http://code.haskell.org/~thielema/llvm-ffi/
+
 Library
   Build-Depends:
     base >= 3 && < 5
@@ -84,11 +97,53 @@ Library
     cbits/extra.cpp
     cbits/support.cpp
 
-Source-Repository head
-  Type:     darcs
-  Location: http://code.haskell.org/~thielema/llvm-ffi/
+Executable llvm-diff-ffi
+  If flag(buildTools)
+    Build-Depends:
+      utility-ht >=0.0.9 && <0.1,
+      regex-posix >=0.95 && <0.96,
+      containers >=0.4 && <0.6,
+      base
+  Else
+    Buildable: False
 
-Source-Repository this
-  Tag:      3.0.0
-  Type:     darcs
-  Location: http://code.haskell.org/~thielema/llvm-ffi/
+  If flag(developer)
+    GHC-Options: -Werror
+
+  Hs-Source-Dirs: tool
+  GHC-Options: -Wall
+  Main-Is: DiffFFI.hs
+  Other-Modules: FunctionMangulation
+
+Executable llvm-function-mangler
+  If flag(buildTools)
+    Build-Depends:
+      utility-ht >=0.0.9 && <0.1,
+      regex-posix >=0.95 && <0.96,
+      containers >=0.4 && <0.6,
+      base
+  Else
+    Buildable: False
+
+  If flag(developer)
+    GHC-Options: -Werror
+
+  Hs-Source-Dirs: tool
+  GHC-Options: -Wall
+  Main-Is: FunctionMangler.hs
+  Other-Modules: FunctionMangulation
+
+Executable llvm-intrinsic-mangler
+  If flag(buildTools)
+    Build-Depends:
+      bytestring >=0.9 && <0.11,
+      base
+  Else
+    Buildable: False
+
+  If flag(developer)
+    GHC-Options: -Werror
+
+  Hs-Source-Dirs: tool
+  GHC-Options: -Wall
+  Main-Is: IntrinsicMangler.hs
