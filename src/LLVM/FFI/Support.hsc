@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 
 module LLVM.FFI.Support
@@ -7,12 +6,14 @@ module LLVM.FFI.Support
     , createStandardFunctionPasses
     ) where
 
-#if __GLASGOW_HASKELL__ >= 704
-import Foreign.C.Types (CInt(..), CUInt(..))
-#else
-import Foreign.C.Types (CInt, CUInt)
-#endif
+import qualified Foreign.C.Types as C
+
 import LLVM.FFI.Core (PassManagerRef)
+
+
+type CUInt = C.CUInt
+type CInt = C.CInt
+
 
 foreign import ccall unsafe "LLVMCreateStandardFunctionPasses" createStandardFunctionPasses
     :: PassManagerRef -> CUInt -> IO ()

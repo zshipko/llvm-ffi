@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE DeriveDataTypeable #-}
@@ -47,17 +46,22 @@ module LLVM.FFI.ExecutionEngine
     , getPointerToGlobal
 
     ) where
-import Data.Typeable
-import Foreign.C.String (CString)
-#if __GLASGOW_HASKELL__ >= 704
-import Foreign.C.Types (CDouble(..), CInt(..), CUInt(..), CULLong(..))
-#else
-import Foreign.C.Types (CDouble, CInt, CUInt, CULLong)
-#endif
-import Foreign.Ptr (Ptr, FunPtr)
 
 import LLVM.FFI.Core (ModuleRef, ModuleProviderRef, TypeRef, ValueRef)
 import LLVM.FFI.Target(TargetDataRef)
+
+import qualified Foreign.C.Types as C
+import Foreign.C.String (CString)
+import Foreign.Ptr (Ptr, FunPtr)
+
+import Data.Typeable (Typeable)
+
+
+type CDouble  = C.CDouble
+type CInt     = C.CInt
+type CUInt    = C.CUInt
+type CULLong  = C.CULLong
+
 
 data ExecutionEngine
     deriving (Typeable)

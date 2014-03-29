@@ -1,19 +1,22 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 
 module LLVM.FFI.Target where
-import Data.Typeable
+
+import LLVM.FFI.Core (ValueRef, TypeRef, PassManagerRef)
+
+import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
-#if __GLASGOW_HASKELL__ >= 704
-import Foreign.C.Types (CInt(..), CUInt(..), CULLong(..))
-#else
-import Foreign.C.Types (CInt, CUInt, CULLong)
-#endif
 import Foreign.Ptr (Ptr)
 
-import LLVM.FFI.Core
+import Data.Typeable (Typeable)
+
+
+type CUInt = C.CUInt
+type CInt = C.CInt
+type CULLong = C.CULLong
+
 
 -- enum { LLVMBigEndian, LLVMLittleEndian };
 type ByteOrdering = CInt

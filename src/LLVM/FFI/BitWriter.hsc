@@ -1,16 +1,15 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
 
 module LLVM.FFI.BitWriter where
-import Foreign.C.String(CString)
-#if __GLASGOW_HASKELL__ >= 704
-import Foreign.C.Types(CInt(..))
-#else
-import Foreign.C.Types(CInt)
-#endif
 
-import LLVM.FFI.Core
+import LLVM.FFI.Core (ModuleRef)
+
+import qualified Foreign.C.Types as C
+import Foreign.C.String(CString)
+
+type CInt = C.CInt
+
 
 foreign import ccall unsafe "LLVMWriteBitcodeToFile" writeBitcodeToFile
     :: ModuleRef -> CString -> IO CInt

@@ -1,17 +1,16 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
 
 module LLVM.FFI.BitReader where
+
+import LLVM.FFI.Core (MemoryBufferRef, ModuleRef, ContextRef, ModuleProviderRef)
+
+import qualified Foreign.C.Types as C
 import Foreign.C.String(CString)
-#if __GLASGOW_HASKELL__ >= 704
-import Foreign.C.Types(CInt(..))
-#else
-import Foreign.C.Types(CInt)
-#endif
 import Foreign.Ptr(Ptr)
 
-import LLVM.FFI.Core
+type CInt = C.CInt
+
 
 foreign import ccall unsafe "LLVMGetBitcodeModuleProvider" getBitcodeModuleProvider
     :: MemoryBufferRef -> (Ptr ModuleProviderRef) -> (Ptr CString) -> IO CInt
