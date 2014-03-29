@@ -35,7 +35,7 @@ Extra-Source-Files:
   tools/Makefile
 
 Flag developer
-  Description: operate in developer mode
+  Description: developer mode - warnings let compilation fail
   Default: False
 
 Library
