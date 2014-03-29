@@ -905,7 +905,7 @@ foreign import ccall unsafe "LLVMFunctionType" functionType
         -> Ptr TypeRef          -- ^ array of argument types
         -> CUInt                -- ^ number of elements in array
         -> CInt                 -- ^ non-zero if function is varargs
-        -> TypeRef
+        -> IO TypeRef
 
 -- | Indicate whether a function takes varargs.
 foreign import ccall unsafe "LLVMIsFunctionVarArg" isFunctionVarArg
@@ -928,7 +928,7 @@ foreign import ccall unsafe "LLVMGetParamTypes" getParamTypes
 foreign import ccall unsafe "LLVMStructTypeInContext" structTypeInContext
     :: ContextRef -> (Ptr TypeRef) -> CUInt -> CInt -> IO TypeRef
 foreign import ccall unsafe "LLVMStructType" structType
-    :: Ptr TypeRef -> CUInt -> CInt -> TypeRef
+    :: Ptr TypeRef -> CUInt -> CInt -> IO TypeRef
 foreign import ccall unsafe "LLVMStructCreateNamed" structCreateNamed
     :: ContextRef -> CString -> IO TypeRef
 foreign import ccall unsafe "LLVMGetStructName" getStructName
@@ -1085,15 +1085,15 @@ foreign import ccall unsafe "LLVMConstStringInContext" constStringInContext
 foreign import ccall unsafe "LLVMConstStructInContext" constStructInContext
     :: ContextRef -> (Ptr ValueRef) -> CUInt -> CInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstString" constString
-    :: CString -> CUInt -> CInt -> ValueRef
+    :: CString -> CUInt -> CInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstArray" constArray
-    :: TypeRef -> Ptr ValueRef -> CUInt -> ValueRef
+    :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstStruct" constStruct
-    :: Ptr ValueRef -> CUInt -> CInt -> ValueRef
+    :: Ptr ValueRef -> CUInt -> CInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstNamedStruct" constNamedStruct
     :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstVector" constVector
-    :: Ptr ValueRef -> CUInt -> ValueRef
+    :: Ptr ValueRef -> CUInt -> IO ValueRef
 
 -- ** Constant expressions
 foreign import ccall unsafe "LLVMGetConstOpcode" getConstOpcode
