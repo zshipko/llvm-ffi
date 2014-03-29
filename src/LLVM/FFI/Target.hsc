@@ -1,3 +1,4 @@
+{-# LANGUAGE Safe #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE DeriveDataTypeable #-}
@@ -38,28 +39,28 @@ foreign import ccall unsafe "LLVMAddTargetLibraryInfo" addTargetLibraryInfo
 foreign import ccall unsafe "LLVMCopyStringRepOfTargetData" copyStringRepOfTargetData
     :: TargetDataRef -> IO CString
 foreign import ccall unsafe "LLVMByteOrder" byteOrder
-    :: TargetDataRef -> ByteOrdering
+    :: TargetDataRef -> IO ByteOrdering
 foreign import ccall unsafe "LLVMPointerSize" pointerSize
-    :: TargetDataRef -> CUInt
+    :: TargetDataRef -> IO CUInt
 foreign import ccall unsafe "LLVMIntPtrType" intPtrType
-    :: TargetDataRef -> TypeRef
+    :: TargetDataRef -> IO TypeRef
 foreign import ccall unsafe "LLVMSizeOfTypeInBits" sizeOfTypeInBits
-    :: TargetDataRef -> TypeRef -> CULLong
+    :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMStoreSizeOfType" storeSizeOfType
-    :: TargetDataRef -> TypeRef -> CULLong
+    :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMABISizeOfType" aBISizeOfType
-    :: TargetDataRef -> TypeRef -> CULLong
+    :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMABIAlignmentOfType" aBIAlignmentOfType
-    :: TargetDataRef -> TypeRef -> CULLong
+    :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMCallFrameAlignmentOfType" callFrameAlignmentOfType
-    :: TargetDataRef -> TypeRef -> CULLong
+    :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMPreferredAlignmentOfType" preferredAlignmentOfType
-    :: TargetDataRef -> TypeRef -> CULLong
+    :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMPreferredAlignmentOfGlobal" preferredAlignmentOfGlobal
-    :: TargetDataRef -> ValueRef -> CUInt
+    :: TargetDataRef -> ValueRef -> IO CUInt
 foreign import ccall unsafe "LLVMElementAtOffset" elementAtOffset
-    :: TargetDataRef -> TypeRef -> CULLong -> CUInt
+    :: TargetDataRef -> TypeRef -> CULLong -> IO CUInt
 foreign import ccall unsafe "LLVMOffsetOfElement" offsetOfElement
-    :: TargetDataRef -> TypeRef -> CUInt -> CULLong
+    :: TargetDataRef -> TypeRef -> CUInt -> IO CULLong
 foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
     :: TargetDataRef -> IO ()

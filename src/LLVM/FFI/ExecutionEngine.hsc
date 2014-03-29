@@ -1,3 +1,4 @@
+{-# LANGUAGE Safe #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE EmptyDataDecls #-}
 {-# LANGUAGE DeriveDataTypeable #-}
@@ -88,11 +89,11 @@ foreign import ccall unsafe "LLVMCreateGenericValueOfFloat"
 foreign import ccall unsafe "LLVMGenericValueIntWidth" genericValueIntWidth
     :: GenericValueRef -> IO CUInt
 foreign import ccall unsafe "LLVMGenericValueToInt" genericValueToInt
-    :: GenericValueRef -> CInt -> CULLong
+    :: GenericValueRef -> CInt -> IO CULLong
 foreign import ccall unsafe "LLVMGenericValueToPointer" genericValueToPointer
     :: GenericValueRef -> IO (Ptr a)
 foreign import ccall unsafe "LLVMGenericValueToFloat" genericValueToFloat
-    :: TypeRef -> GenericValueRef -> CDouble
+    :: TypeRef -> GenericValueRef -> IO CDouble
 foreign import ccall unsafe "&LLVMDisposeGenericValue" ptrDisposeGenericValue
     :: FunPtr (GenericValueRef -> IO ())
 
