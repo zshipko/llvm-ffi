@@ -31,8 +31,8 @@ Build-Type:    Simple
 Extra-Source-Files:
   include/extra.h
   include/support.h
-  tools/*.hs
-  tools/Makefile
+  tool/ltrace.config
+  tool/ltrace.readme
 
 Flag developer
   Description: developer mode - warnings let compilation fail
