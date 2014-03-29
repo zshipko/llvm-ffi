@@ -1,13 +1,16 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module LLVM.Target.Native(initializeNativeTarget) where
-import Control.Monad
-import Control.Concurrent.MVar
-import System.IO.Unsafe
 
-import Foreign.C.Types
+import qualified Foreign.C.Types as C
+
+import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar)
+import Control.Monad (when)
+
+import System.IO.Unsafe (unsafePerformIO)
+
 
 foreign import ccall unsafe "LLVMInitNativeTarget"
-        llvmInitializeNativeTarget :: IO CUInt
+        llvmInitializeNativeTarget :: IO C.CUInt
 
 -- | Initialize jitter to the native target.
 -- The operation is idempotent.

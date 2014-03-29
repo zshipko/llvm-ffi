@@ -3,7 +3,8 @@
 
 module LLVM.FFI.Transforms.Scalar where
 
-import LLVM.FFI.Core
+import LLVM.FFI.Core (PassManagerRef)
+
 
 foreign import ccall unsafe "LLVMAddAggressiveDCEPass" addAggressiveDCEPass
     :: PassManagerRef -> IO ()

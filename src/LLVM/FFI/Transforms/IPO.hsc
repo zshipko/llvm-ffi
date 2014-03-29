@@ -3,7 +3,8 @@
 
 module LLVM.FFI.Transforms.IPO where
 
-import LLVM.FFI.Core
+import LLVM.FFI.Core (PassManagerRef)
+
 
 foreign import ccall unsafe "LLVMAddArgumentPromotionPass" addArgumentPromotionPass
     :: PassManagerRef -> IO ()
