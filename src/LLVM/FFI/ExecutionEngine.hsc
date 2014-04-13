@@ -44,6 +44,7 @@ module LLVM.FFI.ExecutionEngine
     , runFunction
     , getExecutionEngineTargetData
     , addGlobalMapping
+    , addFunctionMapping
     , getPointerToGlobal
 
     ) where
@@ -156,6 +157,8 @@ foreign import ccall unsafe "LLVMRecompileAndRelinkFunction" recompileAndRelinkF
 foreign import ccall unsafe "LLVMGetExecutionEngineTargetData" getExecutionEngineTargetData
     :: ExecutionEngineRef -> IO TargetDataRef
 foreign import ccall unsafe "LLVMAddGlobalMapping" addGlobalMapping
-    :: ExecutionEngineRef -> ValueRef -> Ptr () -> IO ()
+    :: ExecutionEngineRef -> ValueRef -> Ptr a -> IO ()
+foreign import ccall unsafe "LLVMAddGlobalMapping" addFunctionMapping
+    :: ExecutionEngineRef -> ValueRef -> FunPtr a -> IO ()
 foreign import ccall unsafe "LLVMGetPointerToGlobal" getPointerToGlobal
     :: ExecutionEngineRef -> ValueRef -> IO (FunPtr a)
