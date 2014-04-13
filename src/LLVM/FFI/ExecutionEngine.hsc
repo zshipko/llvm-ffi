@@ -23,6 +23,7 @@ module LLVM.FFI.ExecutionEngine
 
     -- * Execution engines
     , ExecutionEngine
+    , ExecutionEngineRef
     , createExecutionEngineForModule
     , createInterpreterForModule
     , createJITCompilerForModule
