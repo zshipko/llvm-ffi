@@ -36,6 +36,7 @@ Extra-Source-Files:
 
 Flag developer
   Description: developer mode - warnings let compilation fail
+  Manual: True
   Default: False
 
 Flag buildTools
