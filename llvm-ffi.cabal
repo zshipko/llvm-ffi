@@ -44,12 +44,12 @@ Flag buildTools
 
 Source-Repository head
   Type:     darcs
-  Location: http://code.haskell.org/~thielema/llvm-ffi/
+  Location: http://hub.darcs.net/thielema/llvm-ffi/
 
 Source-Repository this
   Tag:      3.0.0.1
   Type:     darcs
-  Location: http://code.haskell.org/~thielema/llvm-ffi/
+  Location: http://hub.darcs.net/thielema/llvm-ffi/
 
 Library
   Build-Depends:
