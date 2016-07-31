@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  *
- *  * Neither the name of this software, nor the names of its 
+ *  * Neither the name of this software, nor the names of its
  *    contributors may be used to endorse or promote products derived from
  *    this software without specific prior written permission.
  *
@@ -237,7 +237,7 @@ static inline void unwrap_cvec(W *values, unsigned n, std::vector<const UW *>& o
     }
 }
 
-LLVMValueRef LLVMBuildRetMultiple(LLVMBuilderRef builder, 
+LLVMValueRef LLVMBuildRetMultiple(LLVMBuilderRef builder,
     LLVMValueRef *values, unsigned n_values)
 {
     assert(values);
@@ -251,7 +251,7 @@ LLVMValueRef LLVMBuildRetMultiple(LLVMBuilderRef builder,
     return llvm::wrap(builderp->CreateAggregateRet(&values_vec[0], values_vec.size()));
 }
 
-LLVMValueRef LLVMBuildGetResult(LLVMBuilderRef builder, 
+LLVMValueRef LLVMBuildGetResult(LLVMBuilderRef builder,
     LLVMValueRef value, unsigned index, const char *name)
 {
     assert(name);
@@ -366,10 +366,10 @@ LLVMValueRef LLVMGetIntrinsic(LLVMModuleRef module, int id,
     assert(modulep);
 
 #if HS_LLVM_VERSION >= 300
-    llvm::Function *intfunc = llvm::Intrinsic::getDeclaration(modulep, 
+    llvm::Function *intfunc = llvm::Intrinsic::getDeclaration(modulep,
         llvm::Intrinsic::ID(id), types_vec);
 #else
-    llvm::Function *intfunc = llvm::Intrinsic::getDeclaration(modulep, 
+    llvm::Function *intfunc = llvm::Intrinsic::getDeclaration(modulep,
         llvm::Intrinsic::ID(id), &types_vec[0], types_vec.size());
 #endif
     return wrap(intfunc);
@@ -428,7 +428,7 @@ unsigned LLVMLinkModules(LLVMModuleRef dest, LLVMModuleRef src, unsigned mode,
     std::string msg;
     bool err;
 
-#if HS_LLVM_VERSION >= 300    
+#if HS_LLVM_VERSION >= 300
     err = llvm::Linker::LinkModules(destinationp, sourcep, mode, &msg);
 #else
     err = llvm::Linker::LinkModules(destinationp, sourcep, &msg);
