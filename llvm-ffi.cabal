@@ -43,6 +43,10 @@ Flag buildTools
   Description: build tools for managing this package
   Default: False
 
+Flag specificPkgConfig
+  Description: use llvm-3.0.pc instead of llvm.pc
+  Default: True
+
 Source-Repository head
   Type:     darcs
   Location: http://hub.darcs.net/thielema/llvm-ffi/
@@ -89,7 +93,10 @@ Library
       LLVM.Target.X86
       LLVM.Target.XCore
 
-  PkgConfig-Depends: llvm == 3.0
+  If flag(specificPkgConfig)
+    PkgConfig-Depends: llvm-3.0 == 3.0
+  Else
+    PkgConfig-Depends: llvm == 3.0
   CC-Options: -DHS_LLVM_VERSION=300 -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -DHS_LLVM_VERSION=300
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
