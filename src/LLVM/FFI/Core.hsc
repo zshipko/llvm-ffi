@@ -666,6 +666,7 @@ data Linkage
     | AvailableExternallyLinkage 
     | LinkOnceAnyLinkage  -- ^Keep one copy of function when linking (inline)
     | LinkOnceODRLinkage  -- ^Same, but only replaced by something equivalent.
+    | LinkOnceODRAutoHideLinkage -- ^Like LinkOnceODR, but possibly hidden.
     | WeakAnyLinkage      -- ^Keep one copy of named function when linking (weak)
     | WeakODRLinkage      -- ^Same, but only replaced by something equivalent.
     | AppendingLinkage    -- ^Special purpose, only applies to global arrays
@@ -677,6 +678,7 @@ data Linkage
     | GhostLinkage        -- ^Stand-in functions for streaming fns from BC files    
     | CommonLinkage       -- ^Tentative definitions
     | LinkerPrivateLinkage -- ^Like Private, but linker removes.
+    | LinkerPrivateWeakLinkage -- ^Like LinkerPrivate, but is weak.
     deriving (Show, Eq, Ord, Enum, Typeable)
 
 fromLinkage :: Linkage -> CUInt
@@ -684,6 +686,7 @@ fromLinkage ExternalLinkage             = (#const LLVMExternalLinkage)
 fromLinkage AvailableExternallyLinkage  = (#const LLVMAvailableExternallyLinkage )
 fromLinkage LinkOnceAnyLinkage          = (#const LLVMLinkOnceAnyLinkage)
 fromLinkage LinkOnceODRLinkage          = (#const LLVMLinkOnceODRLinkage)
+fromLinkage LinkOnceODRAutoHideLinkage  = (#const LLVMLinkOnceODRAutoHideLinkage)
 fromLinkage WeakAnyLinkage              = (#const LLVMWeakAnyLinkage)
 fromLinkage WeakODRLinkage              = (#const LLVMWeakODRLinkage)
 fromLinkage AppendingLinkage            = (#const LLVMAppendingLinkage)
@@ -695,12 +698,14 @@ fromLinkage ExternalWeakLinkage         = (#const LLVMExternalWeakLinkage)
 fromLinkage GhostLinkage                = (#const LLVMGhostLinkage)
 fromLinkage CommonLinkage               = (#const LLVMCommonLinkage)
 fromLinkage LinkerPrivateLinkage        = (#const LLVMLinkerPrivateLinkage)
+fromLinkage LinkerPrivateWeakLinkage    = (#const LLVMLinkerPrivateWeakLinkage)
 
 toLinkage :: CUInt -> Linkage
 toLinkage c | c == (#const LLVMExternalLinkage)             = ExternalLinkage
 toLinkage c | c == (#const LLVMAvailableExternallyLinkage)  = AvailableExternallyLinkage 
 toLinkage c | c == (#const LLVMLinkOnceAnyLinkage)          = LinkOnceAnyLinkage
 toLinkage c | c == (#const LLVMLinkOnceODRLinkage)          = LinkOnceODRLinkage
+toLinkage c | c == (#const LLVMLinkOnceODRAutoHideLinkage)  = LinkOnceODRAutoHideLinkage
 toLinkage c | c == (#const LLVMWeakAnyLinkage)              = WeakAnyLinkage
 toLinkage c | c == (#const LLVMWeakODRLinkage)              = WeakODRLinkage
 toLinkage c | c == (#const LLVMAppendingLinkage)            = AppendingLinkage
@@ -712,6 +717,7 @@ toLinkage c | c == (#const LLVMExternalWeakLinkage)         = ExternalWeakLinkag
 toLinkage c | c == (#const LLVMGhostLinkage)                = GhostLinkage
 toLinkage c | c == (#const LLVMCommonLinkage)               = CommonLinkage
 toLinkage c | c == (#const LLVMLinkerPrivateLinkage)        = LinkerPrivateLinkage
+toLinkage c | c == (#const LLVMLinkerPrivateWeakLinkage)        = LinkerPrivateWeakLinkage
 toLinkage _ = error "toLinkage: bad value"
 
 -- |An enumeration for the kinds of visibility of global values.
