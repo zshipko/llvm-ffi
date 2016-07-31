@@ -83,6 +83,7 @@ Library
       LLVM.Target.CBackend
       LLVM.Target.CellSPU
       LLVM.Target.CppBackend
+      LLVM.Target.Hexagon
       LLVM.Target.MSP430
       LLVM.Target.Mips
       LLVM.Target.PowerPC
