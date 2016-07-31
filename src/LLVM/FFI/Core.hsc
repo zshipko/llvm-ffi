@@ -643,21 +643,26 @@ data CallingConvention = C
                          deriving (Show, Eq, Ord, Enum, Bounded, Typeable)
 
 fromCallingConvention :: CallingConvention -> CUInt
-fromCallingConvention C = (#const LLVMCCallConv)
-fromCallingConvention Fast = (#const LLVMFastCallConv)
-fromCallingConvention Cold = (#const LLVMColdCallConv)
-fromCallingConvention X86StdCall = (#const LLVMX86FastcallCallConv)
-fromCallingConvention X86FastCall = (#const LLVMX86StdcallCallConv)
-fromCallingConvention GHC = 10
+fromCallingConvention c =
+    case c of
+        C -> (#const LLVMCCallConv)
+        Fast -> (#const LLVMFastCallConv)
+        Cold -> (#const LLVMColdCallConv)
+        X86StdCall -> (#const LLVMX86FastcallCallConv)
+        X86FastCall -> (#const LLVMX86StdcallCallConv)
+        GHC -> 10
 
 toCallingConvention :: CUInt -> CallingConvention
-toCallingConvention c | c == (#const LLVMCCallConv) = C
-toCallingConvention c | c == (#const LLVMFastCallConv) = Fast
-toCallingConvention c | c == (#const LLVMColdCallConv) = Cold
-toCallingConvention c | c == (#const LLVMX86StdcallCallConv) = X86StdCall
-toCallingConvention c | c == (#const LLVMX86FastcallCallConv) = X86FastCall
-toCallingConvention c | c == 10 = GHC
-toCallingConvention c = error $ "LLVM.Core.FFI.toCallingConvention: " ++
+toCallingConvention c =
+    case c of
+        (#const LLVMCCallConv) -> C
+        (#const LLVMFastCallConv) -> Fast
+        (#const LLVMColdCallConv) -> Cold
+        (#const LLVMX86StdcallCallConv) -> X86StdCall
+        (#const LLVMX86FastcallCallConv) -> X86FastCall
+        10 -> GHC
+        _ ->
+            error $ "LLVM.Core.FFI.toCallingConvention: " ++
                                 "unsupported calling convention" ++ show c
 
 -- |An enumeration for the kinds of linkage for global values.
@@ -682,43 +687,47 @@ data Linkage
     deriving (Show, Eq, Ord, Enum, Typeable)
 
 fromLinkage :: Linkage -> CUInt
-fromLinkage ExternalLinkage             = (#const LLVMExternalLinkage)
-fromLinkage AvailableExternallyLinkage  = (#const LLVMAvailableExternallyLinkage )
-fromLinkage LinkOnceAnyLinkage          = (#const LLVMLinkOnceAnyLinkage)
-fromLinkage LinkOnceODRLinkage          = (#const LLVMLinkOnceODRLinkage)
-fromLinkage LinkOnceODRAutoHideLinkage  = (#const LLVMLinkOnceODRAutoHideLinkage)
-fromLinkage WeakAnyLinkage              = (#const LLVMWeakAnyLinkage)
-fromLinkage WeakODRLinkage              = (#const LLVMWeakODRLinkage)
-fromLinkage AppendingLinkage            = (#const LLVMAppendingLinkage)
-fromLinkage InternalLinkage             = (#const LLVMInternalLinkage)
-fromLinkage PrivateLinkage              = (#const LLVMPrivateLinkage)
-fromLinkage DLLImportLinkage            = (#const LLVMDLLImportLinkage)
-fromLinkage DLLExportLinkage            = (#const LLVMDLLExportLinkage)
-fromLinkage ExternalWeakLinkage         = (#const LLVMExternalWeakLinkage)
-fromLinkage GhostLinkage                = (#const LLVMGhostLinkage)
-fromLinkage CommonLinkage               = (#const LLVMCommonLinkage)
-fromLinkage LinkerPrivateLinkage        = (#const LLVMLinkerPrivateLinkage)
-fromLinkage LinkerPrivateWeakLinkage    = (#const LLVMLinkerPrivateWeakLinkage)
+fromLinkage c =
+    case c of
+        ExternalLinkage             -> (#const LLVMExternalLinkage)
+        AvailableExternallyLinkage  -> (#const LLVMAvailableExternallyLinkage)
+        LinkOnceAnyLinkage          -> (#const LLVMLinkOnceAnyLinkage)
+        LinkOnceODRLinkage          -> (#const LLVMLinkOnceODRLinkage)
+        LinkOnceODRAutoHideLinkage  -> (#const LLVMLinkOnceODRAutoHideLinkage)
+        WeakAnyLinkage              -> (#const LLVMWeakAnyLinkage)
+        WeakODRLinkage              -> (#const LLVMWeakODRLinkage)
+        AppendingLinkage            -> (#const LLVMAppendingLinkage)
+        InternalLinkage             -> (#const LLVMInternalLinkage)
+        PrivateLinkage              -> (#const LLVMPrivateLinkage)
+        DLLImportLinkage            -> (#const LLVMDLLImportLinkage)
+        DLLExportLinkage            -> (#const LLVMDLLExportLinkage)
+        ExternalWeakLinkage         -> (#const LLVMExternalWeakLinkage)
+        GhostLinkage                -> (#const LLVMGhostLinkage)
+        CommonLinkage               -> (#const LLVMCommonLinkage)
+        LinkerPrivateLinkage        -> (#const LLVMLinkerPrivateLinkage)
+        LinkerPrivateWeakLinkage    -> (#const LLVMLinkerPrivateWeakLinkage)
 
 toLinkage :: CUInt -> Linkage
-toLinkage c | c == (#const LLVMExternalLinkage)             = ExternalLinkage
-toLinkage c | c == (#const LLVMAvailableExternallyLinkage)  = AvailableExternallyLinkage 
-toLinkage c | c == (#const LLVMLinkOnceAnyLinkage)          = LinkOnceAnyLinkage
-toLinkage c | c == (#const LLVMLinkOnceODRLinkage)          = LinkOnceODRLinkage
-toLinkage c | c == (#const LLVMLinkOnceODRAutoHideLinkage)  = LinkOnceODRAutoHideLinkage
-toLinkage c | c == (#const LLVMWeakAnyLinkage)              = WeakAnyLinkage
-toLinkage c | c == (#const LLVMWeakODRLinkage)              = WeakODRLinkage
-toLinkage c | c == (#const LLVMAppendingLinkage)            = AppendingLinkage
-toLinkage c | c == (#const LLVMInternalLinkage)             = InternalLinkage
-toLinkage c | c == (#const LLVMPrivateLinkage)              = PrivateLinkage
-toLinkage c | c == (#const LLVMDLLImportLinkage)            = DLLImportLinkage
-toLinkage c | c == (#const LLVMDLLExportLinkage)            = DLLExportLinkage
-toLinkage c | c == (#const LLVMExternalWeakLinkage)         = ExternalWeakLinkage
-toLinkage c | c == (#const LLVMGhostLinkage)                = GhostLinkage
-toLinkage c | c == (#const LLVMCommonLinkage)               = CommonLinkage
-toLinkage c | c == (#const LLVMLinkerPrivateLinkage)        = LinkerPrivateLinkage
-toLinkage c | c == (#const LLVMLinkerPrivateWeakLinkage)        = LinkerPrivateWeakLinkage
-toLinkage _ = error "toLinkage: bad value"
+toLinkage c =
+    case c of
+        (#const LLVMExternalLinkage)             -> ExternalLinkage
+        (#const LLVMAvailableExternallyLinkage)  -> AvailableExternallyLinkage 
+        (#const LLVMLinkOnceAnyLinkage)          -> LinkOnceAnyLinkage
+        (#const LLVMLinkOnceODRLinkage)          -> LinkOnceODRLinkage
+        (#const LLVMLinkOnceODRAutoHideLinkage)  -> LinkOnceODRAutoHideLinkage
+        (#const LLVMWeakAnyLinkage)              -> WeakAnyLinkage
+        (#const LLVMWeakODRLinkage)              -> WeakODRLinkage
+        (#const LLVMAppendingLinkage)            -> AppendingLinkage
+        (#const LLVMInternalLinkage)             -> InternalLinkage
+        (#const LLVMPrivateLinkage)              -> PrivateLinkage
+        (#const LLVMDLLImportLinkage)            -> DLLImportLinkage
+        (#const LLVMDLLExportLinkage)            -> DLLExportLinkage
+        (#const LLVMExternalWeakLinkage)         -> ExternalWeakLinkage
+        (#const LLVMGhostLinkage)                -> GhostLinkage
+        (#const LLVMCommonLinkage)               -> CommonLinkage
+        (#const LLVMLinkerPrivateLinkage)        -> LinkerPrivateLinkage
+        (#const LLVMLinkerPrivateWeakLinkage)    -> LinkerPrivateWeakLinkage
+        _ -> error "toLinkage: bad value"
 
 -- |An enumeration for the kinds of visibility of global values.
 data Visibility
@@ -728,15 +737,19 @@ data Visibility
     deriving (Show, Eq, Ord, Enum)
 
 fromVisibility :: Visibility -> CUInt
-fromVisibility DefaultVisibility   = (#const LLVMDefaultVisibility)
-fromVisibility HiddenVisibility    = (#const LLVMHiddenVisibility)
-fromVisibility ProtectedVisibility = (#const LLVMProtectedVisibility)
+fromVisibility c =
+    case c of
+        DefaultVisibility   -> (#const LLVMDefaultVisibility)
+        HiddenVisibility    -> (#const LLVMHiddenVisibility)
+        ProtectedVisibility -> (#const LLVMProtectedVisibility)
 
 toVisibility :: CUInt -> Visibility
-toVisibility c | c == (#const LLVMDefaultVisibility)   = DefaultVisibility
-toVisibility c | c == (#const LLVMHiddenVisibility)    = HiddenVisibility
-toVisibility c | c == (#const LLVMProtectedVisibility) = ProtectedVisibility
-toVisibility _ = error "toVisibility: bad value"
+toVisibility c =
+    case c of
+        (#const LLVMDefaultVisibility)   -> DefaultVisibility
+        (#const LLVMHiddenVisibility)    -> HiddenVisibility
+        (#const LLVMProtectedVisibility) -> ProtectedVisibility
+        _ -> error "toVisibility: bad value"
 
 data Attribute
     = ZExtAttribute
@@ -762,49 +775,53 @@ data Attribute
     deriving (Show, Eq, Ord, Enum, Bounded, Typeable)
 
 fromAttribute :: Attribute -> CAttribute
-fromAttribute ZExtAttribute = (#const LLVMZExtAttribute)
-fromAttribute SExtAttribute = (#const LLVMSExtAttribute)
-fromAttribute NoReturnAttribute = (#const LLVMNoReturnAttribute)
-fromAttribute InRegAttribute = (#const LLVMInRegAttribute)
-fromAttribute StructRetAttribute = (#const LLVMStructRetAttribute)
-fromAttribute NoUnwindAttribute = (#const LLVMNoUnwindAttribute)
-fromAttribute NoAliasAttribute = (#const LLVMNoAliasAttribute)
-fromAttribute ByValAttribute = (#const LLVMByValAttribute)
-fromAttribute NestAttribute = (#const LLVMNestAttribute)
-fromAttribute ReadNoneAttribute = (#const LLVMReadNoneAttribute)
-fromAttribute ReadOnlyAttribute = (#const LLVMReadOnlyAttribute)
-fromAttribute NoInlineAttribute = (#const LLVMNoInlineAttribute)
-fromAttribute AlwaysInlineAttribute = (#const LLVMAlwaysInlineAttribute)
-fromAttribute OptimizeForSizeAttribute = (#const LLVMOptimizeForSizeAttribute)
-fromAttribute StackProtectAttribute = (#const LLVMStackProtectAttribute)
-fromAttribute StackProtectReqAttribute = (#const LLVMStackProtectReqAttribute)
-fromAttribute NoCaptureAttribute = (#const LLVMNoCaptureAttribute)
-fromAttribute NoRedZoneAttribute = (#const LLVMNoRedZoneAttribute)
-fromAttribute NoImplicitFloatAttribute = (#const LLVMNoImplicitFloatAttribute)
-fromAttribute NakedAttribute = (#const LLVMNakedAttribute)
+fromAttribute c =
+    case c of
+        ZExtAttribute -> (#const LLVMZExtAttribute)
+        SExtAttribute -> (#const LLVMSExtAttribute)
+        NoReturnAttribute -> (#const LLVMNoReturnAttribute)
+        InRegAttribute -> (#const LLVMInRegAttribute)
+        StructRetAttribute -> (#const LLVMStructRetAttribute)
+        NoUnwindAttribute -> (#const LLVMNoUnwindAttribute)
+        NoAliasAttribute -> (#const LLVMNoAliasAttribute)
+        ByValAttribute -> (#const LLVMByValAttribute)
+        NestAttribute -> (#const LLVMNestAttribute)
+        ReadNoneAttribute -> (#const LLVMReadNoneAttribute)
+        ReadOnlyAttribute -> (#const LLVMReadOnlyAttribute)
+        NoInlineAttribute -> (#const LLVMNoInlineAttribute)
+        AlwaysInlineAttribute -> (#const LLVMAlwaysInlineAttribute)
+        OptimizeForSizeAttribute -> (#const LLVMOptimizeForSizeAttribute)
+        StackProtectAttribute -> (#const LLVMStackProtectAttribute)
+        StackProtectReqAttribute -> (#const LLVMStackProtectReqAttribute)
+        NoCaptureAttribute -> (#const LLVMNoCaptureAttribute)
+        NoRedZoneAttribute -> (#const LLVMNoRedZoneAttribute)
+        NoImplicitFloatAttribute -> (#const LLVMNoImplicitFloatAttribute)
+        NakedAttribute -> (#const LLVMNakedAttribute)
 
 toAttribute :: CAttribute -> Attribute
-toAttribute c | c == (#const LLVMZExtAttribute) = ZExtAttribute
-toAttribute c | c == (#const LLVMSExtAttribute) = SExtAttribute
-toAttribute c | c == (#const LLVMNoReturnAttribute) = NoReturnAttribute
-toAttribute c | c == (#const LLVMInRegAttribute) = InRegAttribute
-toAttribute c | c == (#const LLVMStructRetAttribute) = StructRetAttribute
-toAttribute c | c == (#const LLVMNoUnwindAttribute) = NoUnwindAttribute
-toAttribute c | c == (#const LLVMNoAliasAttribute) = NoAliasAttribute
-toAttribute c | c == (#const LLVMByValAttribute) = ByValAttribute
-toAttribute c | c == (#const LLVMNestAttribute) = NestAttribute
-toAttribute c | c == (#const LLVMReadNoneAttribute) = ReadNoneAttribute
-toAttribute c | c == (#const LLVMReadOnlyAttribute) = ReadOnlyAttribute
-toAttribute c | c == (#const LLVMNoInlineAttribute) = NoInlineAttribute
-toAttribute c | c == (#const LLVMAlwaysInlineAttribute) = AlwaysInlineAttribute
-toAttribute c | c == (#const LLVMOptimizeForSizeAttribute) = OptimizeForSizeAttribute
-toAttribute c | c == (#const LLVMStackProtectAttribute) = StackProtectAttribute
-toAttribute c | c == (#const LLVMStackProtectReqAttribute) = StackProtectReqAttribute
-toAttribute c | c == (#const LLVMNoCaptureAttribute) = NoCaptureAttribute
-toAttribute c | c == (#const LLVMNoRedZoneAttribute) = NoRedZoneAttribute
-toAttribute c | c == (#const LLVMNoImplicitFloatAttribute) = NoImplicitFloatAttribute
-toAttribute c | c == (#const LLVMNakedAttribute) = NakedAttribute
-toAttribute _ = error "toAttribute: bad value"
+toAttribute c =
+    case c of
+        (#const LLVMZExtAttribute) -> ZExtAttribute
+        (#const LLVMSExtAttribute) -> SExtAttribute
+        (#const LLVMNoReturnAttribute) -> NoReturnAttribute
+        (#const LLVMInRegAttribute) -> InRegAttribute
+        (#const LLVMStructRetAttribute) -> StructRetAttribute
+        (#const LLVMNoUnwindAttribute) -> NoUnwindAttribute
+        (#const LLVMNoAliasAttribute) -> NoAliasAttribute
+        (#const LLVMByValAttribute) -> ByValAttribute
+        (#const LLVMNestAttribute) -> NestAttribute
+        (#const LLVMReadNoneAttribute) -> ReadNoneAttribute
+        (#const LLVMReadOnlyAttribute) -> ReadOnlyAttribute
+        (#const LLVMNoInlineAttribute) -> NoInlineAttribute
+        (#const LLVMAlwaysInlineAttribute) -> AlwaysInlineAttribute
+        (#const LLVMOptimizeForSizeAttribute) -> OptimizeForSizeAttribute
+        (#const LLVMStackProtectAttribute) -> StackProtectAttribute
+        (#const LLVMStackProtectReqAttribute) -> StackProtectReqAttribute
+        (#const LLVMNoCaptureAttribute) -> NoCaptureAttribute
+        (#const LLVMNoRedZoneAttribute) -> NoRedZoneAttribute
+        (#const LLVMNoImplicitFloatAttribute) -> NoImplicitFloatAttribute
+        (#const LLVMNakedAttribute) -> NakedAttribute
+        _ -> error "toAttribute: bad value"
 
 type CAttribute = CInt
 
