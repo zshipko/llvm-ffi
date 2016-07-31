@@ -80,7 +80,6 @@ Library
 
   Other-modules:
       LLVM.Target.ARM
-      LLVM.Target.CBackend
       LLVM.Target.CellSPU
       LLVM.Target.CppBackend
       LLVM.Target.Hexagon
