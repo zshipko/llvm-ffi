@@ -85,6 +85,7 @@ Library
       LLVM.Target.Hexagon
       LLVM.Target.MSP430
       LLVM.Target.Mips
+      LLVM.Target.NVPTX
       LLVM.Target.PowerPC
       LLVM.Target.Sparc
       LLVM.Target.X86
