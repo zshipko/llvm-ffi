@@ -80,8 +80,6 @@ Library
 
   Other-modules:
       LLVM.Target.ARM
-      LLVM.Target.Alpha
-      LLVM.Target.Blackfin
       LLVM.Target.CBackend
       LLVM.Target.CellSPU
       LLVM.Target.CppBackend
@@ -89,7 +87,6 @@ Library
       LLVM.Target.Mips
       LLVM.Target.PowerPC
       LLVM.Target.Sparc
-      LLVM.Target.SystemZ
       LLVM.Target.X86
       LLVM.Target.XCore
 
