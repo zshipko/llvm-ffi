@@ -341,12 +341,12 @@ unsigned LLVMGetDoesNotThrow(LLVMValueRef fn)
     return fnp->doesNotThrow();
 }
 
-void LLVMSetDoesNotThrow(LLVMValueRef fn, int DoesNotThrow)
+void LLVMSetDoesNotThrow(LLVMValueRef fn)
 {
     llvm::Function *fnp = llvm::unwrap<llvm::Function>(fn);
     assert(fnp);
 
-    return fnp->setDoesNotThrow((bool)DoesNotThrow);
+    return fnp->setDoesNotThrow();
 }
 
 LLVMValueRef LLVMGetIntrinsic(LLVMModuleRef module, int id,
