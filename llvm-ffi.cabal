@@ -1,5 +1,5 @@
 Name:          llvm-ffi
-Version:       3.2.0
+Version:       3.2.1
 License:       BSD3
 License-File:  LICENSE
 Synopsis:      FFI bindings to the LLVM compiler toolkit.
@@ -52,7 +52,7 @@ Source-Repository head
   Location: http://hub.darcs.net/thielema/llvm-ffi/
 
 Source-Repository this
-  Tag:      3.2.0
+  Tag:      3.2.1
   Type:     darcs
   Location: http://hub.darcs.net/thielema/llvm-ffi/
 
