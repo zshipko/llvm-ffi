@@ -562,6 +562,8 @@ define_pass( StripNonDebugSymbols )
 define_pass( UnifyFunctionExitNodes )
 
 /* we support only internalize(true) */
-llvm::ModulePass *createInternalize2Pass() { return llvm::createInternalizePass(true); }
+llvm::ModulePass *createInternalize2Pass() {
+  return llvm::createInternalizePass();
+}
 define_pass( Internalize2 )
 
