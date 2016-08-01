@@ -53,9 +53,9 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/CallSite.h"
-#include "llvm/Analysis/Verifier.h"
-#include "llvm/Assembly/Parser.h"
+#include "llvm/IR/CallSite.h"
+#include "llvm/IR/Verifier.h"
+#include "llvm/AsmParser/Parser.h"
 #ifdef HAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H
 # include "llvm/Support/DynamicLibrary.h"
 #else
@@ -71,8 +71,9 @@
 #include "llvm/Transforms/Utils/UnifyFunctionExitNodes.h"
 #include "llvm/Transforms/Instrumentation.h"
 #include "llvm/Transforms/Utils/Cloning.h"
-#include "llvm/Linker.h"
+#include "llvm/Linker/Linker.h"
 #include "llvm/Support/SourceMgr.h"
+#include "llvm/Support/raw_ostream.h"
 
 // LLVM-C includes
 #include "llvm-c/Core.h"
