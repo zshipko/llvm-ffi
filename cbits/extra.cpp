@@ -119,6 +119,7 @@ char *LLVMDumpValueToString(LLVMValueRef value)
     return strdup(buf.str().c_str());
 }
 
+#if HS_LLVM_VERSION < 305
 unsigned LLVMModuleGetPointerSize(LLVMModuleRef module)
 {
     llvm::Module *modulep = llvm::unwrap(module);
@@ -131,6 +132,7 @@ unsigned LLVMModuleGetPointerSize(LLVMModuleRef module)
         return 64;
     return 0;
 }
+#endif
 
 LLVMValueRef LLVMModuleGetOrInsertFunction(LLVMModuleRef module,
     const char *name, LLVMTypeRef function_type)
@@ -388,6 +390,7 @@ LLVMModuleRef LLVMGetModuleFromAssembly(const char *asmtext, unsigned txtlen,
     return wrap(modulep);
 }
 
+#if HS_LLVM_VERSION < 305
 LLVMModuleRef LLVMGetModuleFromBitcode(const char *bitcode, unsigned bclen,
     char **out)
 {
@@ -409,6 +412,7 @@ LLVMModuleRef LLVMGetModuleFromBitcode(const char *bitcode, unsigned bclen,
     delete mbp;
     return wrap(modulep);
 }
+#endif
 
 unsigned LLVMLinkModules(LLVMModuleRef dest, LLVMModuleRef src, unsigned mode,
 			 char **out)
