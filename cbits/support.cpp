@@ -49,7 +49,9 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
   Builder.OptLevel = OptLevel;
   Builder.SizeLevel = OptimizeSize;
   Builder.DisableUnrollLoops = !UnrollLoops;
+#if HS_LLVM_VERSION < 304
   Builder.DisableSimplifyLibCalls = !SimplifyLibCalls;
+#endif
   Builder.DisableUnitAtATime = !UnitAtATime;
     
   Pass *InliningPass = 0;
