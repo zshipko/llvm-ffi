@@ -15,7 +15,7 @@ Description:
   using the @llvm-pkg-config@ package.
   .
   We try to stay up to date with LLVM releases.
-  The current version of this package is compatible with LLVM 3.4.
+  The current version of this package is compatible with LLVM 3.5.
   Please understand that the package may or may not work
   against older LLVM releases.
   We don't have the time or resources to test across multiple releases.
@@ -44,7 +44,7 @@ Flag buildTools
   Default: False
 
 Flag specificPkgConfig
-  Description: use llvm-3.4.pc instead of llvm.pc
+  Description: use llvm-3.5.pc instead of llvm.pc
   Default: True
 
 Source-Repository head
@@ -91,11 +91,11 @@ Library
       LLVM.Target.XCore
 
   If flag(specificPkgConfig)
-    PkgConfig-Depends: llvm-3.4 == 3.4
+    PkgConfig-Depends: llvm-3.5 == 3.5
   Else
-    PkgConfig-Depends: llvm == 3.4
-  CC-Options: -DHS_LLVM_VERSION=304 -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
-  CPP-Options: -DHS_LLVM_VERSION=304
+    PkgConfig-Depends: llvm == 3.5
+  CC-Options: -DHS_LLVM_VERSION=305 -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
+  CPP-Options: -DHS_LLVM_VERSION=305
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
   Include-Dirs: include
   C-Sources:
