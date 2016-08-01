@@ -180,7 +180,7 @@ unsigned char *LLVMGetBitcodeFromModule(LLVMModuleRef module, unsigned *len);
 /* Wraps llvm::sys::DynamicLibrary::LoadLibraryPermanently(). Returns 0 on
  * failure (with errmsg filled in) and 1 on success. Dispose error message after
  * use, via LLVMDisposeMessage(). */
-unsigned LLVMLoadLibraryPermanently(const char* filename, char **errmsg);
+unsigned LLVMLoadLibraryPermanentlyError(const char* filename, char **errmsg);
 
 /* Wraps llvm::ExecutionEngine::getPointerToFunction(). Returns a pointer
  * to the JITted function. */

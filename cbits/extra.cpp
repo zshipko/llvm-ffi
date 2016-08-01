@@ -461,7 +461,7 @@ unsigned char *LLVMGetBitcodeFromModule(LLVMModuleRef module, unsigned *lenp)
 }
 
 /* Return 0 on failure (with errmsg filled in), 1 on success. */
-unsigned LLVMLoadLibraryPermanently(const char* filename, char **errmsg)
+unsigned LLVMLoadLibraryPermanentlyError(const char* filename, char **errmsg)
 {
     assert(filename);
     assert(errmsg);
