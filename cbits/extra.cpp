@@ -41,12 +41,6 @@
 #define __STDC_CONSTANT_MACROS
 #endif
 
-// standard includes
-#include <cassert>
-#include <cstdlib>
-#include <cstring>
-#include <sstream>
-
 // LLVM includes
 #include "llvm/LLVMContext.h"
 #include "llvm/Bitcode/ReaderWriter.h"
