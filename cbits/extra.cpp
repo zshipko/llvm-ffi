@@ -52,7 +52,6 @@
 #include "llvm/Bitcode/ReaderWriter.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Casting.h"
-#include "llvm/Support/MemoryBuffer.h"
 #include "llvm/IR/CallSite.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/AsmParser/Parser.h"
