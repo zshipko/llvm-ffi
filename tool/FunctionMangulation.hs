@@ -34,6 +34,7 @@ rename cname =
       "void" -> "()"
       "const char *" -> "CString"
       "char *" -> "CString"
+      "size_t" -> "CSize"
       _ ->
          case reverse cname of
             '*':ps -> "(Ptr " ++ rename (reverse ps) ++ ")"

@@ -8,6 +8,7 @@ module LLVM.FFI.ExecutionEngine
     -- * Linking
       linkInInterpreter
     , linkInJIT
+    , linkInMCJIT
 
     -- * Generic values
     , GenericValue
@@ -27,6 +28,8 @@ module LLVM.FFI.ExecutionEngine
     , createExecutionEngineForModule
     , createInterpreterForModule
     , createJITCompilerForModule
+    , createMCJITCompilerForModule
+    , initializeMCJITCompilerOptions
     , createExecutionEngine
     , createInterpreter
     , createJITCompiler
@@ -64,6 +67,7 @@ type CDouble  = C.CDouble
 type CInt     = C.CInt
 type CUInt    = C.CUInt
 type CULLong  = C.CULLong
+type CSize    = C.CSize
 
 
 data ExecutionEngine
@@ -74,10 +78,16 @@ data GenericValue
     deriving (Typeable)
 type GenericValueRef = Ptr GenericValue
 
+data MCJITCompilerOptions
+    deriving (Typeable)
+type MCJITCompilerOptionsRef = Ptr MCJITCompilerOptions
+
 -- ** Linking
 foreign import ccall unsafe "LLVMLinkInInterpreter" linkInInterpreter
     :: IO ()
 foreign import ccall unsafe "LLVMLinkInJIT" linkInJIT
+    :: IO ()
+foreign import ccall unsafe "LLVMLinkInMCJIT" linkInMCJIT
     :: IO ()
 
 -- ** Generic values
@@ -106,6 +116,10 @@ foreign import ccall unsafe "LLVMCreateInterpreterForModule" createInterpreterFo
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
 foreign import ccall unsafe "LLVMCreateJITCompilerForModule" createJITCompilerForModule
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> CUInt -> (Ptr CString) -> IO Bool
+foreign import ccall unsafe "LLVMInitializeMCJITCompilerOptions" initializeMCJITCompilerOptions
+    :: MCJITCompilerOptionsRef -> CSize -> IO ()
+foreign import ccall unsafe "LLVMCreateMCJITCompilerForModule" createMCJITCompilerForModule
+    :: Ptr ExecutionEngineRef -> ModuleRef -> MCJITCompilerOptionsRef -> CSize -> Ptr CString -> IO Bool
 foreign import ccall unsafe "LLVMCreateExecutionEngine" createExecutionEngine
     :: Ptr ExecutionEngineRef -> ModuleProviderRef -> Ptr CString
     -> IO CInt
