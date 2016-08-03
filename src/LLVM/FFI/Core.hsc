@@ -45,6 +45,9 @@ module LLVM.FFI.Core
     , getTarget
     , setTarget
 
+    , defaultTargetTriple
+    , hostTriple
+
     , dumpModule
 
     , setModuleInlineAsm
@@ -569,6 +572,7 @@ type CLLong   = C.CLLong
 type CULLong  = C.CULLong
 
 
+#include <llvm/Config/config.h>
 #include <llvm-c/Core.h>
 
 data Module
@@ -613,6 +617,12 @@ type PassRegistryRef = Ptr PassRegistry
 data Context
     deriving (Typeable)
 type ContextRef = Ptr Context
+
+
+defaultTargetTriple, hostTriple :: String
+defaultTargetTriple = (#const_str LLVM_DEFAULT_TARGET_TRIPLE)
+hostTriple          = (#const_str LLVM_HOST_TRIPLE)
+
 
 data TypeKind
     = VoidTypeKind
