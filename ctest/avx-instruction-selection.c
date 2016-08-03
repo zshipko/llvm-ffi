@@ -19,7 +19,6 @@ const char* roundName = "llvm.x86.avx.round.ps.256";
 int main ()
 {
   LLVMModuleRef module;
-  LLVMModuleProviderRef provider;
   LLVMExecutionEngineRef execEngine;
   LLVMTargetDataRef targetData;
   LLVMTypeRef floatType, vectorType, ptrType, voidType, funcType, roundType, int32Type;
@@ -59,10 +58,9 @@ int main ()
   LLVMAddInstrAttribute(callRound, 0, 0);
   LLVMBuildStore(builder, callRound, param);
   LLVMBuildRetVoid(builder);
-  provider = LLVMCreateModuleProviderForExistingModule(module);
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
   char *errorMsg;
-  LLVMCreateExecutionEngine(&execEngine, provider, &errorMsg);
+  LLVMCreateExecutionEngineForModule(&execEngine, module, &errorMsg);
   targetData = LLVMGetExecutionEngineTargetData(execEngine);
   size_t vectorSize0 = LLVMStoreSizeOfType(targetData, vectorType);
   size_t vectorAlign = LLVMABIAlignmentOfType(targetData, vectorType);
