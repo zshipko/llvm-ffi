@@ -1,3 +1,4 @@
+#include <llvm/Config/config.h>
 #include <llvm-c/Core.h>
 #include <llvm-c/Target.h>
 #include <llvm-c/ExecutionEngine.h>
@@ -32,7 +33,7 @@ int main ()
   LLVMInitializeX86Target();
   LLVMInitializeX86TargetMC();
   module = LLVMModuleCreateWithName("_module");
-  LLVMSetTarget(module, "x86_64-unknown-linux-gnu");
+  LLVMSetTarget(module, LLVM_HOST_TRIPLE);
   floatType = LLVMFloatType();
   vectorType = LLVMVectorType(floatType, vectorSize);
   ptrType = LLVMPointerType(vectorType, 0);
