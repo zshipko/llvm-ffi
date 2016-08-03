@@ -33,6 +33,7 @@ int main ()
   LLVMInitializeX86Target();
   LLVMInitializeX86TargetMC();
   module = LLVMModuleCreateWithName("_module");
+  LLVMSetTarget(module, "x86_64-unknown-linux-gnu");
   floatType = LLVMFloatType();
   vectorType = LLVMVectorType(floatType, vectorSize);
   ptrType = LLVMPointerType(vectorType, 0);
