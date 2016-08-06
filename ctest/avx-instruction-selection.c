@@ -37,6 +37,8 @@ int main ()
 #else
   LLVMInitializeNativeTarget();
 #endif
+  LLVMInitializeNativeAsmPrinter();
+  LLVMInitializeNativeAsmParser();
   module = LLVMModuleCreateWithName("_module");
   LLVMSetTarget(module, LLVM_HOST_TRIPLE);
   floatType = LLVMFloatType();
