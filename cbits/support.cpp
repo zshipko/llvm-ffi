@@ -10,6 +10,9 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/IPO.h"
 
+#include "llvm-c/ExecutionEngine.h"
+#include "llvm/ExecutionEngine/ExecutionEngine.h"
+#include "llvm/IR/Module.h"
 #include "llvm/Support/Host.h"
 
 #include "support.h"
@@ -96,3 +99,24 @@ const char *LLVMGetHostCPUName(size_t &len) {
   return r.data();
 }
 
+
+LLVMBool LLVMCreateExecutionEngineForModuleCPU
+  (LLVMExecutionEngineRef *OutEE,
+   LLVMModuleRef M,
+   char **OutError) {
+  std::string Error;
+#if HS_LLVM_VERSION < 306
+  EngineBuilder builder(unwrap(M));
+#else
+  EngineBuilder builder(std::unique_ptr<Module>(unwrap(M)));
+#endif
+  builder.setEngineKind(EngineKind::Either)
+         .setMCPU(sys::getHostCPUName().data())
+         .setErrorStr(&Error);
+  if (ExecutionEngine *EE = builder.create()){
+    *OutEE = wrap(EE);
+    return 0;
+  }
+  *OutError = strdup(Error.c_str());
+  return 1;
+}

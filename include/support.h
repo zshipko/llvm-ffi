@@ -19,6 +19,11 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
 
 const char *LLVMGetHostCPUName(size_t &len);
 
+LLVMBool LLVMCreateExecutionEngineForModuleCPU
+  (LLVMExecutionEngineRef *OutEE,
+   LLVMModuleRef M,
+   char **OutError);
+
 
 #ifdef __cplusplus
 } /* extern "C" */

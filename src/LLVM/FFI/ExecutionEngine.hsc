@@ -26,6 +26,7 @@ module LLVM.FFI.ExecutionEngine
     , ExecutionEngine
     , ExecutionEngineRef
     , createExecutionEngineForModule
+    , createExecutionEngineForModuleCPU
     , createInterpreterForModule
     , createJITCompilerForModule
     , createMCJITCompilerForModule
@@ -111,6 +112,8 @@ foreign import ccall unsafe "&LLVMDisposeGenericValue" ptrDisposeGenericValue
 
 -- ** Execution engines
 foreign import ccall unsafe "LLVMCreateExecutionEngineForModule" createExecutionEngineForModule
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
+foreign import ccall unsafe "LLVMCreateExecutionEngineForModuleCPU" createExecutionEngineForModuleCPU
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
 foreign import ccall unsafe "LLVMCreateInterpreterForModule" createInterpreterForModule
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
