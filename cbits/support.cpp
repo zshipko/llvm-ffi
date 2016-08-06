@@ -10,6 +10,8 @@
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/IPO.h"
 
+#include "llvm/Support/Host.h"
+
 #include "support.h"
 
 using namespace llvm;
@@ -87,3 +89,10 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
                              HaveExceptions, InliningPass);
 #endif
 }
+
+const char *LLVMGetHostCPUName(size_t &len) {
+  StringRef r = sys::getHostCPUName();
+  len = r.size();
+  return r.data();
+}
+

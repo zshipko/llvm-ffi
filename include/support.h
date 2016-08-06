@@ -17,6 +17,9 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
 				    int HaveExceptions,
 				    int DisableInlining);
 
+const char *LLVMGetHostCPUName(size_t &len);
+
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
