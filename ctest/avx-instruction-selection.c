@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ctest/create-execution-engine.h"
+
 #if 0
 const int vectorSize = 4;
 const char* roundName = "llvm.x86.sse41.round.ps";
@@ -68,7 +70,7 @@ int main ()
   LLVMBuildRetVoid(builder);
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
   char *errorMsg;
-  LLVMCreateExecutionEngineForModule(&execEngine, module, &errorMsg);
+  LLVMCreateExecutionEngineForModuleCPU(&execEngine, module, &errorMsg);
   if (!execEngine) {
     printf ("LLVMCreateExecutionEngine: %s\n", errorMsg);
     return 1;
