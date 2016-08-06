@@ -65,7 +65,7 @@ int main ()
   targetData = LLVMGetExecutionEngineTargetData(execEngine);
   size_t vectorSize0 = LLVMStoreSizeOfType(targetData, vectorType);
   size_t vectorAlign = LLVMABIAlignmentOfType(targetData, vectorType);
-  float vector[vectorSize];
+  float vector[vectorSize] __attribute__((aligned(32)));
   printf("%lx, size %lx, align %lx\n", (size_t)vector, vectorSize0, vectorAlign);
   LLVMGenericValueRef genericVector = LLVMCreateGenericValueOfPointer(vector);
   LLVMGenericValueRef runParams[] = { genericVector } ;
