@@ -69,6 +69,10 @@ int main ()
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
   char *errorMsg;
   LLVMCreateExecutionEngineForModule(&execEngine, module, &errorMsg);
+  if (!execEngine) {
+    printf ("LLVMCreateExecutionEngine: %s\n", errorMsg);
+    return 1;
+  }
   targetData = LLVMGetExecutionEngineTargetData(execEngine);
   size_t vectorSize0 = LLVMStoreSizeOfType(targetData, vectorType);
   size_t vectorAlign = LLVMABIAlignmentOfType(targetData, vectorType);
