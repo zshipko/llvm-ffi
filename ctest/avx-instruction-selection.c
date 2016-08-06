@@ -29,9 +29,14 @@ int main ()
   LLVMBasicBlockRef block;
   const int false = 0;
 
+#if 0
+  // this is the expansion of LLVMInitializeNativeTarget
   LLVMInitializeX86TargetInfo();
   LLVMInitializeX86Target();
   LLVMInitializeX86TargetMC();
+#else
+  LLVMInitializeNativeTarget();
+#endif
   module = LLVMModuleCreateWithName("_module");
   LLVMSetTarget(module, LLVM_HOST_TRIPLE);
   floatType = LLVMFloatType();
