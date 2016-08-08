@@ -99,6 +99,55 @@ const char *LLVMGetHostCPUName(size_t &len) {
   return r.data();
 }
 
+typedef StringMap<bool> LLVMFeatureMap;
+typedef LLVMFeatureMap *LLVMFeatureMapRef;
+
+LLVMFeatureMapRef LLVMGetHostFeatures() {
+  LLVMFeatureMapRef features = new(LLVMFeatureMap);
+  if (sys::getHostCPUFeatures(*features)) {
+    return features;
+  } else {
+    return nullptr;
+  }
+}
+
+void LLVMFreeFeatures(LLVMFeatureMapRef features) {
+  delete(features);
+}
+
+typedef llvm::StringMap<bool>::const_iterator LLVMFeatureIterator;
+struct LLVMFeature
+  {LLVMFeature (LLVMFeatureMapRef map0, LLVMFeatureIterator it0)
+     : map(map0), it(it0) {};
+   LLVMFeatureMapRef map; LLVMFeatureIterator it; };
+typedef LLVMFeature *LLVMFeatureRef;
+
+LLVMFeatureRef LLVMCheckFeature(LLVMFeatureRef featureRef) {
+  if (featureRef->it == featureRef->map->end()) {
+    return featureRef;
+  } else {
+    delete featureRef;
+    return nullptr;
+  }
+}
+
+LLVMFeatureRef LLVMGetFirstFeature(LLVMFeatureMapRef features) {
+  return LLVMCheckFeature(new LLVMFeature(features, features->begin()));
+}
+
+LLVMFeatureRef LLVMGetNextFeature(LLVMFeatureRef featureRef) {
+  (featureRef->it)++;
+  return LLVMCheckFeature(featureRef);
+}
+
+const char *LLVMGetFeatureName(LLVMFeatureRef featureRef) {
+  return featureRef->it->first().data();
+}
+
+LLVMBool LLVMGetFeatureSupport(LLVMFeatureRef featureRef) {
+  return featureRef->it->second;
+}
+
 
 LLVMBool LLVMCreateExecutionEngineForModuleCPU
   (LLVMExecutionEngineRef *OutEE,
