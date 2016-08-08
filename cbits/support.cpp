@@ -116,36 +116,34 @@ void LLVMFreeFeatures(LLVMFeatureMapRef features) {
 }
 
 typedef llvm::StringMap<bool>::const_iterator LLVMFeatureIterator;
-struct LLVMFeature
-  {LLVMFeature (LLVMFeatureMapRef map0, LLVMFeatureIterator it0)
-     : map(map0), it(it0) {};
-   LLVMFeatureMapRef map; LLVMFeatureIterator it; };
-typedef LLVMFeature *LLVMFeatureRef;
+typedef LLVMFeatureIterator *LLVMFeatureIteratorRef;
 
-LLVMFeatureRef LLVMCheckFeature(LLVMFeatureRef featureRef) {
-  if (featureRef->it == featureRef->map->end()) {
-    return featureRef;
-  } else {
+LLVMFeatureIteratorRef LLVMCheckFeature
+    (LLVMFeatureMapRef features, LLVMFeatureIteratorRef featureRef) {
+  if (*featureRef == features->end()) {
     delete featureRef;
     return nullptr;
+  } else {
+    return featureRef;
   }
 }
 
-LLVMFeatureRef LLVMGetFirstFeature(LLVMFeatureMapRef features) {
-  return LLVMCheckFeature(new LLVMFeature(features, features->begin()));
+LLVMFeatureIteratorRef LLVMGetFirstFeature(LLVMFeatureMapRef features) {
+  return LLVMCheckFeature(features, new LLVMFeatureIterator(features->begin()));
 }
 
-LLVMFeatureRef LLVMGetNextFeature(LLVMFeatureRef featureRef) {
-  (featureRef->it)++;
-  return LLVMCheckFeature(featureRef);
+LLVMFeatureIteratorRef LLVMGetNextFeature
+    (LLVMFeatureMapRef features, LLVMFeatureIteratorRef featureRef) {
+  (*featureRef)++;
+  return LLVMCheckFeature(features, featureRef);
 }
 
-const char *LLVMGetFeatureName(LLVMFeatureRef featureRef) {
-  return featureRef->it->first().data();
+const char *LLVMGetFeatureName(LLVMFeatureIteratorRef featureRef) {
+  return (*featureRef)->first().data();
 }
 
-LLVMBool LLVMGetFeatureSupport(LLVMFeatureRef featureRef) {
-  return featureRef->it->second;
+LLVMBool LLVMGetFeatureSupport(LLVMFeatureIteratorRef featureRef) {
+  return (*featureRef)->second;
 }
 
 
