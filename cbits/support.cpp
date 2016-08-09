@@ -58,7 +58,7 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
   Builder.DisableSimplifyLibCalls = !SimplifyLibCalls;
 #endif
   Builder.DisableUnitAtATime = !UnitAtATime;
-    
+
   Pass *InliningPass = 0;
 
   if (DisableInline) {
@@ -146,6 +146,7 @@ const char *LLVMGetFeatureName(LLVMFeatureIteratorRef featureRef) {
 LLVMBool LLVMGetFeatureSupport(LLVMFeatureIteratorRef featureRef) {
   return (*featureRef)->second;
 }
+
 
 
 LLVMBool LLVMCreateExecutionEngineForModuleCPU

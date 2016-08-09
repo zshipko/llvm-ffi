@@ -24,8 +24,8 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
 				    int HaveExceptions,
 				    int DisableInlining);
 
-const char *LLVMGetHostCPUName(size_t &len);
 
+const char *LLVMGetHostCPUName(size_t &len);
 
 
 typedef LLVMFeatureMap *LLVMFeatureMapRef;
