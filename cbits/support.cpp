@@ -99,8 +99,6 @@ const char *LLVMGetHostCPUName(size_t &len) {
   return r.data();
 }
 
-typedef StringMap<bool> LLVMFeatureMap;
-typedef LLVMFeatureMap *LLVMFeatureMapRef;
 
 
 /*
@@ -120,9 +118,6 @@ LLVMFeatureMapRef LLVMGetHostFeatures() {
 void LLVMFreeFeatures(LLVMFeatureMapRef features) {
   delete(features);
 }
-
-typedef llvm::StringMap<bool>::const_iterator LLVMFeatureIterator;
-typedef LLVMFeatureIterator *LLVMFeatureIteratorRef;
 
 LLVMFeatureIteratorRef LLVMCheckFeature
     (LLVMFeatureMapRef features, LLVMFeatureIteratorRef featureRef) {

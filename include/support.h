@@ -1,8 +1,15 @@
 #ifndef LLVM_HS_SUPPORT_H
 #define LLVM_HS_SUPPORT_H
 
+
 #ifdef __cplusplus
+typedef llvm::StringMap<bool> LLVMFeatureMap;
+typedef llvm::StringMap<bool>::const_iterator LLVMFeatureIterator;
+
 extern "C" {
+#else
+typedef int LLVMFeatureMap;
+typedef int LLVMFeatureIterator;
 #endif
 
 void LLVMCreateStandardFunctionPasses(LLVMPassManagerRef PM,
@@ -18,6 +25,22 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
 				    int DisableInlining);
 
 const char *LLVMGetHostCPUName(size_t &len);
+
+
+
+typedef LLVMFeatureMap *LLVMFeatureMapRef;
+typedef LLVMFeatureIterator *LLVMFeatureIteratorRef;
+
+LLVMFeatureMapRef LLVMGetHostFeatures();
+void LLVMFreeFeatures(LLVMFeatureMapRef features);
+
+LLVMFeatureIteratorRef LLVMGetFirstFeature(LLVMFeatureMapRef features);
+LLVMFeatureIteratorRef LLVMGetNextFeature(LLVMFeatureMapRef features, LLVMFeatureIteratorRef featureRef);
+
+const char *LLVMGetFeatureName(LLVMFeatureIteratorRef featureRef);
+LLVMBool LLVMGetFeatureSupport(LLVMFeatureIteratorRef featureRef);
+
+
 
 LLVMBool LLVMCreateExecutionEngineForModuleCPU
   (LLVMExecutionEngineRef *OutEE,
