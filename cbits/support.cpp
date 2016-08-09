@@ -107,6 +107,7 @@ LLVMFeatureMapRef LLVMGetHostFeatures() {
   if (sys::getHostCPUFeatures(*features)) {
     return features;
   } else {
+    delete features;
     return nullptr;
   }
 }
