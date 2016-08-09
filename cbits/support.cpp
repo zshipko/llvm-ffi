@@ -102,6 +102,11 @@ const char *LLVMGetHostCPUName(size_t &len) {
 typedef StringMap<bool> LLVMFeatureMap;
 typedef LLVMFeatureMap *LLVMFeatureMapRef;
 
+
+/*
+getHostCPUFeatures supports X86 only starting with LLVM-3.7
+How does llc -mattr=help work? It seems to emit directly to stderr.
+*/
 LLVMFeatureMapRef LLVMGetHostFeatures() {
   LLVMFeatureMapRef features = new(LLVMFeatureMap);
   if (sys::getHostCPUFeatures(*features)) {
