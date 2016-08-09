@@ -86,7 +86,10 @@
 
 unsigned LLVMInitNativeTarget()
 {
-    return LLVMInitializeNativeTarget();
+    LLVMBool init = LLVMInitializeNativeTarget();
+    LLVMInitializeNativeAsmParser();
+    LLVMInitializeNativeAsmPrinter();
+    return init;
 }
 
 char *LLVMDumpModuleToString(LLVMModuleRef module)
