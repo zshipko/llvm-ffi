@@ -26,7 +26,7 @@ int main ()
   LLVMTargetDataRef targetData;
   LLVMTypeRef vectorType, ptrType, voidType, funcType, roundType, int32Type;
   LLVMValueRef func, roundFunc;
-  LLVMValueRef param, loaded, const1, callRound;
+  LLVMValueRef param, loaded, callRound;
   LLVMBuilderRef builder;
   LLVMBasicBlockRef block;
   const int false = 0;
@@ -64,11 +64,15 @@ int main ()
   funcType = LLVMFunctionType(vectorType, funcParams, 2, false);
   roundFunc = LLVMAddFunction(module, roundName, funcType);
   LLVMSetLinkage(roundFunc, LLVMExternalLinkage);
-  const1 = LLVMConstInt(int32Type, 1, false);
+#if 1
+  LLVMValueRef const1 = LLVMConstInt(int32Type, 1, false);
   LLVMValueRef callParams [] = { loaded, const1 } ;
   callRound = LLVMBuildCall(builder, roundFunc, callParams, 2, "");
   LLVMSetInstructionCallConv(callRound, LLVMCCallConv);
   LLVMAddInstrAttribute(callRound, 0, 0);
+#else
+  callRound = LLVMBuildFAdd(builder, loaded, loaded, "");
+#endif
   LLVMBuildStore(builder, callRound, param);
   LLVMBuildRetVoid(builder);
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
