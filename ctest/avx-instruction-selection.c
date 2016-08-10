@@ -80,8 +80,8 @@ int main ()
   size_t vectorAlign = LLVMABIAlignmentOfType(targetData, vectorType);
   float vector[vectorSize] __attribute__((aligned(32)));
   printf("%lx, size %lx, align %lx\n", (size_t)vector, vectorSize0, vectorAlign);
-  LLVMGenericValueRef genericVector = LLVMCreateGenericValueOfPointer(vector);
-  LLVMGenericValueRef runParams[] = { genericVector } ;
+  LLVMGenericValueRef runParams[] =
+    { LLVMCreateGenericValueOfPointer(vector) } ;
   LLVMRunFunction(execEngine, func, 1, runParams);
   return 0;
 }
