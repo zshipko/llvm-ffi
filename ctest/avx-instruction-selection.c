@@ -77,8 +77,7 @@ int main ()
   LLVMBuildRetVoid(builder);
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
   char *errorMsg;
-  LLVMCreateExecutionEngineForModuleCPU(&execEngine, module, &errorMsg);
-  if (!execEngine) {
+  if (LLVMCreateExecutionEngineForModuleCPU(&execEngine, module, &errorMsg)) {
     printf ("LLVMCreateExecutionEngine: %s\n", errorMsg);
     return 1;
   }
