@@ -86,9 +86,22 @@ int main ()
   size_t vectorSize0 = LLVMStoreSizeOfType(targetData, vectorType);
   size_t vectorAlign = LLVMABIAlignmentOfType(targetData, vectorType);
   float vector[vectorSize] __attribute__((aligned(32)));
-  printf("%lx, size %lx, align %lx\n", (size_t)vector, vectorSize0, vectorAlign);
+  printf("%lx, size %lx, align %lx\n",
+    (size_t)vector, vectorSize0, vectorAlign);
+
+  {
+    float x = -1.3;
+    int k;
+    for (k = 0; k<vectorSize; k++) { vector[k] = x; x += 1; }
+  }
   LLVMGenericValueRef runParams[] =
     { LLVMCreateGenericValueOfPointer(vector) } ;
   LLVMRunFunction(execEngine, func, 1, runParams);
+  {
+    int k;
+    printf("vector:");
+    for (k = 0; k<vectorSize; k++) { printf(" %f", vector[k]); }
+    printf("\n");
+  }
   return 0;
 }
