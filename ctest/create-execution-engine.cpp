@@ -3,7 +3,7 @@
 #include "llvm/IR/Module.h"
 #include "llvm/Support/Host.h"
 
-#include "ctest/create-execution-engine.h"
+#include "create-execution-engine.h"
 
 using namespace llvm;
 

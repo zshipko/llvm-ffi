@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ctest/create-execution-engine.h"
+#include "create-execution-engine.h"
 
 #if 0
 const int vectorSize = 4;
