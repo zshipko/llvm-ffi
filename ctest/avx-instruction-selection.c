@@ -24,7 +24,7 @@ int main ()
   LLVMModuleRef module;
   LLVMExecutionEngineRef execEngine;
   LLVMTargetDataRef targetData;
-  LLVMTypeRef floatType, vectorType, ptrType, voidType, funcType, roundType, int32Type;
+  LLVMTypeRef vectorType, ptrType, voidType, funcType, roundType, int32Type;
   LLVMValueRef func, roundFunc;
   LLVMValueRef param, loaded, const1, callRound;
   LLVMBuilderRef builder;
@@ -43,8 +43,11 @@ int main ()
   LLVMInitializeNativeAsmParser();
   module = LLVMModuleCreateWithName("_module");
   LLVMSetTarget(module, LLVM_HOST_TRIPLE);
-  floatType = LLVMFloatType();
-  vectorType = LLVMVectorType(floatType, vectorSize);
+#if 1
+  vectorType = LLVMVectorType(LLVMFloatType(), vectorSize);
+#else
+  vectorType = LLVMFloatType();
+#endif
   ptrType = LLVMPointerType(vectorType, 0);
   voidType = LLVMVoidType();
   LLVMTypeRef roundParams[] = { ptrType };
