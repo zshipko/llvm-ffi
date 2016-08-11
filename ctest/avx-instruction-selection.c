@@ -93,9 +93,15 @@ int main ()
     int k;
     for (k = 0; k<vectorSize; k++) { vector[k] = x; x += 1; }
   }
+#if 0
   LLVMGenericValueRef runParams[] =
     { LLVMCreateGenericValueOfPointer(vector) } ;
   LLVMRunFunction(execEngine, func, 1, runParams);
+#else
+  void (*funcPtr) (float *);
+  funcPtr = LLVMGetPointerToGlobal(execEngine, func);
+  funcPtr(vector);
+#endif
   {
     int k;
     printf("vector:");
