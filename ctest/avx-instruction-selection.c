@@ -60,7 +60,7 @@ int main ()
   LLVMPositionBuilderAtEnd(builder, block);
   param = LLVMGetParam(func, 0);
   loaded = LLVMBuildLoad(builder, param, "");
-  int32Type = LLVMIntType(32);
+  int32Type = LLVMInt32Type();
   LLVMTypeRef funcParams[] = { vectorType, int32Type } ;
   funcType = LLVMFunctionType(vectorType, funcParams, 2, false);
   roundFunc = LLVMAddFunction(module, roundName, funcType);
