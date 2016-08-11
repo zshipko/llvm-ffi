@@ -3,6 +3,7 @@
 #include <llvm-c/Target.h>
 #include <llvm-c/ExecutionEngine.h>
 #include <llvm-c/BitWriter.h>
+#include <llvm-c/BitReader.h>
 #include <llvm-c/Transforms/Scalar.h>
 
 #include <stdlib.h>
@@ -77,6 +78,23 @@ int main ()
   LLVMBuildRetVoid(builder);
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
   char *errorMsg;
+#if 0
+  {
+    LLVMMemoryBufferRef mem;
+    if (LLVMCreateMemoryBufferWithContentsOfFile
+          ("round-avx.bc", &mem, &errorMsg)) {
+      printf ("LLVMCreateMemoryBufferWithContentsOfFile: %s\n", errorMsg);
+      return 1;
+    }
+    if (LLVMParseBitcode(mem, &module, &errorMsg)) {
+      printf ("LLVMParseBitcode: %s\n", errorMsg);
+      return 1;
+    }
+    func = LLVMGetNamedFunction(module, "round");
+    LLVMDisposeMemoryBuffer (mem);
+  }
+#endif
+
   if (LLVMCreateExecutionEngineForModuleCPU(&execEngine, module, &errorMsg)) {
     printf ("LLVMCreateExecutionEngine: %s\n", errorMsg);
     return 1;
