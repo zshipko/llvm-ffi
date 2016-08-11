@@ -126,5 +126,6 @@ int main ()
     for (k = 0; k<vectorSize; k++) { printf(" %f", vector[k]); }
     printf("\n");
   }
+  LLVMDisposeExecutionEngine(execEngine);
   return 0;
 }
