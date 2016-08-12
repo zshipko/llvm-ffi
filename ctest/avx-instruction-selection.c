@@ -5,6 +5,7 @@
 #include <llvm-c/BitWriter.h>
 #include <llvm-c/BitReader.h>
 #include <llvm-c/Transforms/Scalar.h>
+#include <llvm-c/Transforms/PassManagerBuilder.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -72,11 +73,36 @@ int main ()
   LLVMSetInstructionCallConv(callRound, LLVMCCallConv);
   LLVMAddInstrAttribute(callRound, 0, 0);
 #else
-  callRound = LLVMBuildFAdd(builder, loaded, loaded, "");
+  LLVMBuildFAdd(builder, loaded, loaded, "");
+  LLVMValueRef zero = LLVMConstNull (vectorType);
+  callRound = LLVMBuildFSub(builder, loaded, zero, "");
 #endif
   LLVMBuildStore(builder, callRound, param);
   LLVMBuildRetVoid(builder);
   LLVMWriteBitcodeToFile(module, "round-avx.bc");
+
+#if 1
+  LLVMPassManagerRef mpasses = LLVMCreatePassManager();
+  LLVMPassManagerRef fpasses = LLVMCreatePassManager();
+  LLVMAddVerifierPass(mpasses);
+
+  LLVMPassManagerBuilderRef fpassBuilder = LLVMPassManagerBuilderCreate();
+  LLVMPassManagerBuilderSetOptLevel(fpassBuilder, 3);
+  LLVMPassManagerBuilderPopulateFunctionPassManager(fpassBuilder, fpasses);
+  LLVMPassManagerBuilderDispose (fpassBuilder);
+
+  LLVMPassManagerBuilderRef mpassBuilder = LLVMPassManagerBuilderCreate();
+  LLVMPassManagerBuilderSetOptLevel(mpassBuilder, 3);
+  LLVMPassManagerBuilderPopulateModulePassManager(mpassBuilder, mpasses);
+  LLVMPassManagerBuilderDispose (mpassBuilder);
+
+  LLVMRunPassManager(fpasses, module);
+  LLVMRunPassManager(mpasses, module);
+  LLVMDisposePassManager(fpasses);
+  LLVMDisposePassManager(mpasses);
+  LLVMWriteBitcodeToFile(module, "round-avx-opt.bc");
+#endif
+
   char *errorMsg;
 #if 0
   {
