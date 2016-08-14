@@ -578,7 +578,7 @@ type CLLong   = C.CLLong
 type CULLong  = C.CULLong
 
 
-#include <llvm/Config/config.h>
+#include <llvm/Config/llvm-config.h>
 #include <llvm-c/Core.h>
 
 data Module
