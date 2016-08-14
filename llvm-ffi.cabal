@@ -80,6 +80,7 @@ Library
       LLVM.FFI.Support.Host
       LLVM.FFI.Target
       LLVM.FFI.Transforms.IPO
+      LLVM.FFI.Transforms.PassManagerBuilder
       LLVM.FFI.Transforms.Scalar
       LLVM.Target.Native
 
