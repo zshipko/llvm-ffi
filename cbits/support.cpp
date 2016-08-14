@@ -169,3 +169,20 @@ LLVMBool LLVMCreateExecutionEngineForModuleCPU
   *OutError = strdup(Error.c_str());
   return 1;
 }
+
+
+void LLVMSetHasUnsafeAlgebra(LLVMValueRef Instr, LLVMBool B) {
+  (unwrap<Instruction>(Instr))->setHasUnsafeAlgebra(B);
+}
+void LLVMSetHasNoNaNs(LLVMValueRef Instr, LLVMBool B) {
+  (unwrap<Instruction>(Instr))->setHasNoNaNs(B);
+}
+void LLVMSetHasNoInfs(LLVMValueRef Instr, LLVMBool B) {
+  (unwrap<Instruction>(Instr))->setHasNoInfs(B);
+}
+void LLVMSetHasNoSignedZeros(LLVMValueRef Instr, LLVMBool B) {
+  (unwrap<Instruction>(Instr))->setHasNoSignedZeros(B);
+}
+void LLVMSetHasAllowReciprocal(LLVMValueRef Instr, LLVMBool B) {
+  (unwrap<Instruction>(Instr))->setHasAllowReciprocal(B);
+}

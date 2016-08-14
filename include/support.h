@@ -48,6 +48,13 @@ LLVMBool LLVMCreateExecutionEngineForModuleCPU
    char **OutError);
 
 
+void LLVMSetHasUnsafeAlgebra(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasNoNaNs(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasNoInfs(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasNoSignedZeros(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasAllowReciprocal(LLVMValueRef Instr, LLVMBool B);
+
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

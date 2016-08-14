@@ -267,6 +267,12 @@ module LLVM.FFI.Core
     , constInlineAsm
     , blockAddress
 
+    , setHasUnsafeAlgebra
+    , setHasNoNaNs
+    , setHasNoInfs
+    , setHasNoSignedZeros
+    , setHasAllowReciprocal
+
     -- ** Support operations and types
     , Linkage(..)
     , fromLinkage
@@ -1626,6 +1632,18 @@ foreign import ccall unsafe "LLVMBuildFNeg" buildFNeg
     :: BuilderRef -> ValueRef -> CString -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildNot" buildNot
     :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+
+-- ** Floating point attributes
+foreign import ccall unsafe "LLVMSetHasUnsafeAlgebra" setHasUnsafeAlgebra
+    :: ValueRef -> CUInt{-Bool-} -> IO ()
+foreign import ccall unsafe "LLVMSetHasNoNaNs" setHasNoNaNs
+    :: ValueRef -> CUInt{-Bool-} -> IO ()
+foreign import ccall unsafe "LLVMSetHasNoInfs" setHasNoInfs
+    :: ValueRef -> CUInt{-Bool-} -> IO ()
+foreign import ccall unsafe "LLVMSetHasNoSignedZeros" setHasNoSignedZeros
+    :: ValueRef -> CUInt{-Bool-} -> IO ()
+foreign import ccall unsafe "LLVMSetHasAllowReciprocal" setHasAllowReciprocal
+    :: ValueRef -> CUInt{-Bool-} -> IO ()
 
 -- ** Memory
 foreign import ccall unsafe "LLVMBuildMalloc" buildMalloc
