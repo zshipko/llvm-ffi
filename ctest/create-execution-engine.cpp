@@ -29,3 +29,8 @@ LLVMBool LLVMCreateExecutionEngineForModuleCPU
   *OutError = strdup(Error.c_str());
   return 1;
 }
+
+
+void LLVMSetHasNoSignedZeros (LLVMValueRef Instr, LLVMBool B) {
+  (unwrap<Instruction>(Instr))->setHasNoSignedZeros(B);
+}

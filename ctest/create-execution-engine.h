@@ -7,6 +7,8 @@ LLVMBool LLVMCreateExecutionEngineForModuleCPU
      LLVMModuleRef M,
      char **OutError);
 
+void LLVMSetHasNoSignedZeros (LLVMValueRef Instr, LLVMBool B);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

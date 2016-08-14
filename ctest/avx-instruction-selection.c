@@ -73,9 +73,11 @@ int main ()
   LLVMSetInstructionCallConv(callRound, LLVMCCallConv);
   LLVMAddInstrAttribute(callRound, 0, 0);
 #else
+  const int true = 1;
   LLVMBuildFAdd(builder, loaded, loaded, "");
   LLVMValueRef zero = LLVMConstNull (vectorType);
-  callRound = LLVMBuildFSub(builder, loaded, zero, "");
+  callRound = LLVMBuildFAdd(builder, loaded, zero, "");
+  LLVMSetHasNoSignedZeros(callRound, true);
 #endif
   LLVMBuildStore(builder, callRound, param);
   LLVMBuildRetVoid(builder);
