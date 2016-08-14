@@ -59,8 +59,6 @@ void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
 #endif
   Builder.DisableUnitAtATime = !UnitAtATime;
 
-  Pass *InliningPass = 0;
-
   if (DisableInline) {
     // No inlining pass
   } else if (OptLevel) {
