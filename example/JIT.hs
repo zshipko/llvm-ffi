@@ -7,6 +7,8 @@ It let us check whether Haskell bindings match C functions.
 -}
 module Main where
 
+import qualified LLVM.FFI.Transforms.PassManagerBuilder as PMB
+import qualified LLVM.FFI.Transforms.Scalar as Transform
 import qualified LLVM.FFI.ExecutionEngine as EE
 import qualified LLVM.FFI.BitWriter as BW
 import qualified LLVM.FFI.Core as Core
@@ -93,11 +95,36 @@ main = do
                Core.fromCallingConvention Core.C
             Core.addInstrAttribute call 0 0
             return call
-        else withCString "" $ Core.buildFAdd builder loaded loaded
+        else do
+           void $ withCString "" $ Core.buildFAdd builder loaded loaded
+           zero <- Core.constNull vectorType
+           withCString "" $ Core.buildFSub builder loaded zero
+
    void $ Core.buildStore builder callRound param
    void $ Core.buildRetVoid builder
 
    void $ withCString "round-avx.bc" $ BW.writeBitcodeToFile modul
+
+   when True $ do
+      mpasses <- Core.createPassManager
+      fpasses <- Core.createPassManager
+      Transform.addVerifierPass mpasses
+
+      fpassBuilder <- PMB.create
+      PMB.setOptLevel fpassBuilder 3
+      PMB.populateFunctionPassManager fpassBuilder fpasses
+      PMB.dispose fpassBuilder
+
+      mpassBuilder <- PMB.create
+      PMB.setOptLevel mpassBuilder 3
+      PMB.populateModulePassManager mpassBuilder mpasses
+      PMB.dispose mpassBuilder
+
+      void $ Core.runPassManager fpasses modul
+      void $ Core.runPassManager mpasses modul
+      Core.disposePassManager fpasses
+      Core.disposePassManager mpasses
+      void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 
    Alloc.alloca $ \execEngineRef -> do
       Alloc.alloca $ \errorMsgRef -> do
