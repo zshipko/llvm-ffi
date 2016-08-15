@@ -191,60 +191,6 @@ void *LLVMGetPointerToFunction(LLVMExecutionEngineRef ee, LLVMValueRef fn);
  * containing the call is still in a proper state (not changed). */
 int LLVMInlineFunction(LLVMValueRef call);
 
-/* Passes. Some passes are used directly from LLVM-C, rest are declared
- * here. */
-
-#define declare_pass(P) \
-    void LLVMAdd ## P ## Pass (LLVMPassManagerRef PM);
-
-declare_pass( AAEval )
-declare_pass( AliasAnalysisCounter )
-declare_pass( AlwaysInliner )
-declare_pass( BasicAliasAnalysis )
-declare_pass( BlockPlacement )
-declare_pass( BreakCriticalEdges )
-declare_pass( CodeGenPrepare )
-declare_pass( DbgInfoPrinter )
-declare_pass( DeadCodeElimination )
-declare_pass( DeadInstElimination )
-declare_pass( DemoteRegisterToMemory )
-declare_pass( DomOnlyPrinter )
-declare_pass( DomOnlyViewer )
-declare_pass( DomPrinter )
-declare_pass( DomViewer )
-declare_pass( EdgeProfiler )
-declare_pass( GlobalsModRef )
-declare_pass( InstCount )
-declare_pass( InstructionNamer )
-declare_pass( LazyValueInfo )
-declare_pass( LCSSA )
-declare_pass( LoopDependenceAnalysis )
-declare_pass( LoopExtractor )
-declare_pass( LoopSimplify )
-declare_pass( LoopStrengthReduce )
-declare_pass( LowerInvoke )
-declare_pass( LowerSwitch )
-declare_pass( MergeFunctions )
-declare_pass( NoAA )
-declare_pass( NoProfileInfo )
-declare_pass( OptimalEdgeProfiler )
-declare_pass( PartialInlining )
-declare_pass( PostDomOnlyPrinter )
-declare_pass( PostDomOnlyViewer )
-declare_pass( PostDomPrinter )
-declare_pass( PostDomViewer )
-declare_pass( ProfileEstimator )
-declare_pass( ProfileLoader )
-declare_pass( ProfileVerifier )
-declare_pass( ScalarEvolutionAliasAnalysis )
-declare_pass( SingleLoopExtractor )
-declare_pass( StripNonDebugSymbols )
-declare_pass( StructRetPromotion )
-declare_pass( TailDuplication )
-declare_pass( UnifyFunctionExitNodes )
-
-declare_pass( Internalize2 )
-
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
