@@ -50,146 +50,14 @@ extern "C" {
 /* Wraps the LLVMInitializeTarget macro from Target.h */
 unsigned LLVMInitNativeTarget(void);
 
-
-/* Wraps llvm::Module::print(). Dispose the returned string after use, via
- * LLVMDisposeMessage(). */
-char *LLVMDumpModuleToString(LLVMModuleRef module);
-
-/* Wraps llvm::Type::print(). Dispose the returned string after use, via
- * LLVMDisposeMessage(). */
-char *LLVMDumpTypeToString(LLVMTypeRef type);
-
-/* Wraps llvm::Value::print(). Dispose the returned string after use, via
- * LLVMDisposeMessage(). */
-char *LLVMDumpValueToString(LLVMValueRef Val);
-
-/* Wraps llvm::IRBuilder::CreateRet(). */
-LLVMValueRef LLVMBuildRetMultiple(LLVMBuilderRef bulder, LLVMValueRef *values,
-    unsigned n_values);
-
-/* Wraps llvm::IRBuilder::CreateGetResult(). */
-LLVMValueRef LLVMBuildGetResult(LLVMBuilderRef builder, LLVMValueRef value,
-    unsigned index, const char *name);
-
-/* Wraps llvm::Value::getValueID(). */
-unsigned LLVMValueGetID(LLVMValueRef value);
-
 /* Wraps llvm::Value::getNumUses(). */
 unsigned LLVMValueGetNumUses(LLVMValueRef value);
-
-/* Wraps llvm::Value::use_{begin,end}. Allocates LLVMValueRef's as
- * required. Number of objects are returned as return value. If that is
- * greater than zero, the pointer given out must be freed by a
- * subsequent call to LLVMDisposeValueRefArray(). */
-unsigned LLVMValueGetUses(LLVMValueRef value, LLVMValueRef **refs);
-
-/* Wraps llvm::Value::isUsedInBasicBlock(). */
-unsigned LLVMValueIsUsedInBasicBlock(LLVMValueRef value, LLVMBasicBlockRef bb);
-/* See above. */
-void LLVMDisposeValueRefArray(LLVMValueRef *refs);
-
-/* Wraps llvm:User::getNumOperands(). */
-unsigned LLVMUserGetNumOperands(LLVMValueRef user);
-
-/* Wraps llvm:User::getOperand(). */
-LLVMValueRef LLVMUserGetOperand(LLVMValueRef user, unsigned idx);
-
-/* Wraps llvm::ConstantExpr::getVICmp(). */
-LLVMValueRef LLVMConstVICmp(LLVMIntPredicate predicate, LLVMValueRef lhs,
-    LLVMValueRef rhs);
-
-/* Wraps llvm::ConstantExpr::getVFCmp(). */
-LLVMValueRef LLVMConstVFCmp(LLVMRealPredicate predicate, LLVMValueRef lhs,
-    LLVMValueRef rhs);
-
-/* Wraps llvm::IRBuilder::CreateVICmp(). */
-LLVMValueRef LLVMBuildVICmp(LLVMBuilderRef builder, LLVMIntPredicate predicate,
-    LLVMValueRef lhs, LLVMValueRef rhs, const char *name);
-
-/* Wraps llvm::IRBuilder::CreateVFCmp(). */
-LLVMValueRef LLVMBuildVFCmp(LLVMBuilderRef builder, LLVMRealPredicate predicate,
-    LLVMValueRef lhs, LLVMValueRef rhs, const char *name);
-
-/* Wraps llvm::Intrinsic::getDeclaration(). */
-LLVMValueRef LLVMGetIntrinsic(LLVMModuleRef builder, int id,
-    LLVMTypeRef *types, unsigned n_types);
-
-/* Wraps llvm::Function::doesNotThrow(). */
-unsigned LLVMGetDoesNotThrow(LLVMValueRef fn);
-
-/* Wraps llvm::Function::setDoesNotThrow(). */
-void LLVMSetDoesNotThrow(LLVMValueRef fn, int DoesNotThrow);
-
-/* Wraps llvm::Module::getPointerSize(). */
-unsigned LLVMModuleGetPointerSize(LLVMModuleRef module);
-
-/* Wraps llvm::Module::getOrInsertFunction(). */
-LLVMValueRef LLVMModuleGetOrInsertFunction(LLVMModuleRef module,
-    const char *name, LLVMTypeRef function_type);
-
-/* Wraps llvm::GlobalVariable::hasInitializer(). */
-int LLVMHasInitializer(LLVMValueRef global_var);
-
-/* The following functions wrap various llvm::Instruction::isXXX() functions.
- * All of them take an instruction and return 0 (isXXX returned false) or 1
- * (isXXX returned false). */
-unsigned LLVMInstIsTerminator      (LLVMValueRef inst);
-unsigned LLVMInstIsBinaryOp        (LLVMValueRef inst);
-unsigned LLVMInstIsShift           (LLVMValueRef inst);
-unsigned LLVMInstIsCast            (LLVMValueRef inst);
-unsigned LLVMInstIsLogicalShift    (LLVMValueRef inst);
-unsigned LLVMInstIsArithmeticShift (LLVMValueRef inst);
-unsigned LLVMInstIsAssociative     (LLVMValueRef inst);
-unsigned LLVMInstIsCommutative     (LLVMValueRef inst);
-unsigned LLVMInstIsTrapping        (LLVMValueRef inst);
-
-/* As above, but these are wrap methods from subclasses of Instruction. */
-unsigned LLVMInstIsVolatile        (LLVMValueRef inst);
-
-/* Wraps llvm::Instruction::getOpcodeName(). */
-const char *LLVMInstGetOpcodeName(LLVMValueRef inst);
 
 /* Wraps llvm::Instruction::getOpcode(). */
 unsigned LLVMInstGetOpcode(LLVMValueRef inst);
 
 /* Wraps llvm::CmpInst::getPredicate(). */
 unsigned LLVMCmpInstGetPredicate(LLVMValueRef cmpinst);
-
-/* Wraps llvm::ParseAssemblyString(). Returns a module reference or NULL (with
- * `out' pointing to an error message). Dispose error message after use, via
- * LLVMDisposeMessage(). */
-LLVMModuleRef LLVMGetModuleFromAssembly(const char *asmtxt, unsigned txten,
-    char **out);
-
-/* Wraps llvm::ParseBitcodeFile(). Returns a module reference or NULL (with
- * `out' pointing to an error message). Dispose error message after use, via
- * LLVMDisposeMessage(). */
-LLVMModuleRef LLVMGetModuleFromBitcode(const char *bc, unsigned bclen,
-    char **out);
-
-/* Wraps llvm::Linker::LinkModules().  Returns 0 on failure (with errmsg
- * filled in) and 1 on success.  Dispose error message after use with
- * LLVMDisposeMessage(). */
-unsigned LLVMLinkModules(LLVMModuleRef dest, LLVMModuleRef src,
-			 unsigned mode, char **errmsg);
-
-/* Returns pointer to a heap-allocated block of `*len' bytes containing bit code
- * for the given module. NULL on error. */
-unsigned char *LLVMGetBitcodeFromModule(LLVMModuleRef module, unsigned *len);
-
-/* Wraps llvm::sys::DynamicLibrary::LoadLibraryPermanently(). Returns 0 on
- * failure (with errmsg filled in) and 1 on success. Dispose error message after
- * use, via LLVMDisposeMessage(). */
-unsigned LLVMLoadLibraryPermanentlyError(const char* filename, char **errmsg);
-
-/* Wraps llvm::ExecutionEngine::getPointerToFunction(). Returns a pointer
- * to the JITted function. */
-void *LLVMGetPointerToFunction(LLVMExecutionEngineRef ee, LLVMValueRef fn);
-
-/* Wraps llvm::InlineFunction(). Inlines a function. C is the call
- * instruction, created by LLVMBuildCall. Even if it fails, the Function
- * containing the call is still in a proper state (not changed). */
-int LLVMInlineFunction(LLVMValueRef call);
 
 #ifdef __cplusplus
 } /* extern "C" */
