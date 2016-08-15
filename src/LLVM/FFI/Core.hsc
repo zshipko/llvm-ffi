@@ -267,6 +267,7 @@ module LLVM.FFI.Core
     , constInlineAsm
     , blockAddress
 
+    -- ** Floating point attributes
     , setHasUnsafeAlgebra
     , setHasNoNaNs
     , setHasNoInfs
