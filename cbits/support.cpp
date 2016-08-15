@@ -6,12 +6,14 @@
 #endif
 
 #include "llvm-c/Core.h"
+#include "llvm-c/Target.h"
 #include "llvm/PassManager.h"
 #include "llvm/Transforms/IPO/PassManagerBuilder.h"
 #include "llvm/Transforms/IPO.h"
 
 #include "llvm-c/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
+#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Operator.h"
 #include "llvm/Support/Host.h"
@@ -19,6 +21,37 @@
 #include "support.h"
 
 using namespace llvm;
+
+
+unsigned LLVMInitNativeTarget()
+{
+    LLVMBool init = LLVMInitializeNativeTarget();
+    LLVMInitializeNativeAsmParser();
+    LLVMInitializeNativeAsmPrinter();
+    return init;
+}
+
+unsigned LLVMInstGetOpcode(LLVMValueRef inst)
+{
+    llvm::Instruction *instp = llvm::unwrap<llvm::Instruction>(inst);
+    assert(instp);
+    return instp->getOpcode();
+}
+
+unsigned LLVMCmpInstGetPredicate(LLVMValueRef cmpinst)
+{
+    llvm::CmpInst *instp = llvm::unwrap<llvm::CmpInst>(cmpinst);
+    assert(instp);
+    return instp->getPredicate();
+}
+
+unsigned LLVMValueGetNumUses(LLVMValueRef value)
+{
+    llvm::Value *valuep = llvm::unwrap(value);
+    assert(valuep);
+    return valuep->getNumUses();
+}
+
 
 void LLVMCreateStandardFunctionPasses(LLVMPassManagerRef PM,
 					unsigned OptimizationLevel)

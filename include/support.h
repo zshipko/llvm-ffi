@@ -12,6 +12,20 @@ typedef int LLVMFeatureMap;
 typedef int LLVMFeatureIterator;
 #endif
 
+
+/* Wraps the LLVMInitializeTarget macro from Target.h */
+unsigned LLVMInitNativeTarget(void);
+
+/* Wraps llvm::Value::getNumUses(). */
+unsigned LLVMValueGetNumUses(LLVMValueRef value);
+
+/* Wraps llvm::Instruction::getOpcode(). */
+unsigned LLVMInstGetOpcode(LLVMValueRef inst);
+
+/* Wraps llvm::CmpInst::getPredicate(). */
+unsigned LLVMCmpInstGetPredicate(LLVMValueRef cmpinst);
+
+
 void LLVMCreateStandardFunctionPasses(LLVMPassManagerRef PM,
 				      unsigned OptimizationLevel);
 

@@ -29,7 +29,6 @@ Cabal-Version: >= 1.8
 Build-Type:    Simple
 
 Extra-Source-Files:
-  include/extra.h
   include/support.h
   tool/ltrace.config
   tool/ltrace.readme
@@ -107,7 +106,6 @@ Library
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
   Include-Dirs: include
   C-Sources:
-    cbits/extra.cpp
     cbits/support.cpp
 
 Executable llvm-ffi-example
