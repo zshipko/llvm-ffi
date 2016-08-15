@@ -53,6 +53,7 @@ void LLVMSetHasNoNaNs(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasNoInfs(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasNoSignedZeros(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasAllowReciprocal(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags);
 
 
 #ifdef __cplusplus

@@ -273,6 +273,15 @@ module LLVM.FFI.Core
     , setHasNoSignedZeros
     , setHasAllowReciprocal
 
+    , FastMathFlags(..)
+    , FastMathFlagSet
+    , noNaNs
+    , noInfs
+    , noSignedZeros
+    , allowReciprocal
+    , unsafeAlgebra
+    , setFastMathFlags
+
     -- ** Support operations and types
     , Linkage(..)
     , fromLinkage
@@ -568,6 +577,7 @@ import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr, FunPtr)
 
+import qualified Data.EnumSet as EnumSet
 import Data.Typeable (Typeable)
 
 
@@ -1644,6 +1654,27 @@ foreign import ccall unsafe "LLVMSetHasNoSignedZeros" setHasNoSignedZeros
     :: ValueRef -> CUInt{-Bool-} -> IO ()
 foreign import ccall unsafe "LLVMSetHasAllowReciprocal" setHasAllowReciprocal
     :: ValueRef -> CUInt{-Bool-} -> IO ()
+
+data FastMathFlags
+    = NoNaNs
+    | NoInfs
+    | NoSignedZeros
+    | AllowReciprocal
+    | UnsafeAlgebra
+    deriving (Eq, Ord, Enum, Bounded, Show, Read, Typeable)
+
+type FastMathFlagSet = EnumSet.T CUInt FastMathFlags
+
+noNaNs, noInfs, noSignedZeros, allowReciprocal, unsafeAlgebra :: FastMathFlagSet
+noNaNs          = EnumSet.fromEnum NoNaNs
+noInfs          = EnumSet.fromEnum NoInfs
+noSignedZeros   = EnumSet.fromEnum NoSignedZeros
+allowReciprocal = EnumSet.fromEnum AllowReciprocal
+unsafeAlgebra   = EnumSet.fromEnum UnsafeAlgebra
+
+foreign import ccall unsafe "LLVMSetFastMathFlags" setFastMathFlags
+    :: ValueRef -> FastMathFlagSet -> IO ()
+
 
 -- ** Memory
 foreign import ccall unsafe "LLVMBuildMalloc" buildMalloc

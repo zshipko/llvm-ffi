@@ -13,6 +13,7 @@
 #include "llvm-c/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/Operator.h"
 #include "llvm/Support/Host.h"
 
 #include "support.h"
@@ -183,4 +184,13 @@ void LLVMSetHasNoSignedZeros(LLVMValueRef Instr, LLVMBool B) {
 }
 void LLVMSetHasAllowReciprocal(LLVMValueRef Instr, LLVMBool B) {
   (unwrap<Instruction>(Instr))->setHasAllowReciprocal(B);
+}
+void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags) {
+  FastMathFlags FMF;
+  if (Flags & FastMathFlags::NoNaNs)          FMF.setNoNaNs();
+  if (Flags & FastMathFlags::NoInfs)          FMF.setNoInfs();
+  if (Flags & FastMathFlags::NoSignedZeros)   FMF.setNoSignedZeros();
+  if (Flags & FastMathFlags::AllowReciprocal) FMF.setAllowReciprocal();
+  if (Flags & FastMathFlags::UnsafeAlgebra)   FMF.setUnsafeAlgebra();
+  (unwrap<Instruction>(Instr))->setFastMathFlags(FMF);
 }
