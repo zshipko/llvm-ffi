@@ -303,7 +303,7 @@ module LLVM.FFI.Core
     , setVisibility
     , getAlignment
     , setAlignment
-      
+
     -- ** Global variables
     , addGlobal
     , addGlobalInAddressSpace
@@ -695,7 +695,7 @@ toCallingConvention c =
 -- |An enumeration for the kinds of linkage for global values.
 data Linkage
     = ExternalLinkage     -- ^Externally visible function
-    | AvailableExternallyLinkage 
+    | AvailableExternallyLinkage
     | LinkOnceAnyLinkage  -- ^Keep one copy of function when linking (inline)
     | LinkOnceODRLinkage  -- ^Same, but only replaced by something equivalent.
     | LinkOnceODRAutoHideLinkage -- ^Like LinkOnceODR, but possibly hidden.
@@ -707,7 +707,7 @@ data Linkage
     | DLLImportLinkage    -- ^Function to be imported from DLL
     | DLLExportLinkage    -- ^Function to be accessible from DLL
     | ExternalWeakLinkage -- ^ExternalWeak linkage description
-    | GhostLinkage        -- ^Stand-in functions for streaming fns from BC files    
+    | GhostLinkage        -- ^Stand-in functions for streaming fns from BC files
     | CommonLinkage       -- ^Tentative definitions
     | LinkerPrivateLinkage -- ^Like Private, but linker removes.
     | LinkerPrivateWeakLinkage -- ^Like LinkerPrivate, but is weak.
@@ -738,7 +738,7 @@ toLinkage :: CUInt -> Linkage
 toLinkage c =
     case c of
         (#const LLVMExternalLinkage)             -> ExternalLinkage
-        (#const LLVMAvailableExternallyLinkage)  -> AvailableExternallyLinkage 
+        (#const LLVMAvailableExternallyLinkage)  -> AvailableExternallyLinkage
         (#const LLVMLinkOnceAnyLinkage)          -> LinkOnceAnyLinkage
         (#const LLVMLinkOnceODRLinkage)          -> LinkOnceODRLinkage
         (#const LLVMLinkOnceODRAutoHideLinkage)  -> LinkOnceODRAutoHideLinkage
