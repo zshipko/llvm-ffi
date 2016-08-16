@@ -13,11 +13,8 @@ import Foreign.Ptr (Ptr)
 import Data.Typeable (Typeable)
 
 
-type CDouble  = C.CDouble
 type CInt     = C.CInt
 type CUInt    = C.CUInt
-type CLLong   = C.CLLong
-type CULLong  = C.CULLong
 
 
 data PassManagerBuilder
