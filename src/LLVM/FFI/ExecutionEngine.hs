@@ -54,6 +54,7 @@ module LLVM.FFI.ExecutionEngine
 
     ) where
 
+import qualified LLVM.FFI.Core as LLVM
 import LLVM.FFI.Core (ModuleRef, ModuleProviderRef, TypeRef, ValueRef)
 import LLVM.FFI.Target(TargetDataRef)
 
@@ -93,7 +94,7 @@ foreign import ccall unsafe "LLVMLinkInMCJIT" linkInMCJIT
 
 -- ** Generic values
 foreign import ccall unsafe "LLVMCreateGenericValueOfInt"
-    createGenericValueOfInt :: TypeRef -> CULLong -> CInt
+    createGenericValueOfInt :: TypeRef -> CULLong -> LLVM.Bool
                             -> IO GenericValueRef
 foreign import ccall unsafe "LLVMCreateGenericValueOfPointer"
     createGenericValueOfPointer :: Ptr a -> IO GenericValueRef
@@ -102,7 +103,7 @@ foreign import ccall unsafe "LLVMCreateGenericValueOfFloat"
 foreign import ccall unsafe "LLVMGenericValueIntWidth" genericValueIntWidth
     :: GenericValueRef -> IO CUInt
 foreign import ccall unsafe "LLVMGenericValueToInt" genericValueToInt
-    :: GenericValueRef -> CInt -> IO CULLong
+    :: GenericValueRef -> LLVM.Bool -> IO CULLong
 foreign import ccall unsafe "LLVMGenericValueToPointer" genericValueToPointer
     :: GenericValueRef -> IO (Ptr a)
 foreign import ccall unsafe "LLVMGenericValueToFloat" genericValueToFloat
@@ -112,24 +113,24 @@ foreign import ccall unsafe "&LLVMDisposeGenericValue" ptrDisposeGenericValue
 
 -- ** Execution engines
 foreign import ccall unsafe "LLVMCreateExecutionEngineForModule" createExecutionEngineForModule
-    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateExecutionEngineForModuleCPU" createExecutionEngineForModuleCPU
-    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateInterpreterForModule" createInterpreterForModule
-    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO Bool
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateJITCompilerForModule" createJITCompilerForModule
-    :: (Ptr ExecutionEngineRef) -> ModuleRef -> CUInt -> (Ptr CString) -> IO Bool
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> CUInt -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMInitializeMCJITCompilerOptions" initializeMCJITCompilerOptions
     :: MCJITCompilerOptionsRef -> CSize -> IO ()
 foreign import ccall unsafe "LLVMCreateMCJITCompilerForModule" createMCJITCompilerForModule
-    :: Ptr ExecutionEngineRef -> ModuleRef -> MCJITCompilerOptionsRef -> CSize -> Ptr CString -> IO Bool
+    :: Ptr ExecutionEngineRef -> ModuleRef -> MCJITCompilerOptionsRef -> CSize -> Ptr CString -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateExecutionEngine" createExecutionEngine
     :: Ptr ExecutionEngineRef -> ModuleProviderRef -> Ptr CString
-    -> IO CInt
+    -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateInterpreter" createInterpreter
-    :: Ptr ExecutionEngineRef -> ModuleProviderRef -> Ptr CString -> IO CInt
+    :: Ptr ExecutionEngineRef -> ModuleProviderRef -> Ptr CString -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateJITCompiler" createJITCompiler
-    :: Ptr ExecutionEngineRef -> ModuleProviderRef -> CUInt -> Ptr CString -> IO CInt
+    :: Ptr ExecutionEngineRef -> ModuleProviderRef -> CUInt -> Ptr CString -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMDisposeExecutionEngine" disposeExecutionEngine
     :: ExecutionEngineRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposeExecutionEngine" ptrDisposeExecutionEngine
@@ -164,12 +165,12 @@ foreign import ccall unsafe "LLVMAddModule" addModule
 foreign import ccall unsafe "LLVMAddModuleProvider" addModuleProvider
     :: ExecutionEngineRef -> ModuleProviderRef -> IO ()
 foreign import ccall unsafe "LLVMRemoveModule" removeModule
-    :: ExecutionEngineRef -> ModuleRef -> (Ptr ModuleRef) -> (Ptr CString) -> IO Bool
+    :: ExecutionEngineRef -> ModuleRef -> (Ptr ModuleRef) -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMRemoveModuleProvider" removeModuleProvider
     :: ExecutionEngineRef -> ModuleProviderRef -> Ptr ModuleRef -> Ptr CString
-    -> IO CInt
+    -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMFindFunction" findFunction
-    :: ExecutionEngineRef -> CString -> Ptr ValueRef -> IO CInt
+    :: ExecutionEngineRef -> CString -> Ptr ValueRef -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMRecompileAndRelinkFunction" recompileAndRelinkFunction
     :: ExecutionEngineRef -> ValueRef -> IO (FunPtr a)
 foreign import ccall unsafe "LLVMGetExecutionEngineTargetData" getExecutionEngineTargetData

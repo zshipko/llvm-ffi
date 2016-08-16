@@ -64,10 +64,9 @@ main = do
    ptrType <- Core.pointerType vectorType 0
    voidType <- Core.voidType
    let params = [ptrType]
-   let false = 0
    roundType <-
       withArrayLen params $ \len ps ->
-         Core.functionType voidType ps len false
+         Core.functionType voidType ps len Core.false
    func <- withCString "round" $ \name -> Core.addFunction modul name roundType
    Core.setLinkage func $ Core.fromLinkage Core.ExternalLinkage
    builder <- Core.createBuilder
@@ -79,14 +78,14 @@ main = do
    let funcParams = [vectorType, int32Type]
    funcType <-
       withArrayLen funcParams $ \len ps ->
-         Core.functionType vectorType ps len false
+         Core.functionType vectorType ps len Core.false
    roundFunc <-
       withCString roundName $ \name -> Core.addFunction modul name funcType
    Core.setLinkage roundFunc $ Core.fromLinkage Core.ExternalLinkage
    callRound <-
       if True
         then do
-            const1 <- Core.constInt int32Type 1 false
+            const1 <- Core.constInt int32Type 1 Core.false
             let callParams = [loaded, const1]
             call <-
                withArrayLen callParams $ \len ps ->
@@ -131,7 +130,7 @@ main = do
       Alloc.alloca $ \errorMsgRef -> do
          err <-
             EE.createExecutionEngineForModuleCPU execEngineRef modul errorMsgRef
-         when err $ do
+         when (err/=Core.false) $ do
             noResult $
                printf "Core.createExecutionEngine: %s\n"
                   =<< CStr.peekCString =<< peek errorMsgRef

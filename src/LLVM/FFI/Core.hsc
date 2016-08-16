@@ -18,6 +18,11 @@ module LLVM.FFI.Core
     (
       initializeCore
 
+    -- * Boolean values
+    , Bool(Bool)
+    , false
+    , true
+
     -- * Error handling
     , disposeMessage
 
@@ -581,6 +586,11 @@ import Foreign.Ptr (Ptr, FunPtr)
 import qualified Data.EnumSet as EnumSet
 import Data.Typeable (Typeable)
 
+import Data.Int (Int32)
+import Prelude
+         (IO, Eq, Ord, Int, Bounded, Enum, Show, Read, String,
+          ($), (++), (.), (==), error,
+           fmap, fromIntegral, show, fromEnum, toEnum, )
 
 type CDouble  = C.CDouble
 type CInt     = C.CInt
@@ -591,6 +601,21 @@ type CULLong  = C.CULLong
 
 #include <llvm/Config/llvm-config.h>
 #include <llvm-c/Core.h>
+
+
+newtype Bool = Bool (#type LLVMBool)
+    deriving (Eq)
+
+instance Enum Bool where
+    fromEnum (Bool b) = fromIntegral b
+    toEnum = Bool . fromIntegral
+
+instance Show Bool where
+    show b = if b == false then "false" else "true"
+
+false, true :: Bool
+false = Bool 0; true = Bool 1
+
 
 data Module
     deriving (Typeable)
@@ -909,7 +934,7 @@ foreign import ccall unsafe "LLVMGetModuleContext" getModuleContext
 foreign import ccall unsafe "LLVMGetTypeKind" getTypeKindCUInt
     :: TypeRef -> IO CUInt
 foreign import ccall unsafe "LLVMTypeIsSized" typeIsSized
-    :: TypeRef -> IO CInt
+    :: TypeRef -> IO Bool
 foreign import ccall unsafe "LLVMGetTypeContext" getTypeContext
     :: TypeRef -> IO ContextRef
 
@@ -960,12 +985,12 @@ foreign import ccall unsafe "LLVMFunctionType" functionType
         :: TypeRef              -- ^ return type
         -> Ptr TypeRef          -- ^ array of argument types
         -> CUInt                -- ^ number of elements in array
-        -> CInt                 -- ^ non-zero if function is varargs
+        -> Bool                 -- ^ non-zero if function is varargs
         -> IO TypeRef
 
 -- | Indicate whether a function takes varargs.
 foreign import ccall unsafe "LLVMIsFunctionVarArg" isFunctionVarArg
-        :: TypeRef -> IO CInt
+        :: TypeRef -> IO Bool
 
 -- | Give a function's return type.
 foreign import ccall unsafe "LLVMGetReturnType" getReturnType
@@ -982,23 +1007,23 @@ foreign import ccall unsafe "LLVMGetParamTypes" getParamTypes
 
 -- ** Struct Type
 foreign import ccall unsafe "LLVMStructTypeInContext" structTypeInContext
-    :: ContextRef -> (Ptr TypeRef) -> CUInt -> CInt -> IO TypeRef
+    :: ContextRef -> (Ptr TypeRef) -> CUInt -> Bool -> IO TypeRef
 foreign import ccall unsafe "LLVMStructType" structType
-    :: Ptr TypeRef -> CUInt -> CInt -> IO TypeRef
+    :: Ptr TypeRef -> CUInt -> Bool -> IO TypeRef
 foreign import ccall unsafe "LLVMStructCreateNamed" structCreateNamed
     :: ContextRef -> CString -> IO TypeRef
 foreign import ccall unsafe "LLVMGetStructName" getStructName
     :: TypeRef -> IO CString
 foreign import ccall unsafe "LLVMStructSetBody" structSetBody
-    :: TypeRef -> Ptr TypeRef -> CUInt -> CInt -> IO ()
+    :: TypeRef -> Ptr TypeRef -> CUInt -> Bool -> IO ()
 foreign import ccall unsafe "LLVMCountStructElementTypes"
     countStructElementTypes :: TypeRef -> IO CUInt
 foreign import ccall unsafe "LLVMGetStructElementTypes" getStructElementTypes
     :: TypeRef -> Ptr TypeRef -> IO ()
 foreign import ccall unsafe "LLVMIsPackedStruct" isPackedStruct
-    :: TypeRef -> IO CInt
+    :: TypeRef -> IO Bool
 foreign import ccall unsafe "LLVMIsOpaqueStruct" isOpaqueStruct
-    :: TypeRef -> IO CInt
+    :: TypeRef -> IO Bool
 foreign import ccall unsafe "LLVMGetTypeByName" getTypeByName
     :: ModuleRef -> CString -> IO TypeRef
 
@@ -1053,7 +1078,7 @@ foreign import ccall unsafe "LLVMDumpValue" dumpValue
 foreign import ccall unsafe "LLVMReplaceAllUsesWith" replaceAllUsesWith
     :: ValueRef -> ValueRef -> IO ()
 foreign import ccall unsafe "LLVMHasMetadata" hasMetadata
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMGetMetadata" getMetadata
     :: ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMSetMetadata" setMetadata
@@ -1085,11 +1110,11 @@ foreign import ccall unsafe "LLVMConstAllOnes" constAllOnes
 foreign import ccall unsafe "LLVMGetUndef" getUndef
     :: TypeRef -> IO ValueRef
 foreign import ccall unsafe "LLVMIsConstant" isConstant
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMIsUndef" isUndef
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMIsNull" isNull
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMConstPointerNull" constPointerNull
     :: TypeRef -> IO ValueRef
 
@@ -1117,7 +1142,7 @@ foreign import ccall unsafe "LLVMGetNamedMetadataOperands" getNamedMetadataOpera
 
 -- ** Scalar Constants
 foreign import ccall unsafe "LLVMConstInt" constInt
-    :: TypeRef -> CULLong -> CInt -> IO ValueRef
+    :: TypeRef -> CULLong -> Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstIntOfArbitraryPrecision" constIntOfArbitraryPrecision
     :: TypeRef -> CUInt -> Ptr CULLong -> IO ValueRef
 foreign import ccall unsafe "LLVMConstIntOfString" constIntOfString
@@ -1137,15 +1162,15 @@ foreign import ccall unsafe "LLVMConstIntGetSExtValue" constIntGetSExtValue
 
 -- ** Composite Constants
 foreign import ccall unsafe "LLVMConstStringInContext" constStringInContext
-    :: ContextRef -> CString -> CUInt -> CInt -> IO ValueRef
+    :: ContextRef -> CString -> CUInt -> Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstStructInContext" constStructInContext
-    :: ContextRef -> (Ptr ValueRef) -> CUInt -> CInt -> IO ValueRef
+    :: ContextRef -> (Ptr ValueRef) -> CUInt -> Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstString" constString
-    :: CString -> CUInt -> CInt -> IO ValueRef
+    :: CString -> CUInt -> Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstArray" constArray
     :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstStruct" constStruct
-    :: Ptr ValueRef -> CUInt -> CInt -> IO ValueRef
+    :: Ptr ValueRef -> CUInt -> Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstNamedStruct" constNamedStruct
     :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstVector" constVector
@@ -1283,7 +1308,7 @@ foreign import ccall unsafe "LLVMBlockAddress" blockAddress
 foreign import ccall unsafe "LLVMGetGlobalParent" getGlobalParent
     :: ValueRef -> IO ModuleRef
 foreign import ccall unsafe "LLVMIsDeclaration" isDeclaration
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMGetLinkage" getLinkage
     :: ValueRef -> IO CUInt
 foreign import ccall unsafe "LLVMSetLinkage" setLinkage
@@ -1323,13 +1348,13 @@ foreign import ccall unsafe "LLVMSetInitializer" setInitializer
 foreign import ccall unsafe "LLVMGetInitializer" getInitializer
     :: ValueRef -> IO ValueRef
 foreign import ccall unsafe "LLVMIsThreadLocal" isThreadLocal
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMSetThreadLocal" setThreadLocal
-    :: ValueRef -> CInt -> IO ()
+    :: ValueRef -> Bool -> IO ()
 foreign import ccall unsafe "LLVMIsGlobalConstant" isGlobalConstant
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMSetGlobalConstant" setGlobalConstant
-    :: ValueRef -> CInt -> IO ()
+    :: ValueRef -> Bool -> IO ()
 
 -- ** Aliases
 foreign import ccall unsafe "LLVMAddAlias" addAlias
@@ -1491,9 +1516,9 @@ foreign import ccall unsafe "LLVMSetInstrParamAlignment" setInstrParamAlignment
 
 -- ** Call instructions
 foreign import ccall unsafe "LLVMIsTailCall" isTailCall
-    :: ValueRef -> IO CInt
+    :: ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMSetTailCall" setTailCall
-    :: ValueRef -> CInt -> IO ()
+    :: ValueRef -> Bool -> IO ()
 
 -- ** Switch Instructions
 foreign import ccall unsafe "LLVMGetSwitchDefaultDest" getSwitchDefaultDest
@@ -1578,7 +1603,7 @@ foreign import ccall unsafe "LLVMAddClause" addClause
 
 -- ** Resume instructions
 foreign import ccall unsafe "LLVMSetCleanup" setCleanup
-    :: ValueRef -> CInt -> IO ()
+    :: ValueRef -> Bool -> IO ()
 
 -- ** Arithmetic
 foreign import ccall unsafe "LLVMBuildAdd" buildAdd
@@ -1787,9 +1812,9 @@ foreign import ccall unsafe "&LLVMDisposeModuleProvider" ptrDisposeModuleProvide
 
 -- ** Memory Buffers
 foreign import ccall unsafe "LLVMCreateMemoryBufferWithContentsOfFile" createMemoryBufferWithContentsOfFile
-    :: CString -> Ptr MemoryBufferRef -> Ptr CString -> IO CInt
+    :: CString -> Ptr MemoryBufferRef -> Ptr CString -> IO Bool
 foreign import ccall unsafe "LLVMCreateMemoryBufferWithSTDIN" createMemoryBufferWithSTDIN
-    :: Ptr MemoryBufferRef -> Ptr CString -> IO CInt
+    :: Ptr MemoryBufferRef -> Ptr CString -> IO Bool
 foreign import ccall unsafe "LLVMDisposeMemoryBuffer" disposeMemoryBuffer
     :: MemoryBufferRef -> IO ()
 
@@ -1805,13 +1830,13 @@ foreign import ccall unsafe "LLVMCreateFunctionPassManagerForModule" createFunct
 foreign import ccall unsafe "LLVMCreateFunctionPassManager" createFunctionPassManager
     :: ModuleProviderRef -> IO PassManagerRef
 foreign import ccall unsafe "LLVMRunPassManager" runPassManager
-    :: PassManagerRef -> ModuleRef -> IO CInt
+    :: PassManagerRef -> ModuleRef -> IO Bool
 foreign import ccall unsafe "LLVMInitializeFunctionPassManager" initializeFunctionPassManager
-    :: PassManagerRef -> IO CInt
+    :: PassManagerRef -> IO Bool
 foreign import ccall unsafe "LLVMRunFunctionPassManager" runFunctionPassManager
-    :: PassManagerRef -> ValueRef -> IO CInt
+    :: PassManagerRef -> ValueRef -> IO Bool
 foreign import ccall unsafe "LLVMFinalizeFunctionPassManager" finalizeFunctionPassManager
-    :: PassManagerRef -> IO CInt
+    :: PassManagerRef -> IO Bool
 foreign import ccall unsafe "LLVMDisposePassManager" disposePassManager
     :: PassManagerRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposePassManager" ptrDisposePassManager

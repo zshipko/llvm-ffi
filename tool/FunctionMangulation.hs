@@ -27,6 +27,7 @@ renameType t =
 rename :: String -> String
 rename cname =
    case cname of
+      "Bool" -> "LLVM.Bool"
       "int" -> "CInt"
       "unsigned" -> "CUInt"
       "long long" -> "CLLong"

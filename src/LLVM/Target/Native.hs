@@ -1,7 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 module LLVM.Target.Native(initializeNativeTarget) where
 
-import qualified Foreign.C.Types as C
+import qualified LLVM.FFI.Core as LLVM
 
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar)
 import Control.Monad (when)
@@ -10,7 +10,7 @@ import System.IO.Unsafe (unsafePerformIO)
 
 
 foreign import ccall unsafe "LLVMInitNativeTarget"
-        llvmInitializeNativeTarget :: IO C.CUInt
+        llvmInitializeNativeTarget :: IO LLVM.Bool
 
 -- | Initialize jitter to the native target.
 -- The operation is idempotent.

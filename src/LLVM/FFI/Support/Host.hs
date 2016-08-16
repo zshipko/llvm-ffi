@@ -13,6 +13,7 @@ module LLVM.FFI.Support.Host (
     getFeatureSupport,
     ) where
 
+import qualified LLVM.FFI.Core as LLVM
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr)
@@ -45,4 +46,4 @@ foreign import ccall unsafe "LLVMGetNextFeature" getNextFeature
 foreign import ccall unsafe "LLVMGetFeatureName" getFeatureName
     :: FeatureIteratorRef -> IO CString
 foreign import ccall unsafe "LLVMGetFeatureSupport" getFeatureSupport
-    :: FeatureIteratorRef -> IO Bool
+    :: FeatureIteratorRef -> IO LLVM.Bool

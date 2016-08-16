@@ -5,6 +5,7 @@
 
 module LLVM.FFI.Transforms.PassManagerBuilder where
 
+import qualified LLVM.FFI.Core as LLVM
 import LLVM.FFI.Core (PassManagerRef)
 
 import qualified Foreign.C.Types as C
@@ -13,8 +14,7 @@ import Foreign.Ptr (Ptr)
 import Data.Typeable (Typeable)
 
 
-type CInt     = C.CInt
-type CUInt    = C.CUInt
+type CUInt = C.CUInt
 
 
 data PassManagerBuilder
@@ -35,13 +35,13 @@ foreign import ccall unsafe "LLVMPassManagerBuilderSetSizeLevel" setSizeLevel
     :: PassManagerBuilderRef -> CUInt -> IO ()
 
 foreign import ccall unsafe "LLVMPassManagerBuilderSetDisableUnitAtATime" setDisableUnitAtATime
-    :: PassManagerBuilderRef -> CUInt{-Bool-} -> IO ()
+    :: PassManagerBuilderRef -> LLVM.Bool -> IO ()
 
 foreign import ccall unsafe "LLVMPassManagerBuilderSetDisableUnrollLoops" setDisableUnrollLoops
-    :: PassManagerBuilderRef -> CUInt{-Bool-} -> IO ()
+    :: PassManagerBuilderRef -> LLVM.Bool -> IO ()
 
 foreign import ccall unsafe "LLVMPassManagerBuilderSetDisableSimplifyLibCalls" setDisableSimplifyLibCalls
-    :: PassManagerBuilderRef -> CUInt{-Bool-} -> IO ()
+    :: PassManagerBuilderRef -> LLVM.Bool -> IO ()
 
 foreign import ccall unsafe "LLVMPassManagerBuilderUseInlinerWithThreshold" useInlinerWithThreshold
     :: PassManagerBuilderRef -> CUInt -> IO ()
@@ -53,4 +53,4 @@ foreign import ccall unsafe "LLVMPassManagerBuilderPopulateModulePassManager" po
     :: PassManagerBuilderRef -> PassManagerRef -> IO ()
 
 foreign import ccall unsafe "LLVMPassManagerBuilderPopulateLTOPassManager" populateLTOPassManager
-    :: PassManagerBuilderRef -> PassManagerRef -> CUInt{-Bool-} -> CUInt{-Bool-} -> IO ()
+    :: PassManagerBuilderRef -> PassManagerRef -> LLVM.Bool -> LLVM.Bool -> IO ()
