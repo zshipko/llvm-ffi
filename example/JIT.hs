@@ -22,7 +22,7 @@ import Foreign.C.Types (CUInt, CFloat)
 import Foreign.Storable (Storable, peek, sizeOf)
 import Foreign.Ptr (Ptr, FunPtr)
 
-import Control.Exception (finally)
+import Control.Exception (bracket, finally)
 import Control.Monad (when, void)
 
 import qualified System.Exit as Exit
@@ -113,15 +113,13 @@ main = do
       fpasses <- Core.createPassManager
       Transform.addVerifierPass mpasses
 
-      fpassBuilder <- PMB.create
-      PMB.setOptLevel fpassBuilder 3
-      PMB.populateFunctionPassManager fpassBuilder fpasses
-      PMB.dispose fpassBuilder
+      bracket PMB.create PMB.dispose $ \fpassBuilder -> do
+         PMB.setOptLevel fpassBuilder 3
+         PMB.populateFunctionPassManager fpassBuilder fpasses
 
-      mpassBuilder <- PMB.create
-      PMB.setOptLevel mpassBuilder 3
-      PMB.populateModulePassManager mpassBuilder mpasses
-      PMB.dispose mpassBuilder
+      bracket PMB.create PMB.dispose $ \mpassBuilder -> do
+         PMB.setOptLevel mpassBuilder 3
+         PMB.populateModulePassManager mpassBuilder mpasses
 
       void $ Core.runPassManager fpasses modul
       void $ Core.runPassManager mpasses modul
