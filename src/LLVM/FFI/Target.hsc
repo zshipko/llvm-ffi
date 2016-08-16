@@ -12,15 +12,22 @@ import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr)
 
 import Data.Typeable (Typeable)
+import Data.Word (Word32)
 
 
 type CUInt = C.CUInt
-type CInt = C.CInt
 type CULLong = C.CULLong
 
 
--- enum { LLVMBigEndian, LLVMLittleEndian };
-type ByteOrdering = CInt
+#include <llvm-c/Target.h>
+
+newtype ByteOrdering = ByteOrdering (#type enum LLVMByteOrdering)
+    deriving (Eq)
+
+bigEndian, littleEndian :: ByteOrdering
+bigEndian = ByteOrdering (#const LLVMBigEndian)
+littleEndian = ByteOrdering (#const LLVMLittleEndian)
+
 
 data TargetData
     deriving (Typeable)
