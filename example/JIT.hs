@@ -119,11 +119,11 @@ main = do
             PMB.populateFunctionPassManager passBuilder fpasses
             PMB.populateModulePassManager passBuilder mpasses
 
-         void $ Core.runPassManager mpasses modul
          bracket_
             (Core.initializeFunctionPassManager fpasses)
             (Core.finalizeFunctionPassManager fpasses)
             (void $ Core.runFunctionPassManager fpasses func)
+         void $ Core.runPassManager mpasses modul
 
          void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 
