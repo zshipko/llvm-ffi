@@ -113,13 +113,10 @@ main = do
       bracket Core.createPassManager Core.disposePassManager $ \fpasses -> do
          Transform.addVerifierPass mpasses
 
-         bracket PMB.create PMB.dispose $ \fpassBuilder -> do
-            PMB.setOptLevel fpassBuilder 3
-            PMB.populateFunctionPassManager fpassBuilder fpasses
-
-         bracket PMB.create PMB.dispose $ \mpassBuilder -> do
-            PMB.setOptLevel mpassBuilder 3
-            PMB.populateModulePassManager mpassBuilder mpasses
+         bracket PMB.create PMB.dispose $ \passBuilder -> do
+            PMB.setOptLevel passBuilder 3
+            PMB.populateFunctionPassManager passBuilder fpasses
+            PMB.populateModulePassManager passBuilder mpasses
 
          void $ Core.runPassManager fpasses modul
          void $ Core.runPassManager mpasses modul
