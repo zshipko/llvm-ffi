@@ -22,7 +22,7 @@ import Foreign.C.Types (CUInt, CFloat)
 import Foreign.Storable (Storable, peek, sizeOf)
 import Foreign.Ptr (Ptr, FunPtr)
 
-import Control.Exception (bracket, finally)
+import Control.Exception (bracket, bracket_, finally)
 import Control.Monad (when, void)
 
 import qualified System.Exit as Exit
@@ -110,7 +110,8 @@ main = do
 
    when True $
       bracket Core.createPassManager Core.disposePassManager $ \mpasses ->
-      bracket Core.createPassManager Core.disposePassManager $ \fpasses -> do
+      bracket (Core.createFunctionPassManagerForModule modul)
+            Core.disposePassManager $ \fpasses -> do
          Transform.addVerifierPass mpasses
 
          bracket PMB.create PMB.dispose $ \passBuilder -> do
@@ -118,8 +119,11 @@ main = do
             PMB.populateFunctionPassManager passBuilder fpasses
             PMB.populateModulePassManager passBuilder mpasses
 
-         void $ Core.runPassManager fpasses modul
          void $ Core.runPassManager mpasses modul
+         bracket_
+            (Core.initializeFunctionPassManager fpasses)
+            (Core.finalizeFunctionPassManager fpasses)
+            (void $ Core.runFunctionPassManager fpasses func)
 
          void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 
