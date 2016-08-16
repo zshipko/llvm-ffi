@@ -108,24 +108,23 @@ main = do
 
    void $ withCString "round-avx.bc" $ BW.writeBitcodeToFile modul
 
-   when True $ do
-      mpasses <- Core.createPassManager
-      fpasses <- Core.createPassManager
-      Transform.addVerifierPass mpasses
+   when True $
+      bracket Core.createPassManager Core.disposePassManager $ \mpasses ->
+      bracket Core.createPassManager Core.disposePassManager $ \fpasses -> do
+         Transform.addVerifierPass mpasses
 
-      bracket PMB.create PMB.dispose $ \fpassBuilder -> do
-         PMB.setOptLevel fpassBuilder 3
-         PMB.populateFunctionPassManager fpassBuilder fpasses
+         bracket PMB.create PMB.dispose $ \fpassBuilder -> do
+            PMB.setOptLevel fpassBuilder 3
+            PMB.populateFunctionPassManager fpassBuilder fpasses
 
-      bracket PMB.create PMB.dispose $ \mpassBuilder -> do
-         PMB.setOptLevel mpassBuilder 3
-         PMB.populateModulePassManager mpassBuilder mpasses
+         bracket PMB.create PMB.dispose $ \mpassBuilder -> do
+            PMB.setOptLevel mpassBuilder 3
+            PMB.populateModulePassManager mpassBuilder mpasses
 
-      void $ Core.runPassManager fpasses modul
-      void $ Core.runPassManager mpasses modul
-      Core.disposePassManager fpasses
-      Core.disposePassManager mpasses
-      void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
+         void $ Core.runPassManager fpasses modul
+         void $ Core.runPassManager mpasses modul
+
+         void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 
    Alloc.alloca $ \execEngineRef -> do
       Alloc.alloca $ \errorMsgRef -> do
