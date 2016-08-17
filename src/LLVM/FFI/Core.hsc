@@ -22,6 +22,8 @@ module LLVM.FFI.Core
     , Bool(Bool)
     , false
     , true
+    , consBool
+    , deconsBool
 
     -- * Error handling
     , disposeMessage
@@ -587,10 +589,13 @@ import qualified Data.EnumSet as EnumSet
 import Data.Typeable (Typeable)
 
 import Data.Int (Int32)
+
+import qualified Data.Bool as Bool
 import Prelude
          (IO, Eq, Ord, Int, Bounded, Enum, Show, Read, String,
           ($), (++), (.), (==), error,
            fmap, fromIntegral, show, fromEnum, toEnum, )
+
 
 type CDouble  = C.CDouble
 type CInt     = C.CInt
@@ -615,6 +620,12 @@ instance Show Bool where
 
 false, true :: Bool
 false = Bool 0; true = Bool 1
+
+consBool :: Bool.Bool -> Bool
+consBool = toEnum . fromEnum
+
+deconsBool :: Bool -> Bool.Bool
+deconsBool = toEnum . fromEnum
 
 
 data Module
