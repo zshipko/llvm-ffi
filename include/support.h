@@ -61,6 +61,11 @@ LLVMBool LLVMCreateExecutionEngineForModuleCPU
    LLVMModuleRef M,
    char **OutError);
 
+LLVMBool LLVMCreateInterpreterForModuleCPU
+  (LLVMExecutionEngineRef *OutInterp,
+   LLVMModuleRef M,
+   char **OutError);
+
 
 void LLVMSetHasUnsafeAlgebra(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasNoNaNs(LLVMValueRef Instr, LLVMBool B);

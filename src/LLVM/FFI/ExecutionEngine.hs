@@ -27,6 +27,7 @@ module LLVM.FFI.ExecutionEngine
     , createExecutionEngineForModule
     , createExecutionEngineForModuleCPU
     , createInterpreterForModule
+    , createInterpreterForModuleCPU
     , createJITCompilerForModule
     , createMCJITCompilerForModule
     , initializeMCJITCompilerOptions
@@ -114,6 +115,8 @@ foreign import ccall unsafe "LLVMCreateExecutionEngineForModule" createExecution
 foreign import ccall unsafe "LLVMCreateExecutionEngineForModuleCPU" createExecutionEngineForModuleCPU
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateInterpreterForModule" createInterpreterForModule
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
+foreign import ccall unsafe "LLVMCreateInterpreterForModuleCPU" createInterpreterForModuleCPU
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateJITCompilerForModule" createJITCompilerForModule
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> CUInt -> (Ptr CString) -> IO LLVM.Bool
