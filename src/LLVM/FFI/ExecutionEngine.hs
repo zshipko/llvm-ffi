@@ -7,7 +7,6 @@ module LLVM.FFI.ExecutionEngine
     (
     -- * Linking
       linkInInterpreter
-    , linkInJIT
     , linkInMCJIT
 
     -- * Generic values
@@ -86,8 +85,6 @@ type MCJITCompilerOptionsRef = Ptr MCJITCompilerOptions
 
 -- ** Linking
 foreign import ccall unsafe "LLVMLinkInInterpreter" linkInInterpreter
-    :: IO ()
-foreign import ccall unsafe "LLVMLinkInJIT" linkInJIT
     :: IO ()
 foreign import ccall unsafe "LLVMLinkInMCJIT" linkInMCJIT
     :: IO ()
