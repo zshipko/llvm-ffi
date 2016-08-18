@@ -1,5 +1,5 @@
 test:
-	runhaskell Setup configure --user -fbuildExamples -fbuildTools
+	runhaskell Setup configure --user -fbuildExamples
 	runhaskell Setup build
 	runhaskell Setup haddock
 	./dist/build/llvm-ffi-example/llvm-ffi-example

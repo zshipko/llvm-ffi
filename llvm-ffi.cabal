@@ -42,10 +42,6 @@ Flag buildExamples
   Description: Build example executables
   Default: False
 
-Flag buildTools
-  Description: build tools for managing this package
-  Default: False
-
 Flag specificPkgConfig
   Description: use llvm-3.6.pc instead of llvm.pc
   Default: True
@@ -123,55 +119,3 @@ Executable llvm-ffi-example
   Hs-Source-Dirs: example
   GHC-Options: -Wall
   Main-Is: JIT.hs
-
-Executable llvm-diff-ffi
-  If flag(buildTools)
-    Build-Depends:
-      utility-ht >=0.0.9 && <0.1,
-      regex-posix >=0.95 && <0.96,
-      containers >=0.4 && <0.6,
-      base
-  Else
-    Buildable: False
-
-  If flag(developer)
-    GHC-Options: -Werror
-
-  Hs-Source-Dirs: tool
-  GHC-Options: -Wall
-  Main-Is: DiffFFI.hs
-  Other-Modules: FunctionMangulation
-
-Executable llvm-function-mangler
-  If flag(buildTools)
-    Build-Depends:
-      utility-ht >=0.0.9 && <0.1,
-      regex-posix >=0.95 && <0.96,
-      containers >=0.4 && <0.6,
-      base
-  Else
-    Buildable: False
-
-  If flag(developer)
-    GHC-Options: -Werror
-
-  Hs-Source-Dirs: tool
-  GHC-Options: -Wall
-  Main-Is: FunctionMangler.hs
-  Other-Modules: FunctionMangulation
-
-Executable llvm-intrinsic-mangler
-  If flag(buildTools)
-    Build-Depends:
-      bytestring >=0.9 && <0.11,
-      regex-posix >=0.95 && <0.96,
-      base
-  Else
-    Buildable: False
-
-  If flag(developer)
-    GHC-Options: -Werror
-
-  Hs-Source-Dirs: tool
-  GHC-Options: -Wall
-  Main-Is: IntrinsicMangler.hs
