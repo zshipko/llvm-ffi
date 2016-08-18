@@ -26,19 +26,6 @@ unsigned LLVMInstGetOpcode(LLVMValueRef inst);
 unsigned LLVMCmpInstGetPredicate(LLVMValueRef cmpinst);
 
 
-void LLVMCreateStandardFunctionPasses(LLVMPassManagerRef PM,
-				      unsigned OptimizationLevel);
-
-void LLVMCreateStandardModulePasses(LLVMPassManagerRef PM,
-				    unsigned OptimizationLevel,
-				    int OptimizeSize,
-				    int UnitAtATime,
-				    int UnrollLoops,
-				    int SimplifyLibCalls,
-				    int HaveExceptions,
-				    int DisableInlining);
-
-
 const char *LLVMGetHostCPUName(size_t &len);
 
 

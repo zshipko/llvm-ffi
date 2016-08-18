@@ -72,7 +72,6 @@ Library
       LLVM.FFI.BitWriter
       LLVM.FFI.Core
       LLVM.FFI.ExecutionEngine
-      LLVM.FFI.Support
       LLVM.FFI.Support.Host
       LLVM.FFI.Target
       LLVM.FFI.Transforms.IPO
