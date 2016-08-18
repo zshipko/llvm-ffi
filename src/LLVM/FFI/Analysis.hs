@@ -11,10 +11,8 @@ import qualified Foreign.C.Types as C
 import Foreign.C.String(CString)
 import Foreign.Ptr(Ptr)
 
-type CInt = C.CInt
 
-
-type VerifierFailureAction = CInt
+type VerifierFailureAction = C.CInt
 
 foreign import ccall unsafe "LLVMVerifyFunction" verifyFunction
     :: ValueRef -> VerifierFailureAction -> IO LLVM.Bool

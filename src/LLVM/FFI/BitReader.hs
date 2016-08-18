@@ -7,11 +7,8 @@ module LLVM.FFI.BitReader where
 import qualified LLVM.FFI.Core as LLVM
 import LLVM.FFI.Core (MemoryBufferRef, ModuleRef, ContextRef, ModuleProviderRef)
 
-import qualified Foreign.C.Types as C
 import Foreign.C.String(CString)
 import Foreign.Ptr(Ptr)
-
-type CInt = C.CInt
 
 
 foreign import ccall unsafe "LLVMGetBitcodeModuleProvider" getBitcodeModuleProvider
