@@ -55,14 +55,11 @@ const char *LLVMGetFeatureName(LLVMFeatureIteratorRef featureRef);
 LLVMBool LLVMGetFeatureSupport(LLVMFeatureIteratorRef featureRef);
 
 
+typedef unsigned LLVMEngineKind;
 
-LLVMBool LLVMCreateExecutionEngineForModuleCPU
+LLVMBool LLVMCreateExecutionEngineKindForModuleCPU
   (LLVMExecutionEngineRef *OutEE,
-   LLVMModuleRef M,
-   char **OutError);
-
-LLVMBool LLVMCreateInterpreterForModuleCPU
-  (LLVMExecutionEngineRef *OutInterp,
+   LLVMEngineKind kind,
    LLVMModuleRef M,
    char **OutError);
 

@@ -24,6 +24,12 @@ module LLVM.FFI.ExecutionEngine
     -- * Execution engines
     , ExecutionEngine
     , ExecutionEngineRef
+    , EngineKind(..)
+    , EngineKindSet
+    , kindJIT
+    , kindInterpreter
+    , kindEither
+    , createExecutionEngineKindForModuleCPU
     , createExecutionEngineForModule
     , createExecutionEngineForModuleCPU
     , createInterpreterForModule
@@ -62,6 +68,7 @@ import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr, FunPtr)
 
+import qualified Data.EnumSet as EnumSet
 import Data.Typeable (Typeable)
 
 
@@ -109,14 +116,36 @@ foreign import ccall unsafe "LLVMGenericValueToFloat" genericValueToFloat
 foreign import ccall unsafe "&LLVMDisposeGenericValue" ptrDisposeGenericValue
     :: FunPtr (GenericValueRef -> IO ())
 
+
+data EngineKind
+    = JIT
+    | Interpreter
+    deriving (Eq, Ord, Enum, Bounded, Show, Read, Typeable)
+
+type EngineKindSet = EnumSet.T CUInt EngineKind
+
+kindJIT, kindInterpreter, kindEither :: EngineKindSet
+kindJIT = EnumSet.fromEnum JIT
+kindInterpreter = EnumSet.fromEnum Interpreter
+kindEither = kindJIT EnumSet..|. kindInterpreter
+
 -- ** Execution engines
+foreign import ccall unsafe "LLVMCreateExecutionEngineKindForModuleCPU" createExecutionEngineKindForModuleCPU
+    :: (Ptr ExecutionEngineRef) -> EngineKindSet -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
+{-# INLINE createExecutionEngineForModuleCPU #-}
+createExecutionEngineForModuleCPU
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
+createExecutionEngineForModuleCPU ee m outError =
+    createExecutionEngineKindForModuleCPU ee kindEither m outError
+{-# INLINE createInterpreterForModuleCPU #-}
+createInterpreterForModuleCPU
+    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
+createInterpreterForModuleCPU ee m outError =
+    createExecutionEngineKindForModuleCPU ee kindInterpreter m outError
+
 foreign import ccall unsafe "LLVMCreateExecutionEngineForModule" createExecutionEngineForModule
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMCreateExecutionEngineForModuleCPU" createExecutionEngineForModuleCPU
-    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateInterpreterForModule" createInterpreterForModule
-    :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMCreateInterpreterForModuleCPU" createInterpreterForModuleCPU
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMCreateJITCompilerForModule" createJITCompilerForModule
     :: (Ptr ExecutionEngineRef) -> ModuleRef -> CUInt -> (Ptr CString) -> IO LLVM.Bool
@@ -175,6 +204,10 @@ foreign import ccall unsafe "LLVMRecompileAndRelinkFunction" recompileAndRelinkF
     :: ExecutionEngineRef -> ValueRef -> IO (FunPtr a)
 foreign import ccall unsafe "LLVMGetExecutionEngineTargetData" getExecutionEngineTargetData
     :: ExecutionEngineRef -> IO TargetDataRef
+{- |
+disfunctional in LLVM-3.6,
+see <https://llvm.org/bugs/show_bug.cgi?id=20656>
+-}
 foreign import ccall unsafe "LLVMAddGlobalMapping" addGlobalMapping
     :: ExecutionEngineRef -> ValueRef -> Ptr a -> IO ()
 foreign import ccall unsafe "LLVMAddGlobalMapping" addFunctionMapping

@@ -181,8 +181,9 @@ LLVMBool LLVMGetFeatureSupport(LLVMFeatureIteratorRef featureRef) {
 
 
 
-LLVMBool LLVMCreateExecutionEngineForModuleCPU
+LLVMBool LLVMCreateExecutionEngineKindForModuleCPU
   (LLVMExecutionEngineRef *OutEE,
+   LLVMEngineKind kind,
    LLVMModuleRef M,
    char **OutError) {
   std::string Error;
@@ -191,28 +192,11 @@ LLVMBool LLVMCreateExecutionEngineForModuleCPU
 #else
   EngineBuilder builder(std::unique_ptr<Module>(unwrap(M)));
 #endif
-  builder.setEngineKind(EngineKind::Either)
+  builder.setEngineKind((EngineKind::Kind)kind)
          .setMCPU(sys::getHostCPUName().data())
          .setErrorStr(&Error);
   if (ExecutionEngine *EE = builder.create()){
     *OutEE = wrap(EE);
-    return 0;
-  }
-  *OutError = strdup(Error.c_str());
-  return 1;
-}
-
-LLVMBool LLVMCreateInterpreterForModuleCPU
-  (LLVMExecutionEngineRef *OutInterp,
-   LLVMModuleRef M,
-   char **OutError) {
-  std::string Error;
-  EngineBuilder builder(std::unique_ptr<Module>(unwrap(M)));
-  builder.setEngineKind(EngineKind::Interpreter)
-         .setMCPU(sys::getHostCPUName().data())
-         .setErrorStr(&Error);
-  if (ExecutionEngine *Interp = builder.create()) {
-    *OutInterp = wrap(Interp);
     return 0;
   }
   *OutError = strdup(Error.c_str());
