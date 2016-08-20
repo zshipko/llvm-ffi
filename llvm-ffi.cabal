@@ -15,7 +15,7 @@ Description:
   using the @llvm-pkg-config@ package.
   .
   We try to stay up to date with LLVM releases.
-  The current version of this package is compatible with LLVM 3.4-3.7.
+  The current version of this package is compatible with LLVM 3.4-3.8.
   Please understand that the package may or may not work
   against older LLVM releases.
 Author:        Henning Thielemann, Bryan O'Sullivan, Lennart Augustsson
@@ -56,6 +56,10 @@ Flag llvm305
 
 Flag llvm306
   Description: use LLVM-3.6 instead of latest supported LLVM
+  Default: False
+
+Flag llvm307
+  Description: use LLVM-3.7 instead of latest supported LLVM
   Default: False
 
 Source-Repository head
@@ -128,12 +132,20 @@ Library
         CC-Options: -DHS_LLVM_VERSION=306
         CPP-Options: -DHS_LLVM_VERSION=306
       Else
-        If flag(specificPkgConfig)
-          PkgConfig-Depends: llvm-3.7
+        If flag(llvm307)
+          If flag(specificPkgConfig)
+            PkgConfig-Depends: llvm-3.7
+          Else
+            PkgConfig-Depends: llvm == 3.7
+          CC-Options: -DHS_LLVM_VERSION=307
+          CPP-Options: -DHS_LLVM_VERSION=307
         Else
-          PkgConfig-Depends: llvm == 3.7
-        CC-Options: -DHS_LLVM_VERSION=307
-        CPP-Options: -DHS_LLVM_VERSION=307
+          If flag(specificPkgConfig)
+            PkgConfig-Depends: llvm-3.8
+          Else
+            PkgConfig-Depends: llvm == 3.8
+          CC-Options: -DHS_LLVM_VERSION=308
+          CPP-Options: -DHS_LLVM_VERSION=308
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
