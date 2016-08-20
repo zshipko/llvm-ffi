@@ -19,6 +19,10 @@
 
 using namespace llvm;
 
+#if HS_LLVM_VERSION < 305
+#define nullptr 0
+#endif
+
 
 unsigned LLVMInitNativeTarget()
 {
