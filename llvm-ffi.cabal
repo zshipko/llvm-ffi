@@ -15,10 +15,9 @@ Description:
   using the @llvm-pkg-config@ package.
   .
   We try to stay up to date with LLVM releases.
-  The current version of this package is compatible with LLVM 3.6.
+  The current version of this package is compatible with LLVM 3.5-3.6.
   Please understand that the package may or may not work
   against older LLVM releases.
-  We don't have the time or resources to test across multiple releases.
 Author:        Henning Thielemann, Bryan O'Sullivan, Lennart Augustsson
 Maintainer:    Henning Thielemann <llvm@henning-thielemann.de>
 Homepage:      http://haskell.org/haskellwiki/LLVM
@@ -43,8 +42,12 @@ Flag buildExamples
   Default: False
 
 Flag specificPkgConfig
-  Description: use llvm-3.6.pc instead of llvm.pc
+  Description: use llvm-3.x.pc instead of llvm.pc
   Default: True
+
+Flag llvm305
+  Description: use LLVM-3.5 instead of latest supported LLVM
+  Default: False
 
 Source-Repository head
   Type:     darcs
@@ -92,12 +95,22 @@ Library
       LLVM.Target.X86
       LLVM.Target.XCore
 
-  If flag(specificPkgConfig)
-    PkgConfig-Depends: llvm-3.6 == 3.6
+  If flag(llvm305)
+    If flag(specificPkgConfig)
+      PkgConfig-Depends: llvm-3.5
+    Else
+      PkgConfig-Depends: llvm == 3.5
+    CC-Options: -DHS_LLVM_VERSION=305
+    CPP-Options: -DHS_LLVM_VERSION=305
   Else
-    PkgConfig-Depends: llvm == 3.6
-  CC-Options: -DHS_LLVM_VERSION=306 -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
-  CPP-Options: -DHS_LLVM_VERSION=306
+    If flag(specificPkgConfig)
+      PkgConfig-Depends: llvm-3.6
+    Else
+      PkgConfig-Depends: llvm == 3.6
+    CC-Options: -DHS_LLVM_VERSION=306
+    CPP-Options: -DHS_LLVM_VERSION=306
+
+  CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
   Include-Dirs: include
   C-Sources:
