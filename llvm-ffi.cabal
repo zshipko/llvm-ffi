@@ -123,7 +123,8 @@ Library
       CPP-Options: -DHS_LLVM_VERSION=306
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
-  CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
+  CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
+  CPP-Options: -D__STDC_LIMIT_MACROS
   Include-Dirs: include
   C-Sources:
     cbits/support.cpp
