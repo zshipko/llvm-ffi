@@ -5,18 +5,14 @@
 module LLVM.FFI.BitReader where
 
 import qualified LLVM.FFI.Core as LLVM
-import LLVM.FFI.Core (MemoryBufferRef, ModuleRef, ContextRef, ModuleProviderRef)
+import LLVM.FFI.Core (MemoryBufferRef, ModuleRef, ContextRef)
 
 import Foreign.C.String(CString)
 import Foreign.Ptr(Ptr)
 
 
-foreign import ccall unsafe "LLVMGetBitcodeModuleProvider" getBitcodeModuleProvider
-    :: MemoryBufferRef -> (Ptr ModuleProviderRef) -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMParseBitcode" parseBitcode
     :: MemoryBufferRef -> (Ptr ModuleRef) -> (Ptr CString) -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMGetBitcodeModuleProviderInContext" getBitcodeModuleProviderInContext
-    :: ContextRef -> MemoryBufferRef -> (Ptr ModuleProviderRef) -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMParseBitcodeInContext" parseBitcodeInContext
     :: ContextRef -> MemoryBufferRef -> (Ptr ModuleRef) -> (Ptr CString) -> IO LLVM.Bool
 foreign import ccall unsafe "LLVMGetBitcodeModule" getBitcodeModule
