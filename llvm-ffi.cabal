@@ -39,6 +39,7 @@ Flag developer
 
 Flag buildExamples
   Description: Build example executables
+  Manual: True
   Default: False
 
 Flag specificPkgConfig
