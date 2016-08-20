@@ -4,6 +4,7 @@ test:
 	runhaskell Setup haddock
 	./dist/build/llvm-ffi-example/llvm-ffi-example
 
+	make test306
 	make test305
 	make test304
 
