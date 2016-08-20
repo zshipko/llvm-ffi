@@ -55,9 +55,9 @@ foreign import ccall unsafe "LLVMSizeOfTypeInBits" sizeOfTypeInBits
     :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMStoreSizeOfType" storeSizeOfType
     :: TargetDataRef -> TypeRef -> IO CULLong
-foreign import ccall unsafe "LLVMABISizeOfType" aBISizeOfType
+foreign import ccall unsafe "LLVMABISizeOfType" abiSizeOfType
     :: TargetDataRef -> TypeRef -> IO CULLong
-foreign import ccall unsafe "LLVMABIAlignmentOfType" aBIAlignmentOfType
+foreign import ccall unsafe "LLVMABIAlignmentOfType" abiAlignmentOfType
     :: TargetDataRef -> TypeRef -> IO CULLong
 foreign import ccall unsafe "LLVMCallFrameAlignmentOfType" callFrameAlignmentOfType
     :: TargetDataRef -> TypeRef -> IO CULLong
