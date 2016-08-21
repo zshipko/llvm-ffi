@@ -60,12 +60,6 @@ module LLVM.FFI.Core
     , setModuleInlineAsm
     , getModuleContext
 
-    -- * Module providers
-    , ModuleProvider
-    , ModuleProviderRef
-    , createModuleProviderForExistingModule
-    , ptrDisposeModuleProvider
-
     -- * Types
     , Type
     , TypeRef
@@ -567,7 +561,6 @@ module LLVM.FFI.Core
 
     , createPassManager
     , createFunctionPassManagerForModule
-    , createFunctionPassManager
     , runPassManager
     , initializeFunctionPassManager
     , runFunctionPassManager
@@ -631,10 +624,6 @@ deconsBool = toEnum . fromEnum
 data Module
     deriving (Typeable)
 type ModuleRef = Ptr Module
-
-data ModuleProvider
-    deriving (Typeable)
-type ModuleProviderRef = Ptr ModuleProvider
 
 data Type
     deriving (Typeable)
@@ -1813,14 +1802,6 @@ foreign import ccall unsafe "LLVMBuildPtrDiff" buildPtrDiff
     :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
 
 
--- ** Module Providers
-foreign import ccall unsafe "LLVMCreateModuleProviderForExistingModule"
-    createModuleProviderForExistingModule
-    :: ModuleRef -> IO ModuleProviderRef
-foreign import ccall unsafe "&LLVMDisposeModuleProvider" ptrDisposeModuleProvider
-    :: FunPtr (ModuleProviderRef -> IO ())
-
-
 -- ** Memory Buffers
 foreign import ccall unsafe "LLVMCreateMemoryBufferWithContentsOfFile" createMemoryBufferWithContentsOfFile
     :: CString -> Ptr MemoryBufferRef -> Ptr CString -> IO Bool
@@ -1838,8 +1819,6 @@ foreign import ccall unsafe "LLVMCreatePassManager" createPassManager
     :: IO PassManagerRef
 foreign import ccall unsafe "LLVMCreateFunctionPassManagerForModule" createFunctionPassManagerForModule
     :: ModuleRef -> IO PassManagerRef
-foreign import ccall unsafe "LLVMCreateFunctionPassManager" createFunctionPassManager
-    :: ModuleProviderRef -> IO PassManagerRef
 foreign import ccall unsafe "LLVMRunPassManager" runPassManager
     :: PassManagerRef -> ModuleRef -> IO Bool
 foreign import ccall unsafe "LLVMInitializeFunctionPassManager" initializeFunctionPassManager
