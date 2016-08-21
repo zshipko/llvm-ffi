@@ -18,6 +18,13 @@ Description:
   The current version of this package is compatible with LLVM 3.4-3.8.
   Please understand that the package may or may not work
   against older LLVM releases.
+  .
+  Warning for inplace builds:
+  Re-configuring the package using, say -fllvm307,
+  and re-buildung it might result in corrupt code.
+  You must make sure that the stuff in @cbits@ is re-compiled.
+  Cabal or GHC may forget about that.
+  You are safe if you run @cabal clean@.
 Author:        Henning Thielemann, Bryan O'Sullivan, Lennart Augustsson
 Maintainer:    Henning Thielemann <llvm@henning-thielemann.de>
 Homepage:      http://haskell.org/haskellwiki/LLVM
