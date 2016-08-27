@@ -52,6 +52,7 @@ module LLVM.FFI.ExecutionEngine
     , addGlobalMapping
     , addFunctionMapping
     , getPointerToGlobal
+    , getPointerToFunction
 
     ) where
 
@@ -196,4 +197,6 @@ foreign import ccall unsafe "LLVMAddGlobalMapping" addGlobalMapping
 foreign import ccall unsafe "LLVMAddGlobalMapping" addFunctionMapping
     :: ExecutionEngineRef -> ValueRef -> FunPtr a -> IO ()
 foreign import ccall unsafe "LLVMGetPointerToGlobal" getPointerToGlobal
+    :: ExecutionEngineRef -> ValueRef -> IO (Ptr a)
+foreign import ccall unsafe "LLVMGetPointerToGlobal" getPointerToFunction
     :: ExecutionEngineRef -> ValueRef -> IO (FunPtr a)

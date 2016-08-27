@@ -139,7 +139,7 @@ main = do
       execEngine <- peek execEngineRef
       flip finally (EE.disposeExecutionEngine execEngine) $ do
          let vector = take vectorSize $ iterate (1+) (-1.3 :: CFloat)
-         funcPtr <- EE.getPointerToGlobal execEngine func
+         funcPtr <- EE.getPointerToFunction execEngine func
          let size = sum $ map sizeOf vector
          Alloc.allocaBytesAligned size size $ \ptr -> do
             Array.pokeArray ptr vector
