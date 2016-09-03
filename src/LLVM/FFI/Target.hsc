@@ -9,7 +9,7 @@ import LLVM.FFI.Core (ValueRef, TypeRef, PassManagerRef)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
-import Foreign.Ptr (Ptr)
+import Foreign.Ptr (Ptr, FunPtr)
 
 import Data.Typeable (Typeable)
 import Data.Word (Word32)
@@ -71,3 +71,5 @@ foreign import ccall unsafe "LLVMOffsetOfElement" offsetOfElement
     :: TargetDataRef -> TypeRef -> CUInt -> IO CULLong
 foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
     :: TargetDataRef -> IO ()
+foreign import ccall unsafe "&LLVMDisposeTargetData" ptrDisposeTargetData
+    :: FunPtr (TargetDataRef -> IO ())
