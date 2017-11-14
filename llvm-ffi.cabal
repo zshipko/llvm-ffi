@@ -31,7 +31,7 @@ Homepage:      http://haskell.org/haskellwiki/LLVM
 Stability:     experimental
 Category:      Compilers/Interpreters, Code Generation
 Tested-With:   GHC==7.4.2, GHC==7.6.3, GHC==7.8.4, GHC==8.0.1
-Cabal-Version: >= 1.8
+Cabal-Version: >= 2.1
 Build-Type:    Simple
 
 Extra-Source-Files:
@@ -85,6 +85,7 @@ Library
 
   Hs-Source-Dirs: src
   GHC-Options: -Wall -fwarn-missing-import-lists
+  Default-Language: Haskell2010
 
   If flag(developer)
     GHC-Options: -Werror
@@ -121,6 +122,7 @@ Library
     Else
       PkgConfig-Depends: llvm == 3.4
     CC-Options: -DHS_LLVM_VERSION=304
+    Cxx-Options: -DHS_LLVM_VERSION=304
     CPP-Options: -DHS_LLVM_VERSION=304
   Else
     If flag(llvm305)
@@ -129,6 +131,7 @@ Library
       Else
         PkgConfig-Depends: llvm == 3.5
       CC-Options: -DHS_LLVM_VERSION=305
+      Cxx-Options: -DHS_LLVM_VERSION=305
       CPP-Options: -DHS_LLVM_VERSION=305
     Else
       If flag(llvm306)
@@ -137,6 +140,7 @@ Library
         Else
           PkgConfig-Depends: llvm == 3.6
         CC-Options: -DHS_LLVM_VERSION=306
+        Cxx-Options: -DHS_LLVM_VERSION=306
         CPP-Options: -DHS_LLVM_VERSION=306
       Else
         If flag(llvm307)
@@ -145,6 +149,7 @@ Library
           Else
             PkgConfig-Depends: llvm == 3.7
           CC-Options: -DHS_LLVM_VERSION=307
+          Cxx-Options: -DHS_LLVM_VERSION=307
           CPP-Options: -DHS_LLVM_VERSION=307
         Else
           If flag(specificPkgConfig)
@@ -152,13 +157,16 @@ Library
           Else
             PkgConfig-Depends: llvm == 3.8
           CC-Options: -DHS_LLVM_VERSION=308
+          Cxx-Options: -DHS_LLVM_VERSION=308
           CPP-Options: -DHS_LLVM_VERSION=308
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
   CPP-Options: -D__STDC_LIMIT_MACROS
   Include-Dirs: include
-  C-Sources:
+  Extra-Libraries: stdc++
+  Cxx-Options: -std=c++0x -std=c++11
+  Cxx-Sources:
     cbits/support.cpp
 
 Executable llvm-ffi-example
@@ -175,4 +183,5 @@ Executable llvm-ffi-example
 
   Hs-Source-Dirs: example
   GHC-Options: -Wall
+  Default-Language: Haskell2010
   Main-Is: JIT.hs
