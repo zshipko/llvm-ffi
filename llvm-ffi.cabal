@@ -43,7 +43,7 @@ Maintainer:    Henning Thielemann <llvm@henning-thielemann.de>
 Homepage:      http://haskell.org/haskellwiki/LLVM
 Stability:     experimental
 Category:      Compilers/Interpreters, Code Generation
-Tested-With:   GHC==7.4.2, GHC==7.6.3, GHC==7.8.4, GHC==8.0.1
+Tested-With:   GHC==7.4.2, GHC==7.6.3, GHC==7.8.4, GHC==8.0.2, GHC==8.2.2
 Cabal-Version: >= 2.1
 Build-Type:    Simple
 
