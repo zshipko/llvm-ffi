@@ -1,5 +1,5 @@
 test:
-	runhaskell Setup configure --user -fbuildExamples
+	runhaskell Setup configure --user -fbuildExamples -fpkgConfig
 	runhaskell Setup build
 	runhaskell Setup haddock
 	./dist/build/llvm-ffi-example/llvm-ffi-example
@@ -13,6 +13,6 @@ test:
 
 test%:
 	runhaskell Setup clean
-	runhaskell Setup configure --user -fbuildExamples -fllvm$*
+	runhaskell Setup configure --user -fbuildExamples -fpkgConfig -fllvm$*
 	runhaskell Setup build
 	./dist/build/llvm-ffi-example/llvm-ffi-example
