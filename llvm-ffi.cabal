@@ -1,6 +1,7 @@
+Cabal-Version: 2.2
 Name:          llvm-ffi
 Version:       3.8.1.1
-License:       BSD3
+License:       BSD-3-Clause
 License-File:  LICENSE
 Synopsis:      FFI bindings to the LLVM compiler toolkit.
 Description:
@@ -44,7 +45,6 @@ Homepage:      http://haskell.org/haskellwiki/LLVM
 Stability:     experimental
 Category:      Compilers/Interpreters, Code Generation
 Tested-With:   GHC==7.4.2, GHC==7.6.3, GHC==7.8.4, GHC==8.0.2, GHC==8.2.2
-Cabal-Version: >= 2.1
 Build-Type:    Simple
 
 Extra-Source-Files:
