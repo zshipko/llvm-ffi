@@ -51,6 +51,7 @@ Extra-Source-Files:
   include/support.h
   tool/ltrace.config
   tool/ltrace.readme
+  flatpak/llvm-3.8.1.json
 
 Flag developer
   Description: developer mode - warnings let compilation fail
