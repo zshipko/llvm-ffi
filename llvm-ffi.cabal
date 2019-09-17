@@ -17,7 +17,7 @@ Description:
   to the LLVM installation directories manually.
   On Ubuntu this would look like this:
   .
-  > cabal install --extra-include-dirs=/usr/lib/llvm-3.8/include --extra-lib-dirs=/usr/lib/llvm-3.8/lib llvm-ffi
+  > cabal install --extra-include-dirs=/usr/lib/llvm-3.9/include --extra-lib-dirs=/usr/lib/llvm-3.9/lib llvm-ffi
   .
   You can store such paths permanently in a @pkg-config@ file like @llvm.pc@.
   The optimal way would be if LLVM installations or GNU/Linux distributions
@@ -29,7 +29,7 @@ Description:
   > cabal install -fpkgConfig
   .
   We try to stay up to date with LLVM releases.
-  The current version of this package is compatible with LLVM 3.4-3.8.
+  The current version of this package is compatible with LLVM 3.4-3.9.
   Please understand that the package may or may not work
   against older LLVM releases.
   .
@@ -85,6 +85,10 @@ Flag llvm306
 
 Flag llvm307
   Description: use LLVM-3.7 instead of latest supported LLVM
+  Default: False
+
+Flag llvm308
+  Description: use LLVM-3.8 instead of latest supported LLVM
   Default: False
 
 Source-Repository head
@@ -182,16 +186,28 @@ Library
           Cxx-Options: -DHS_LLVM_VERSION=307
           CPP-Options: -DHS_LLVM_VERSION=307
         Else
-          If flag(pkgConfig)
-            If flag(specificPkgConfig)
-              PkgConfig-Depends: llvm-3.8
+          If flag(llvm308)
+            If flag(pkgConfig)
+              If flag(specificPkgConfig)
+                PkgConfig-Depends: llvm-3.8
+              Else
+                PkgConfig-Depends: llvm == 3.8
             Else
-              PkgConfig-Depends: llvm == 3.8
+              Extra-Libraries: LLVM-3.8
+            CC-Options: -DHS_LLVM_VERSION=308
+            Cxx-Options: -DHS_LLVM_VERSION=308
+            CPP-Options: -DHS_LLVM_VERSION=308
           Else
-            Extra-Libraries: LLVM-3.8
-          CC-Options: -DHS_LLVM_VERSION=308
-          Cxx-Options: -DHS_LLVM_VERSION=308
-          CPP-Options: -DHS_LLVM_VERSION=308
+            If flag(pkgConfig)
+              If flag(specificPkgConfig)
+                PkgConfig-Depends: llvm-3.9
+              Else
+                PkgConfig-Depends: llvm == 3.9
+            Else
+              Extra-Libraries: LLVM-3.9
+            CC-Options: -DHS_LLVM_VERSION=309
+            Cxx-Options: -DHS_LLVM_VERSION=309
+            CPP-Options: -DHS_LLVM_VERSION=309
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
