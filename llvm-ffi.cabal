@@ -98,7 +98,7 @@ Source-Repository this
 
 Library
   Build-Depends:
-    enumset >=0.0.4 && <0.1,
+    enumset >=0.0.5 && <0.1,
     base >= 3 && < 5
 
   Hs-Source-Dirs: src

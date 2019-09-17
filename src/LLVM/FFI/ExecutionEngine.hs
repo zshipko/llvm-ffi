@@ -64,7 +64,7 @@ import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr, FunPtr)
 
-import qualified Data.EnumSet as EnumSet
+import qualified Data.EnumBitSet as EnumSet
 import Data.Typeable (Typeable)
 
 
