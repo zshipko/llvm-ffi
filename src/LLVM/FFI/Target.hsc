@@ -39,8 +39,6 @@ type TargetLibraryInfoRef = Ptr TargetLibraryInfo
 
 foreign import ccall unsafe "LLVMCreateTargetData" createTargetData
     :: CString -> IO TargetDataRef
-foreign import ccall unsafe "LLVMAddTargetData" addTargetData
-    :: TargetDataRef -> PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddTargetLibraryInfo" addTargetLibraryInfo
     :: TargetLibraryInfoRef -> PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMCopyStringRepOfTargetData" copyStringRepOfTargetData
