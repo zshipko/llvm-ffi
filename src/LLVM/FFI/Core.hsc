@@ -929,6 +929,25 @@ foreign import ccall unsafe "LLVMSetModuleInlineAsm" setModuleInlineAsm
 foreign import ccall unsafe "LLVMGetModuleContext" getModuleContext
     :: ModuleRef -> IO ContextRef
 
+-- ** Functions
+foreign import ccall unsafe "LLVMAddFunction" addFunction
+    :: ModuleRef                -- ^ module
+    -> CString                  -- ^ name
+    -> TypeRef                  -- ^ type
+    -> IO ValueRef
+foreign import ccall unsafe "LLVMGetNamedFunction" getNamedFunction
+    :: ModuleRef                -- ^ module
+    -> CString                  -- ^ name
+    -> IO ValueRef              -- ^ function (@nullPtr@ if not found)
+foreign import ccall unsafe "LLVMGetFirstFunction" getFirstFunction
+    :: ModuleRef -> IO ValueRef
+foreign import ccall unsafe "LLVMGetLastFunction" getLastFunction
+    :: ModuleRef -> IO ValueRef
+foreign import ccall unsafe "LLVMGetNextFunction" getNextFunction
+    :: ValueRef -> IO ValueRef
+foreign import ccall unsafe "LLVMGetPreviousFunction" getPreviousFunction
+    :: ValueRef -> IO ValueRef
+
 
 -- ** Types
 foreign import ccall unsafe "LLVMGetTypeKind" getTypeKindCUInt
@@ -1360,24 +1379,6 @@ foreign import ccall unsafe "LLVMSetGlobalConstant" setGlobalConstant
 foreign import ccall unsafe "LLVMAddAlias" addAlias
     :: ModuleRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
 
--- ** Functions
-foreign import ccall unsafe "LLVMAddFunction" addFunction
-    :: ModuleRef                -- ^ module
-    -> CString                  -- ^ name
-    -> TypeRef                  -- ^ type
-    -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNamedFunction" getNamedFunction
-    :: ModuleRef                -- ^ module
-    -> CString                  -- ^ name
-    -> IO ValueRef              -- ^ function (@nullPtr@ if not found)
-foreign import ccall unsafe "LLVMGetFirstFunction" getFirstFunction
-    :: ModuleRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetLastFunction" getLastFunction
-    :: ModuleRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNextFunction" getNextFunction
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetPreviousFunction" getPreviousFunction
-    :: ValueRef -> IO ValueRef
 foreign import ccall unsafe "LLVMDeleteFunction" deleteFunction
     :: ValueRef                 -- ^ function
     -> IO ()
