@@ -903,7 +903,7 @@ foreign import ccall unsafe "LLVMModuleCreateWithName" moduleCreateWithName
     :: CString -> IO ModuleRef
 foreign import ccall unsafe "LLVMModuleCreateWithNameInContext"
         moduleCreateWithNameInContext
-    :: CString -> IO ModuleRef
+    :: CString -> ContextRef -> IO ModuleRef
 foreign import ccall unsafe "LLVMDisposeModule" disposeModule
     :: ModuleRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposeModule" ptrDisposeModule
