@@ -128,6 +128,7 @@ Library
       LLVM.Target.Native
 
   Other-modules:
+      LLVM.FFI.Base
       LLVM.Target.ARM
       LLVM.Target.CppBackend
       LLVM.Target.Hexagon
