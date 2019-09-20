@@ -17,3 +17,10 @@ test%:
 	runhaskell Setup configure --user -fbuildExamples -fpkgConfig -fllvm$*
 	runhaskell Setup build
 	./dist/build/llvm-ffi-example/llvm-ffi-example
+
+
+ctest/fastmath.o:	ctest/fastmath.c
+	gcc -Wall -c -o $@ $< -Iinclude/ $$(llvm-config-3.9 --cflags)
+
+ctest/fastmath:	ctest/fastmath.o dist/build/cbits/support.o
+	g++ -o $@ $^ $$(llvm-config-3.9 --ldflags) -lLLVM-3.9
