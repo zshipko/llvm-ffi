@@ -1,6 +1,8 @@
 #ifndef LLVM_HS_SUPPORT_H
 #define LLVM_HS_SUPPORT_H
 
+#include "llvm-c/ExecutionEngine.h"
+
 
 #ifdef __cplusplus
 typedef llvm::StringMap<bool> LLVMFeatureMap;
