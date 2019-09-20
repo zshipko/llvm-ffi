@@ -26,7 +26,7 @@ unsigned LLVMInstGetOpcode(LLVMValueRef inst);
 unsigned LLVMCmpInstGetPredicate(LLVMValueRef cmpinst);
 
 
-const char *LLVMGetHostCPUName(size_t &len);
+const char *LLVMGetHostCPUName(size_t *len);
 
 
 typedef LLVMFeatureMap *LLVMFeatureMapRef;
