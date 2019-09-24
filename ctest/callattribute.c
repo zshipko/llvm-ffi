@@ -24,15 +24,16 @@ int main ()
   LLVMValueRef param0 = LLVMGetParam (func, 0);
   LLVMValueRef call_exp = LLVMBuildCall (builder, func_exp, &param0, 1, "");
   LLVMSetInstructionCallConv (call_exp, 0);
-  LLVMAddInstrAttribute
-    (call_exp, LLVMAttributeFunctionIndex, LLVMReadNoneAttribute);
+  LLVMContextRef context = LLVMGetGlobalContext();
+  unsigned attrKind = LLVMGetEnumAttributeKindForName("readnone", 8);
+  LLVMAttributeRef attr = LLVMCreateEnumAttribute (context, attrKind, 0);
+  LLVMAddCallSiteAttribute(call_exp, LLVMAttributeFunctionIndex, attr);
   LLVMValueRef func_sin = LLVMAddFunction (module, "llvm.sin.f64", type_func);
   LLVMSetLinkage (func_sin, 0);
   LLVMValueRef param1 = LLVMGetParam (func, 1);
   LLVMValueRef call_sin = LLVMBuildCall (builder, func_sin, &param1, 1, "");
   LLVMSetInstructionCallConv (call_sin, 0);
-  LLVMAddInstrAttribute
-    (call_sin, LLVMAttributeFunctionIndex, LLVMReadNoneAttribute);
+  LLVMAddCallSiteAttribute(call_sin, LLVMAttributeFunctionIndex, attr);
   LLVMBuildRet (builder, LLVMBuildFAdd (builder, call_exp, call_sin, ""));
   LLVMWriteBitcodeToFile (module, "call-attribute.bc");
   LLVMPassManagerRef pm = LLVMCreatePassManager ();
