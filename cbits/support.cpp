@@ -154,11 +154,13 @@ void LLVMSetHasAllowReassoc(LLVMValueRef Instr, LLVMBool B) {
   (unwrap<Instruction>(Instr))->setHasAllowReassoc(B);
 #endif
 }
+/* It is not exported by Instruction.h
 void LLVMSetHasAllowContract(LLVMValueRef Instr, LLVMBool B) {
 #if HS_LLVM_VERSION >= 500
   (unwrap<Instruction>(Instr))->setHasAllowContract(B);
 #endif
 }
+*/
 void LLVMSetHasApproxFunc(LLVMValueRef Instr, LLVMBool B) {
 #if HS_LLVM_VERSION >= 600
   (unwrap<Instruction>(Instr))->setHasApproxFunc(B);
@@ -183,7 +185,7 @@ void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags) {
   if (Flags & FastMathFlags::AllowReassoc)    FMF.setAllowReassoc();
   if (Flags & FastMathFlags::ApproxFunc)      FMF.setApproxFunc();
 #endif
-#if HS_LLVM_VERSION >= 500
+#if HS_LLVM_VERSION >= 700
   if (Flags & FastMathFlags::AllowContract)   FMF.setAllowContract();
 #endif
   if (Flags & FastMathFlags::UnsafeAlgebra)   FMF.setUnsafeAlgebra();

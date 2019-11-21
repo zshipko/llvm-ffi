@@ -276,7 +276,6 @@ module LLVM.FFI.Core
     , setHasNoSignedZeros
     , setHasAllowReciprocal
     , setHasAllowReassoc
-    , setHasAllowContract
     , setHasApproxFunc
 
     -- ** Support operations and types
@@ -1657,8 +1656,6 @@ foreign import ccall unsafe "LLVMSetHasNoSignedZeros" setHasNoSignedZeros
 foreign import ccall unsafe "LLVMSetHasAllowReciprocal" setHasAllowReciprocal
     :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasAllowReassoc" setHasAllowReassoc
-    :: ValueRef -> LLVM.Bool -> IO ()
-foreign import ccall unsafe "LLVMSetHasAllowContract" setHasAllowContract
     :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasApproxFunc" setHasApproxFunc
     :: ValueRef -> LLVM.Bool -> IO ()
