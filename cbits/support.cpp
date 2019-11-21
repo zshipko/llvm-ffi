@@ -10,6 +10,7 @@
 
 #include "llvm-c/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
+#include "llvm/IR/Instruction.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Operator.h"
@@ -148,12 +149,43 @@ void LLVMSetHasNoSignedZeros(LLVMValueRef Instr, LLVMBool B) {
 void LLVMSetHasAllowReciprocal(LLVMValueRef Instr, LLVMBool B) {
   (unwrap<Instruction>(Instr))->setHasAllowReciprocal(B);
 }
+void LLVMSetHasAllowReassoc(LLVMValueRef Instr, LLVMBool B) {
+#if HS_LLVM_VERSION >= 600
+  (unwrap<Instruction>(Instr))->setHasAllowReassoc(B);
+#endif
+}
+void LLVMSetHasAllowContract(LLVMValueRef Instr, LLVMBool B) {
+#if HS_LLVM_VERSION >= 500
+  (unwrap<Instruction>(Instr))->setHasAllowContract(B);
+#endif
+}
+void LLVMSetHasApproxFunc(LLVMValueRef Instr, LLVMBool B) {
+#if HS_LLVM_VERSION >= 600
+  (unwrap<Instruction>(Instr))->setHasApproxFunc(B);
+#endif
+}
+/*
+void LLVMSetFast(LLVMValueRef Instr, LLVMBool B) {
+//  (unwrap<Instruction>(Instr))->setFast(B);
+  FastMathFlags FMF;
+  FMF.setFast(B);
+  (unwrap<Instruction>(Instr))->setFastMathFlags(FMF);
+//  (unwrap<Instruction>(Instr))->setFastMathFlags(-1);
+}
+*/
 void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags) {
   FastMathFlags FMF;
   if (Flags & FastMathFlags::NoNaNs)          FMF.setNoNaNs();
   if (Flags & FastMathFlags::NoInfs)          FMF.setNoInfs();
   if (Flags & FastMathFlags::NoSignedZeros)   FMF.setNoSignedZeros();
   if (Flags & FastMathFlags::AllowReciprocal) FMF.setAllowReciprocal();
+#if HS_LLVM_VERSION >= 600
+  if (Flags & FastMathFlags::AllowReassoc)    FMF.setAllowReassoc();
+  if (Flags & FastMathFlags::ApproxFunc)      FMF.setApproxFunc();
+#endif
+#if HS_LLVM_VERSION >= 500
+  if (Flags & FastMathFlags::AllowContract)   FMF.setAllowContract();
+#endif
   if (Flags & FastMathFlags::UnsafeAlgebra)   FMF.setUnsafeAlgebra();
   (unwrap<Instruction>(Instr))->setFastMathFlags(FMF);
 }

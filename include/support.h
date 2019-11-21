@@ -58,6 +58,9 @@ void LLVMSetHasNoNaNs(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasNoInfs(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasNoSignedZeros(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetHasAllowReciprocal(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasAllowReassoc(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasAllowContract(LLVMValueRef Instr, LLVMBool B);
+void LLVMSetHasApproxFunc(LLVMValueRef Instr, LLVMBool B);
 void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags);
 
 
