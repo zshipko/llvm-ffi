@@ -13,7 +13,7 @@ test:
 	make avx-test
 
 avx-test:
-	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 3.4 3.5 3.6 3.7 3.8))
+	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 3.4 3.5 3.6 3.7 3.8 3.9))
 
 test%:
 	runhaskell Setup clean
