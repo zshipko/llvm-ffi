@@ -10,6 +10,9 @@ test:
 	make test305
 	make test304
 
+	make avx-test
+
+avx-test:
 	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 3.4 3.5 3.6 3.7 3.8))
 
 test%:
