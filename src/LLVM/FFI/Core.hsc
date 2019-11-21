@@ -269,6 +269,7 @@ module LLVM.FFI.Core
     , blockAddress
 
     -- ** Floating point attributes
+    , setFastMath
     , setHasUnsafeAlgebra
     , setHasNoNaNs
     , setHasNoInfs
@@ -1643,6 +1644,8 @@ foreign import ccall unsafe "LLVMBuildNot" buildNot
     :: BuilderRef -> ValueRef -> CString -> IO ValueRef
 
 -- ** Floating point attributes
+foreign import ccall unsafe "LLVMSetHasUnsafeAlgebra" setFastMath
+    :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasUnsafeAlgebra" setHasUnsafeAlgebra
     :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasNoNaNs" setHasNoNaNs
