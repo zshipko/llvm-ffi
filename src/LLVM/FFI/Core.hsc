@@ -1641,15 +1641,15 @@ foreign import ccall unsafe "LLVMBuildNot" buildNot
 
 -- ** Floating point attributes
 foreign import ccall unsafe "LLVMSetHasUnsafeAlgebra" setHasUnsafeAlgebra
-    :: ValueRef -> CUInt{-Bool-} -> IO ()
+    :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasNoNaNs" setHasNoNaNs
-    :: ValueRef -> CUInt{-Bool-} -> IO ()
+    :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasNoInfs" setHasNoInfs
-    :: ValueRef -> CUInt{-Bool-} -> IO ()
+    :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasNoSignedZeros" setHasNoSignedZeros
-    :: ValueRef -> CUInt{-Bool-} -> IO ()
+    :: ValueRef -> LLVM.Bool -> IO ()
 foreign import ccall unsafe "LLVMSetHasAllowReciprocal" setHasAllowReciprocal
-    :: ValueRef -> CUInt{-Bool-} -> IO ()
+    :: ValueRef -> LLVM.Bool -> IO ()
 
 
 -- ** Memory

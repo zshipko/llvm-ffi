@@ -98,8 +98,7 @@ main = do
            void $ withCString "" $ Core.buildFAdd builder loaded loaded
            zero <- Core.constNull vectorType
            add <- withCString "" $ Core.buildFAdd builder loaded zero
-           let true = 1
-           Core.setHasNoSignedZeros add true
+           Core.setHasNoSignedZeros add Core.true
            return add
 
    void $ Core.buildStore builder callRound param
