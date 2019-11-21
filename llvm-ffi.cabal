@@ -145,7 +145,7 @@ Library
       If flag(specificPkgConfig)
         PkgConfig-Depends: llvm-3.4
       Else
-        PkgConfig-Depends: llvm == 3.4
+        PkgConfig-Depends: llvm == 3.4.*
     Else
       Extra-Libraries: LLVM-3.4
     CC-Options: -DHS_LLVM_VERSION=304
@@ -157,7 +157,7 @@ Library
         If flag(specificPkgConfig)
           PkgConfig-Depends: llvm-3.5
         Else
-          PkgConfig-Depends: llvm == 3.5
+          PkgConfig-Depends: llvm == 3.5.*
       Else
         Extra-Libraries: LLVM-3.5
       CC-Options: -DHS_LLVM_VERSION=305
@@ -169,7 +169,7 @@ Library
           If flag(specificPkgConfig)
             PkgConfig-Depends: llvm-3.6
           Else
-            PkgConfig-Depends: llvm == 3.6
+            PkgConfig-Depends: llvm == 3.6.*
         Else
           Extra-Libraries: LLVM-3.6
         CC-Options: -DHS_LLVM_VERSION=306
@@ -181,7 +181,7 @@ Library
             If flag(specificPkgConfig)
               PkgConfig-Depends: llvm-3.7
             Else
-              PkgConfig-Depends: llvm == 3.7
+              PkgConfig-Depends: llvm == 3.7.*
           Else
             Extra-Libraries: LLVM-3.7
           CC-Options: -DHS_LLVM_VERSION=307
@@ -193,7 +193,7 @@ Library
               If flag(specificPkgConfig)
                 PkgConfig-Depends: llvm-3.8
               Else
-                PkgConfig-Depends: llvm == 3.8
+                PkgConfig-Depends: llvm == 3.8.*
             Else
               Extra-Libraries: LLVM-3.8
             CC-Options: -DHS_LLVM_VERSION=308
@@ -204,7 +204,7 @@ Library
               If flag(specificPkgConfig)
                 PkgConfig-Depends: llvm-3.9
               Else
-                PkgConfig-Depends: llvm == 3.9
+                PkgConfig-Depends: llvm == 3.9.*
             Else
               Extra-Libraries: LLVM-3.9
             CC-Options: -DHS_LLVM_VERSION=309
