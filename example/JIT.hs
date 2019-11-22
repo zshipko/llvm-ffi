@@ -10,6 +10,7 @@ module Main where
 import qualified LLVM.FFI.Transforms.PassManagerBuilder as PMB
 import qualified LLVM.FFI.Transforms.Scalar as Transform
 import qualified LLVM.FFI.ExecutionEngine as EE
+import qualified LLVM.FFI.Support.Host as Host
 import qualified LLVM.FFI.BitWriter as BW
 import qualified LLVM.FFI.Core as Core
 import qualified LLVM.Target.Native as Native
@@ -53,6 +54,11 @@ foreign import ccall safe "dynamic" derefFuncPtr :: Importer (Ptr a -> IO ())
 main :: IO ()
 main = do
    Native.initializeNativeTarget
+
+   Alloc.alloca $ \lenPtr -> do
+      strPtr <- Host.getHostCPUName lenPtr
+      putStrLn =<<
+         curry CStr.peekCStringLen strPtr . fromIntegral =<< peek lenPtr
 
    modul <- withCString "_module" Core.moduleCreateWithName
    withCString Core.hostTriple $ Core.setTarget modul
