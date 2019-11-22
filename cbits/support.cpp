@@ -166,30 +166,3 @@ void LLVMSetHasApproxFunc(LLVMValueRef Instr, LLVMBool B) {
   (unwrap<Instruction>(Instr))->setHasApproxFunc(B);
 #endif
 }
-/*
-void LLVMSetFast(LLVMValueRef Instr, LLVMBool B) {
-//  (unwrap<Instruction>(Instr))->setFast(B);
-  FastMathFlags FMF;
-  FMF.setFast(B);
-  (unwrap<Instruction>(Instr))->setFastMathFlags(FMF);
-//  (unwrap<Instruction>(Instr))->setFastMathFlags(-1);
-}
-*/
-void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags) {
-  FastMathFlags FMF;
-  if (Flags & FastMathFlags::NoNaNs)          FMF.setNoNaNs();
-  if (Flags & FastMathFlags::NoInfs)          FMF.setNoInfs();
-  if (Flags & FastMathFlags::NoSignedZeros)   FMF.setNoSignedZeros();
-  if (Flags & FastMathFlags::AllowReciprocal) FMF.setAllowReciprocal();
-#if HS_LLVM_VERSION >= 600
-  if (Flags & FastMathFlags::AllowReassoc)    FMF.setAllowReassoc();
-  if (Flags & FastMathFlags::ApproxFunc)      FMF.setApproxFunc();
-#endif
-#if HS_LLVM_VERSION >= 700
-  if (Flags & FastMathFlags::AllowContract)   FMF.setAllowContract();
-#endif
-#if HS_LLVM_VERSION < 600
-  if (Flags & FastMathFlags::UnsafeAlgebra)   FMF.setUnsafeAlgebra();
-#endif
-  (unwrap<Instruction>(Instr))->setFastMathFlags(FMF);
-}
