@@ -188,6 +188,8 @@ void LLVMSetFastMathFlags(LLVMValueRef Instr, unsigned Flags) {
 #if HS_LLVM_VERSION >= 700
   if (Flags & FastMathFlags::AllowContract)   FMF.setAllowContract();
 #endif
+#if HS_LLVM_VERSION < 600
   if (Flags & FastMathFlags::UnsafeAlgebra)   FMF.setUnsafeAlgebra();
+#endif
   (unwrap<Instruction>(Instr))->setFastMathFlags(FMF);
 }
