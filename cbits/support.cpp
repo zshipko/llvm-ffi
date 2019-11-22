@@ -55,9 +55,9 @@ unsigned LLVMValueGetNumUses(LLVMValueRef value)
 }
 
 
-const char *LLVMGetHostCPUName(size_t &len) {
+const char *LLVMGetHostCPUName(size_t *len) {
   StringRef r = sys::getHostCPUName();
-  len = r.size();
+  *len = r.size();
   return r.data();
 }
 
