@@ -1,3 +1,5 @@
+#include "llvm-c/ExecutionEngine.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
