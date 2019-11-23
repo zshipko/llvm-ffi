@@ -55,11 +55,11 @@ unsigned LLVMValueGetNumUses(LLVMValueRef value)
 }
 
 
-const char *LLVMGetHostCPUName(size_t *len) {
-  StringRef r = sys::getHostCPUName();
-  *len = r.size();
-  return r.data();
+#if HS_LLVM_VERSION < 700
+char *LLVMGetHostCPUName(void) {
+  return strdup(sys::getHostCPUName().data());
 }
+#endif
 
 
 

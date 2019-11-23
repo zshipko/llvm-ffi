@@ -14,15 +14,13 @@ module LLVM.FFI.Support.Host (
     ) where
 
 import qualified LLVM.FFI.Core as LLVM
-import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr)
 
 import Data.Typeable (Typeable)
 
 
-foreign import ccall unsafe "LLVMGetHostCPUName" getHostCPUName
-    :: Ptr C.CSize -> IO CString
+foreign import ccall unsafe "LLVMGetHostCPUName" getHostCPUName :: IO CString
 
 
 data FeatureMap

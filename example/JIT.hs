@@ -55,10 +55,8 @@ main :: IO ()
 main = do
    Native.initializeNativeTarget
 
-   Alloc.alloca $ \lenPtr -> do
-      strPtr <- Host.getHostCPUName lenPtr
-      putStrLn =<<
-         curry CStr.peekCStringLen strPtr . fromIntegral =<< peek lenPtr
+   bracket Host.getHostCPUName Core.disposeMessage $ \strPtr ->
+      putStrLn =<< CStr.peekCString strPtr
 
    modul <- withCString "_module" Core.moduleCreateWithName
    withCString Core.hostTriple $ Core.setTarget modul
