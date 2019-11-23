@@ -4,6 +4,10 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
 module LLVM.FFI.Support.Host (
+    FeatureMap,
+    FeatureMapRef,
+    FeatureIterator,
+    FeatureIteratorRef,
     getHostCPUName,
     getHostFeatures,
     freeFeatures,
