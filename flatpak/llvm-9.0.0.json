@@ -1,0 +1,27 @@
+{
+    "cleanup": [
+        "/bin",
+        "/include",
+        "/lib/debug",
+        "/lib/libLLVM*.a",
+        "/lib/LLVMHello.so",
+        "/share"
+    ],
+    "sources": [
+        {
+            "url": "http://releases.llvm.org/9.0.0/llvm-9.0.0.src.tar.xz",
+            "type": "archive",
+            "sha256": "d6a0565cf21f22e9b4353b2eb92622e8365000a9e90a16b09b56f8157eabfe84"
+        }
+    ],
+    "config-opts": [
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DLLVM_ENABLE_ASSERTIONS=ON",
+        "-DLLVM_BUILD_TOOLS=OFF",
+        "-DLLVM_INCLUDE_EXAMPLES=OFF",
+        "-DLLVM_BUILD_LLVM_DYLIB=ON"
+    ],
+    "name": "llvm-9.0",
+    "buildsystem": "cmake",
+    "builddir": true
+}
