@@ -319,9 +319,8 @@ module LLVM.FFI.Core
     , addAlias
 
     -- * Parameter passing
-    , Attribute(..)
-    , fromAttribute
-    , toAttribute
+    , Attribute
+    , AttributeKind(..)
 
     -- ** Calling conventions
     , CallingConvention(..)
@@ -341,9 +340,34 @@ module LLVM.FFI.Core
     , setFunctionCallConv
     , getGC
     , setGC
-    , addFunctionAttr
-    , getFunctionAttr
-    , removeFunctionAttr
+    , AttributeIndex(AttributeIndex)
+    , attributeReturnIndex, attributeFunctionIndex
+    , getEnumAttributeKindForName
+    , getLastEnumAttributeKind
+    , createEnumAttribute
+    , getEnumAttributeKind
+    , getEnumAttributeValue
+    , createStringAttribute
+    , getStringAttributeKind
+    , getStringAttributeValue
+    , isEnumAttribute
+    , isStringAttribute
+    , addAttributeAtIndex
+    , getAttributeCountAtIndex
+    , getAttributesAtIndex
+    , getEnumAttributeAtIndex
+    , getStringAttributeAtIndex
+    , removeEnumAttributeAtIndex
+    , removeStringAttributeAtIndex
+    , addTargetDependentFunctionAttr
+    , addCallSiteAttribute
+    , getCallSiteAttributeCount
+    , getCallSiteAttributes
+    , getCallSiteEnumAttribute
+    , getCallSiteStringAttribute
+    , removeCallSiteEnumAttribute
+    , removeCallSiteStringAttribute
+    , getCalledValue
 
     -- ** Parameters
     , countParams
@@ -354,9 +378,6 @@ module LLVM.FFI.Core
     , getLastParam
     , getNextParam
     , getPreviousParam
-    , addAttribute
-    , removeAttribute
-    , getAttribute
     , setParamAlignment
 
     -- ** Basic blocks
@@ -396,8 +417,6 @@ module LLVM.FFI.Core
     -- ** Call Sites
     , getInstructionCallConv
     , setInstructionCallConv
-    , addInstrAttribute
-    , removeInstrAttribute
     , setInstrParamAlignment
 
     -- ** Call Instructions (only)
@@ -576,9 +595,11 @@ import Foreign.Ptr (Ptr, FunPtr)
 
 import Data.Typeable (Typeable)
 
+import Data.Word (Word32, Word64)
+
 import Prelude
          (IO, Eq, Ord, Int, Bounded, Enum, Show, Read, String,
-          ($), (++), (.), (==), error,
+          ($), (++), (.), error,
            fmap, fromIntegral, show, toEnum, )
 
 
@@ -631,6 +652,16 @@ type PassRegistryRef = Ptr PassRegistry
 data Context
     deriving (Typeable)
 type ContextRef = Ptr Context
+
+data Attribute
+    deriving (Typeable)
+type AttributeRef = Ptr Attribute
+
+newtype AttributeIndex = AttributeIndex (#type LLVMAttributeIndex)
+
+attributeReturnIndex, attributeFunctionIndex :: AttributeIndex
+attributeReturnIndex   = AttributeIndex (#const LLVMAttributeReturnIndex)
+attributeFunctionIndex = AttributeIndex (#const LLVMAttributeFunctionIndex)
 
 
 defaultTargetTriple, hostTriple :: String
@@ -775,79 +806,7 @@ toVisibility c =
         (#const LLVMProtectedVisibility) -> ProtectedVisibility
         _ -> error "toVisibility: bad value"
 
-data Attribute
-    = ZExtAttribute
-    | SExtAttribute
-    | NoReturnAttribute
-    | InRegAttribute
-    | StructRetAttribute
-    | NoUnwindAttribute
-    | NoAliasAttribute
-    | ByValAttribute
-    | NestAttribute
-    | ReadNoneAttribute
-    | ReadOnlyAttribute
-    | NoInlineAttribute
-    | AlwaysInlineAttribute
-    | OptimizeForSizeAttribute
-    | StackProtectAttribute
-    | StackProtectReqAttribute
-    | NoCaptureAttribute
-    | NoRedZoneAttribute
-    | NoImplicitFloatAttribute
-    | NakedAttribute
-    deriving (Show, Eq, Ord, Enum, Bounded, Typeable)
-
-fromAttribute :: Attribute -> CAttribute
-fromAttribute c =
-    case c of
-        ZExtAttribute -> (#const LLVMZExtAttribute)
-        SExtAttribute -> (#const LLVMSExtAttribute)
-        NoReturnAttribute -> (#const LLVMNoReturnAttribute)
-        InRegAttribute -> (#const LLVMInRegAttribute)
-        StructRetAttribute -> (#const LLVMStructRetAttribute)
-        NoUnwindAttribute -> (#const LLVMNoUnwindAttribute)
-        NoAliasAttribute -> (#const LLVMNoAliasAttribute)
-        ByValAttribute -> (#const LLVMByValAttribute)
-        NestAttribute -> (#const LLVMNestAttribute)
-        ReadNoneAttribute -> (#const LLVMReadNoneAttribute)
-        ReadOnlyAttribute -> (#const LLVMReadOnlyAttribute)
-        NoInlineAttribute -> (#const LLVMNoInlineAttribute)
-        AlwaysInlineAttribute -> (#const LLVMAlwaysInlineAttribute)
-        OptimizeForSizeAttribute -> (#const LLVMOptimizeForSizeAttribute)
-        StackProtectAttribute -> (#const LLVMStackProtectAttribute)
-        StackProtectReqAttribute -> (#const LLVMStackProtectReqAttribute)
-        NoCaptureAttribute -> (#const LLVMNoCaptureAttribute)
-        NoRedZoneAttribute -> (#const LLVMNoRedZoneAttribute)
-        NoImplicitFloatAttribute -> (#const LLVMNoImplicitFloatAttribute)
-        NakedAttribute -> (#const LLVMNakedAttribute)
-
-toAttribute :: CAttribute -> Attribute
-toAttribute c =
-    case c of
-        (#const LLVMZExtAttribute) -> ZExtAttribute
-        (#const LLVMSExtAttribute) -> SExtAttribute
-        (#const LLVMNoReturnAttribute) -> NoReturnAttribute
-        (#const LLVMInRegAttribute) -> InRegAttribute
-        (#const LLVMStructRetAttribute) -> StructRetAttribute
-        (#const LLVMNoUnwindAttribute) -> NoUnwindAttribute
-        (#const LLVMNoAliasAttribute) -> NoAliasAttribute
-        (#const LLVMByValAttribute) -> ByValAttribute
-        (#const LLVMNestAttribute) -> NestAttribute
-        (#const LLVMReadNoneAttribute) -> ReadNoneAttribute
-        (#const LLVMReadOnlyAttribute) -> ReadOnlyAttribute
-        (#const LLVMNoInlineAttribute) -> NoInlineAttribute
-        (#const LLVMAlwaysInlineAttribute) -> AlwaysInlineAttribute
-        (#const LLVMOptimizeForSizeAttribute) -> OptimizeForSizeAttribute
-        (#const LLVMStackProtectAttribute) -> StackProtectAttribute
-        (#const LLVMStackProtectReqAttribute) -> StackProtectReqAttribute
-        (#const LLVMNoCaptureAttribute) -> NoCaptureAttribute
-        (#const LLVMNoRedZoneAttribute) -> NoRedZoneAttribute
-        (#const LLVMNoImplicitFloatAttribute) -> NoImplicitFloatAttribute
-        (#const LLVMNakedAttribute) -> NakedAttribute
-        _ -> error "toAttribute: bad value"
-
-type CAttribute = CInt
+newtype AttributeKind = AttributeKind CUInt
 
 -- ** Initialization
 foreign import ccall unsafe "LLVMInitializeCore" initializeCore
@@ -869,6 +828,37 @@ foreign import ccall unsafe "LLVMGetMDKindIDInContext" getMDKindIDInContext
 foreign import ccall unsafe "LLVMGetMDKindID" getMDKindID
     :: CString -> CUInt -> IO CUInt
 
+-- ** Attributes
+
+foreign import ccall unsafe "LLVMGetEnumAttributeKindForName" getEnumAttributeKindForName
+    :: CString -> C.CSize -> IO AttributeKind
+
+foreign import ccall unsafe "LLVMGetLastEnumAttributeKind" getLastEnumAttributeKind
+    :: IO AttributeKind
+
+foreign import ccall unsafe "LLVMCreateEnumAttribute" createEnumAttribute
+    :: ContextRef -> AttributeKind -> Word64 -> IO AttributeRef
+
+foreign import ccall unsafe "LLVMGetEnumAttributeKind" getEnumAttributeKind
+    :: AttributeRef -> IO AttributeKind
+
+foreign import ccall unsafe "LLVMGetEnumAttributeValue" getEnumAttributeValue
+    :: AttributeRef -> IO Word64
+
+foreign import ccall unsafe "LLVMCreateStringAttribute" createStringAttribute
+    :: ContextRef -> CString -> CUInt -> CString -> CUInt -> IO AttributeRef
+
+foreign import ccall unsafe "LLVMGetStringAttributeKind" getStringAttributeKind
+    :: AttributeRef -> Ptr CUInt -> IO CString
+
+foreign import ccall unsafe "LLVMGetStringAttributeValue" getStringAttributeValue
+    :: AttributeRef -> Ptr CUInt -> IO CString
+
+foreign import ccall unsafe "LLVMIsEnumAttribute" isEnumAttribute
+    :: AttributeRef -> IO LLVM.Bool
+
+foreign import ccall unsafe "LLVMIsStringAttribute" isStringAttribute
+    :: AttributeRef -> IO LLVM.Bool
 
 -- ** Modules
 foreign import ccall unsafe "LLVMModuleCreateWithName" moduleCreateWithName
@@ -1368,12 +1358,32 @@ foreign import ccall unsafe "LLVMGetGC" getGC
     :: ValueRef -> IO CString
 foreign import ccall unsafe "LLVMSetGC" setGC
     :: ValueRef -> CString -> IO ()
-foreign import ccall unsafe "LLVMGetFunctionAttr" getFunctionAttr
-    :: ValueRef -> IO CUInt {-Attribute-}
-foreign import ccall unsafe "LLVMAddFunctionAttr" addFunctionAttr
-    :: ValueRef -> CAttribute -> IO ()
-foreign import ccall unsafe "LLVMRemoveFunctionAttr" removeFunctionAttr
-    :: ValueRef -> CAttribute -> IO ()
+
+-- ** Attribute attachment
+
+foreign import ccall unsafe "LLVMAddAttributeAtIndex" addAttributeAtIndex
+    :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
+
+foreign import ccall unsafe "LLVMGetAttributeCountAtIndex" getAttributeCountAtIndex
+    :: ValueRef -> AttributeIndex -> IO CUInt
+
+foreign import ccall unsafe "LLVMGetAttributesAtIndex" getAttributesAtIndex
+    :: ValueRef -> AttributeIndex -> (Ptr AttributeRef) -> IO ()
+
+foreign import ccall unsafe "LLVMGetEnumAttributeAtIndex" getEnumAttributeAtIndex
+    :: ValueRef -> AttributeIndex -> CUInt -> IO AttributeRef
+
+foreign import ccall unsafe "LLVMGetStringAttributeAtIndex" getStringAttributeAtIndex
+    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
+
+foreign import ccall unsafe "LLVMRemoveEnumAttributeAtIndex" removeEnumAttributeAtIndex
+    :: ValueRef -> AttributeIndex -> CUInt -> IO ()
+
+foreign import ccall unsafe "LLVMRemoveStringAttributeAtIndex" removeStringAttributeAtIndex
+    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
+
+foreign import ccall unsafe "LLVMAddTargetDependentFunctionAttr" addTargetDependentFunctionAttr
+    :: ValueRef -> CString -> CString -> IO ()
 
 -- ** Parameters
 foreign import ccall unsafe "LLVMCountParams" countParams
@@ -1397,12 +1407,6 @@ foreign import ccall unsafe "LLVMGetNextParam" getNextParam
     :: ValueRef -> IO ValueRef
 foreign import ccall unsafe "LLVMGetPreviousParam" getPreviousParam
     :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMAddAttribute" addAttribute
-    :: ValueRef -> CAttribute -> IO ()
-foreign import ccall unsafe "LLVMRemoveAttribute" removeAttribute
-    :: ValueRef -> CAttribute -> IO ()
-foreign import ccall unsafe "LLVMGetAttribute" getAttribute
-    :: ValueRef -> IO CUInt{-Attribute-}
 foreign import ccall unsafe "LLVMSetParamAlignment" setParamAlignment
     :: ValueRef -> CUInt -> IO ()
 
@@ -1480,12 +1484,32 @@ foreign import ccall unsafe "LLVMSetInstructionCallConv" setInstructionCallConv
     :: ValueRef -> CUInt -> IO ()
 foreign import ccall unsafe "LLVMGetInstructionCallConv" getInstructionCallConv
     :: ValueRef -> IO CUInt
-foreign import ccall unsafe "LLVMAddInstrAttribute" addInstrAttribute
-    :: ValueRef -> CUInt -> CAttribute -> IO ()
-foreign import ccall unsafe "LLVMRemoveInstrAttribute" removeInstrAttribute
-    :: ValueRef -> CUInt -> CAttribute -> IO ()
 foreign import ccall unsafe "LLVMSetInstrParamAlignment" setInstrParamAlignment
     :: ValueRef -> CUInt -> CUInt -> IO ()
+
+foreign import ccall unsafe "LLVMAddCallSiteAttribute" addCallSiteAttribute
+    :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
+
+foreign import ccall unsafe "LLVMGetCallSiteAttributeCount" getCallSiteAttributeCount
+    :: ValueRef -> AttributeIndex -> IO CUInt
+
+foreign import ccall unsafe "LLVMGetCallSiteAttributes" getCallSiteAttributes
+    :: ValueRef -> AttributeIndex -> (Ptr AttributeRef) -> IO ()
+
+foreign import ccall unsafe "LLVMGetCallSiteEnumAttribute" getCallSiteEnumAttribute
+    :: ValueRef -> AttributeIndex -> CUInt -> IO AttributeRef
+
+foreign import ccall unsafe "LLVMGetCallSiteStringAttribute" getCallSiteStringAttribute
+    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
+
+foreign import ccall unsafe "LLVMRemoveCallSiteEnumAttribute" removeCallSiteEnumAttribute
+    :: ValueRef -> AttributeIndex -> CUInt -> IO ()
+
+foreign import ccall unsafe "LLVMRemoveCallSiteStringAttribute" removeCallSiteStringAttribute
+    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
+
+foreign import ccall unsafe "LLVMGetCalledValue" getCalledValue
+    :: ValueRef -> IO ValueRef
 
 -- ** Call instructions
 foreign import ccall unsafe "LLVMIsTailCall" isTailCall

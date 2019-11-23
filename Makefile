@@ -4,16 +4,18 @@ test:
 	runhaskell Setup haddock
 	./dist/build/llvm-ffi-example/llvm-ffi-example
 
-	make test308
-	make test307
-	make test306
-	make test305
-	make test304
+	make test800
+	make test700
+	make test600
+	make test500
+	make test400
+	make test309
 
 	make avx-test
 
+# llvm-config-7 --cxxflags lacks the "-std=c++11" option and thus compilation fails
 avx-test:
-	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 3.4 3.5 3.6 3.7 3.8 3.9))
+	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 3.9 4.0 5.0 6.0 8 9))
 
 test%:
 	runhaskell Setup clean

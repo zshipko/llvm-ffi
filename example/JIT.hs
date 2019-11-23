@@ -26,6 +26,8 @@ import Foreign.Ptr (Ptr, FunPtr)
 import Control.Exception (bracket, bracket_, finally)
 import Control.Monad (when, void)
 
+import Data.Tuple.HT (mapSnd)
+
 import qualified System.Exit as Exit
 import Text.Printf (printf)
 
@@ -96,7 +98,12 @@ main = do
                withCString "" $ Core.buildCall builder roundFunc ps len
             Core.setInstructionCallConv call $
                Core.fromCallingConvention Core.C
-            Core.addInstrAttribute call 0 0
+            context <- Core.getGlobalContext
+            attrKind <-
+               CStr.withCStringLen "readnone" $
+                  uncurry Core.getEnumAttributeKindForName . mapSnd fromIntegral
+            attr <- Core.createEnumAttribute context attrKind 0
+            Core.addCallSiteAttribute call Core.attributeFunctionIndex attr
             return call
         else do
            void $ withCString "" $ Core.buildFAdd builder loaded loaded

@@ -135,7 +135,11 @@ LLVMBool LLVMCreateExecutionEngineKindForModuleCPU
 
 
 void LLVMSetHasUnsafeAlgebra(LLVMValueRef Instr, LLVMBool B) {
+#if HS_LLVM_VERSION < 600
   (unwrap<Instruction>(Instr))->setHasUnsafeAlgebra(B);
+#else
+  (unwrap<Instruction>(Instr))->setFast(B);
+#endif
 }
 void LLVMSetHasNoNaNs(LLVMValueRef Instr, LLVMBool B) {
   (unwrap<Instruction>(Instr))->setHasNoNaNs(B);

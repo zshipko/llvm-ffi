@@ -71,7 +71,6 @@ int main ()
   LLVMValueRef callParams [] = { loaded, const1 } ;
   callRound = LLVMBuildCall(builder, roundFunc, callParams, 2, "");
   LLVMSetInstructionCallConv(callRound, LLVMCCallConv);
-  LLVMAddInstrAttribute(callRound, 0, 0);
 #else
   const int true = 1;
   LLVMBuildFAdd(builder, loaded, loaded, "");
