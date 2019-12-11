@@ -89,14 +89,14 @@ module LLVM.FFI.Core
     , floatTypeInContext
     , doubleTypeInContext
     , x86FP80TypeInContext
-    , fP128TypeInContext
-    , pPCFP128TypeInContext
+    , fp128TypeInContext
+    , ppcFP128TypeInContext
 
     , floatType
     , doubleType
     , x86FP80Type
-    , fP128Type
-    , pPCFP128Type
+    , fp128Type
+    , ppcFP128Type
 
     -- ** Function types
     , functionType
@@ -949,16 +949,16 @@ foreign import ccall unsafe "LLVMDoubleTypeInContext" doubleTypeInContext
     :: ContextRef -> IO TypeRef
 foreign import ccall unsafe "LLVMX86FP80TypeInContext" x86FP80TypeInContext
     :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMFP128TypeInContext" fP128TypeInContext
+foreign import ccall unsafe "LLVMFP128TypeInContext" fp128TypeInContext
     :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMPPCFP128TypeInContext" pPCFP128TypeInContext
+foreign import ccall unsafe "LLVMPPCFP128TypeInContext" ppcFP128TypeInContext
     :: ContextRef -> IO TypeRef
 
 foreign import ccall unsafe "LLVMFloatType" floatType :: IO TypeRef
 foreign import ccall unsafe "LLVMDoubleType" doubleType :: IO TypeRef
 foreign import ccall unsafe "LLVMX86FP80Type" x86FP80Type :: IO TypeRef
-foreign import ccall unsafe "LLVMFP128Type" fP128Type :: IO TypeRef
-foreign import ccall unsafe "LLVMPPCFP128Type" pPCFP128Type :: IO TypeRef
+foreign import ccall unsafe "LLVMFP128Type" fp128Type :: IO TypeRef
+foreign import ccall unsafe "LLVMPPCFP128Type" ppcFP128Type :: IO TypeRef
 
 -- ** Function types
 -- | Create a function type.
