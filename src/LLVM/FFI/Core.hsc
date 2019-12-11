@@ -988,7 +988,7 @@ foreign import ccall unsafe "LLVMGetParamTypes" getParamTypes
 
 -- ** Struct Type
 foreign import ccall unsafe "LLVMStructTypeInContext" structTypeInContext
-    :: ContextRef -> (Ptr TypeRef) -> CUInt -> LLVM.Bool -> IO TypeRef
+    :: ContextRef -> Ptr TypeRef -> CUInt -> LLVM.Bool -> IO TypeRef
 foreign import ccall unsafe "LLVMStructType" structType
     :: Ptr TypeRef -> CUInt -> LLVM.Bool -> IO TypeRef
 foreign import ccall unsafe "LLVMStructCreateNamed" structCreateNamed
@@ -1105,14 +1105,14 @@ foreign import ccall unsafe "LLVMMDStringInContext" mDStringInContext
 foreign import ccall unsafe "LLVMMDString" mDString
     :: CString -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMMDNodeInContext" mDNodeInContext
-    :: ContextRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
+    :: ContextRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMMDNode" mDNode
-    :: (Ptr ValueRef) -> CUInt -> IO ValueRef
+    :: Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMGetMDString" getMDString
     :: ValueRef -> Ptr CUInt -> IO CString
 {-
 foreign import ccall unsafe "LLVMGetMDNodeNumOperands" getMDNodeNumOperands
-    :: ValueRef -> IO (CInt)
+    :: ValueRef -> IO CInt
 foreign import ccall unsafe "LLVMGetMDNodeOperand" getMDNodeOperand
     :: ValueRef -> CUInt -> IO (Ptr ValueRef)
 -}
@@ -1145,7 +1145,7 @@ foreign import ccall unsafe "LLVMConstIntGetSExtValue" constIntGetSExtValue
 foreign import ccall unsafe "LLVMConstStringInContext" constStringInContext
     :: ContextRef -> CString -> CUInt -> LLVM.Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstStructInContext" constStructInContext
-    :: ContextRef -> (Ptr ValueRef) -> CUInt -> LLVM.Bool -> IO ValueRef
+    :: ContextRef -> Ptr ValueRef -> CUInt -> LLVM.Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstString" constString
     :: CString -> CUInt -> LLVM.Bool -> IO ValueRef
 foreign import ccall unsafe "LLVMConstArray" constArray
@@ -1231,7 +1231,7 @@ foreign import ccall unsafe "LLVMConstAShr" constAShr
 foreign import ccall unsafe "LLVMConstGEP" constGEP
     :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstInBoundsGEP" constInBoundsGEP
-    :: ValueRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
+    :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMConstTrunc" constTrunc
     :: ValueRef -> TypeRef -> IO ValueRef
 foreign import ccall unsafe "LLVMConstSExt" constSExt
@@ -1368,7 +1368,7 @@ foreign import ccall unsafe "LLVMGetAttributeCountAtIndex" getAttributeCountAtIn
     :: ValueRef -> AttributeIndex -> IO CUInt
 
 foreign import ccall unsafe "LLVMGetAttributesAtIndex" getAttributesAtIndex
-    :: ValueRef -> AttributeIndex -> (Ptr AttributeRef) -> IO ()
+    :: ValueRef -> AttributeIndex -> Ptr AttributeRef -> IO ()
 
 foreign import ccall unsafe "LLVMGetEnumAttributeAtIndex" getEnumAttributeAtIndex
     :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
@@ -1494,7 +1494,7 @@ foreign import ccall unsafe "LLVMGetCallSiteAttributeCount" getCallSiteAttribute
     :: ValueRef -> AttributeIndex -> IO CUInt
 
 foreign import ccall unsafe "LLVMGetCallSiteAttributes" getCallSiteAttributes
-    :: ValueRef -> AttributeIndex -> (Ptr AttributeRef) -> IO ()
+    :: ValueRef -> AttributeIndex -> Ptr AttributeRef -> IO ()
 
 foreign import ccall unsafe "LLVMGetCallSiteEnumAttribute" getCallSiteEnumAttribute
     :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
@@ -1567,7 +1567,7 @@ foreign import ccall unsafe "LLVMBuildRetVoid" buildRetVoid
 foreign import ccall unsafe "LLVMBuildRet" buildRet
     :: BuilderRef -> ValueRef -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildAggregateRet" buildAggregateRet
-    :: BuilderRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
+    :: BuilderRef -> Ptr ValueRef -> CUInt -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildBr" buildBr
     :: BuilderRef -> BasicBlockRef -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildCondBr" buildCondBr
@@ -1704,7 +1704,7 @@ foreign import ccall unsafe "LLVMBuildGEP" buildGEP
     :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString
     -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildInBoundsGEP" buildInBoundsGEP
-    :: BuilderRef -> ValueRef -> (Ptr ValueRef) -> CUInt -> CString -> IO ValueRef
+    :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildStructGEP" buildStructGEP
     :: BuilderRef -> ValueRef -> CUInt -> CString -> IO ValueRef
 foreign import ccall unsafe "LLVMBuildGlobalString" buildGlobalString
