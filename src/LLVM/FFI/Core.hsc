@@ -1371,13 +1371,13 @@ foreign import ccall unsafe "LLVMGetAttributesAtIndex" getAttributesAtIndex
     :: ValueRef -> AttributeIndex -> (Ptr AttributeRef) -> IO ()
 
 foreign import ccall unsafe "LLVMGetEnumAttributeAtIndex" getEnumAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> CUInt -> IO AttributeRef
+    :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
 
 foreign import ccall unsafe "LLVMGetStringAttributeAtIndex" getStringAttributeAtIndex
     :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
 
 foreign import ccall unsafe "LLVMRemoveEnumAttributeAtIndex" removeEnumAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> CUInt -> IO ()
+    :: ValueRef -> AttributeIndex -> AttributeKind -> IO ()
 
 foreign import ccall unsafe "LLVMRemoveStringAttributeAtIndex" removeStringAttributeAtIndex
     :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
@@ -1497,13 +1497,13 @@ foreign import ccall unsafe "LLVMGetCallSiteAttributes" getCallSiteAttributes
     :: ValueRef -> AttributeIndex -> (Ptr AttributeRef) -> IO ()
 
 foreign import ccall unsafe "LLVMGetCallSiteEnumAttribute" getCallSiteEnumAttribute
-    :: ValueRef -> AttributeIndex -> CUInt -> IO AttributeRef
+    :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
 
 foreign import ccall unsafe "LLVMGetCallSiteStringAttribute" getCallSiteStringAttribute
     :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
 
 foreign import ccall unsafe "LLVMRemoveCallSiteEnumAttribute" removeCallSiteEnumAttribute
-    :: ValueRef -> AttributeIndex -> CUInt -> IO ()
+    :: ValueRef -> AttributeIndex -> AttributeKind -> IO ()
 
 foreign import ccall unsafe "LLVMRemoveCallSiteStringAttribute" removeCallSiteStringAttribute
     :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
