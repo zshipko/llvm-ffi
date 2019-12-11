@@ -123,6 +123,7 @@ Library
       LLVM.FFI.BitReader
       LLVM.FFI.BitWriter
       LLVM.FFI.Core
+      LLVM.FFI.Core.Attribute
       LLVM.FFI.ExecutionEngine
       LLVM.FFI.Support.Host
       LLVM.FFI.Target
