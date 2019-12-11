@@ -386,6 +386,7 @@ module LLVM.FFI.Core
     , basicBlockAsValue
     , valueIsBasicBlock
     , valueAsBasicBlock
+    , getBasicBlockName
     , getBasicBlockParent
     , getBasicBlockTerminator
     , countBasicBlocks
@@ -1419,6 +1420,8 @@ foreign import ccall unsafe "LLVMValueIsBasicBlock" valueIsBasicBlock
 foreign import ccall unsafe "LLVMValueAsBasicBlock" valueAsBasicBlock
     :: ValueRef                 -- ^ basic block
     -> IO BasicBlockRef
+foreign import ccall unsafe "LLVMGetBasicBlockName" getBasicBlockName
+    :: BasicBlockRef -> IO CString
 foreign import ccall unsafe "LLVMGetBasicBlockParent" getBasicBlockParent
     :: BasicBlockRef -> IO ValueRef
 foreign import ccall unsafe "LLVMGetBasicBlockTerminator" getBasicBlockTerminator
