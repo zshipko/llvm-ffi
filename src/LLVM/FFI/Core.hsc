@@ -622,7 +622,8 @@ data Type
     deriving (Typeable)
 type TypeRef = Ptr Type
 
-type BasicBlock = Value
+data BasicBlock
+    deriving (Typeable)
 type BasicBlockRef = Ptr BasicBlock
 
 data Value
@@ -1523,7 +1524,7 @@ foreign import ccall unsafe "LLVMGetSwitchDefaultDest" getSwitchDefaultDest
 
 -- ** Phi Nodes
 foreign import ccall unsafe "LLVMAddIncoming" addIncoming
-    :: ValueRef -> Ptr ValueRef -> Ptr ValueRef -> CUInt -> IO ()
+    :: ValueRef -> Ptr ValueRef -> Ptr BasicBlockRef -> CUInt -> IO ()
 foreign import ccall unsafe "LLVMCountIncoming" countIncoming
     :: ValueRef -> IO CUInt
 foreign import ccall unsafe "LLVMGetIncomingValue" getIncomingValue
