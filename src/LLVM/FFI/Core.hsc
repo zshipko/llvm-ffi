@@ -17,6 +17,7 @@
 module LLVM.FFI.Core
     (
       initializeCore
+    , Version.version
 
     -- * Boolean values
     , LLVM.Bool(LLVM.Bool)
@@ -588,6 +589,7 @@ module LLVM.FFI.Core
 
     ) where
 
+import qualified LLVM.FFI.Version as Version
 import qualified LLVM.FFI.Base as LLVM
 
 import qualified Foreign.C.Types as C
