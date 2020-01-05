@@ -810,8 +810,6 @@ toVisibility c =
         (#const LLVMProtectedVisibility) -> ProtectedVisibility
         _ -> error "toVisibility: bad value"
 
-newtype AttributeKind = AttributeKind CUInt
-
 -- ** Initialization
 foreign import ccall unsafe "LLVMInitializeCore" initializeCore
     :: PassRegistryRef -> IO ()
@@ -833,6 +831,8 @@ foreign import ccall unsafe "LLVMGetMDKindID" getMDKindID
     :: CString -> CUInt -> IO CUInt
 
 -- ** Attributes
+
+newtype AttributeKind = AttributeKind CUInt
 
 foreign import ccall unsafe "LLVMGetEnumAttributeKindForName" getEnumAttributeKindForName
     :: CString -> C.CSize -> IO AttributeKind
