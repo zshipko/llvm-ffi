@@ -146,6 +146,7 @@ Library
       LLVM.Target.Sparc
       LLVM.Target.X86
       LLVM.Target.XCore
+      LLVM.Raw.Core
 
   If flag(llvm309)
     If flag(pkgConfig)
@@ -155,6 +156,7 @@ Library
         PkgConfig-Depends: llvm == 3.9.*
     Else
       Extra-Libraries: LLVM-3.9
+    Hs-Source-Dirs: src/3.9
     CC-Options: -DHS_LLVM_VERSION=309
     Cxx-Options: -DHS_LLVM_VERSION=309
     CPP-Options: -DHS_LLVM_VERSION=309
@@ -167,6 +169,7 @@ Library
           PkgConfig-Depends: llvm == 4.0.*
       Else
         Extra-Libraries: LLVM-4.0
+      Hs-Source-Dirs: src/4.0
       CC-Options: -DHS_LLVM_VERSION=400
       Cxx-Options: -DHS_LLVM_VERSION=400
       CPP-Options: -DHS_LLVM_VERSION=400
@@ -179,6 +182,7 @@ Library
             PkgConfig-Depends: llvm == 5.0.*
         Else
           Extra-Libraries: LLVM-5.0
+        Hs-Source-Dirs: src/5.0
         CC-Options: -DHS_LLVM_VERSION=500
         Cxx-Options: -DHS_LLVM_VERSION=500
         CPP-Options: -DHS_LLVM_VERSION=500
@@ -191,6 +195,7 @@ Library
               PkgConfig-Depends: llvm == 6.0.*
           Else
             Extra-Libraries: LLVM-6.0
+          Hs-Source-Dirs: src/6.0
           CC-Options: -DHS_LLVM_VERSION=600
           Cxx-Options: -DHS_LLVM_VERSION=600
           CPP-Options: -DHS_LLVM_VERSION=600
@@ -203,6 +208,7 @@ Library
                 PkgConfig-Depends: llvm == 7.*
             Else
               Extra-Libraries: LLVM-7
+            Hs-Source-Dirs: src/7
             CC-Options: -DHS_LLVM_VERSION=700
             Cxx-Options: -DHS_LLVM_VERSION=700
             CPP-Options: -DHS_LLVM_VERSION=700
@@ -215,6 +221,7 @@ Library
                   PkgConfig-Depends: llvm == 8.*
               Else
                 Extra-Libraries: LLVM-8
+              Hs-Source-Dirs: src/8
               CC-Options: -DHS_LLVM_VERSION=800
               Cxx-Options: -DHS_LLVM_VERSION=800
               CPP-Options: -DHS_LLVM_VERSION=800
@@ -226,6 +233,7 @@ Library
                   PkgConfig-Depends: llvm == 9.*
               Else
                 Extra-Libraries: LLVM-9
+              Hs-Source-Dirs: src/9
               CC-Options: -DHS_LLVM_VERSION=900
               Cxx-Options: -DHS_LLVM_VERSION=900
               CPP-Options: -DHS_LLVM_VERSION=900

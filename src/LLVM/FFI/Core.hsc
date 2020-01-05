@@ -4,7 +4,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
 -- |
--- Module:      LLVM.FFI.Core
+-- Raw.Module:      LLVM.FFI.Core
 -- Copyright:   Bryan O'Sullivan 2007, 2008
 -- License:     BSD-style (see the file LICENSE)
 --
@@ -29,8 +29,8 @@ module LLVM.FFI.Core
     -- * Error handling
     , disposeMessage
 
-    -- * Context functions
-    , Context
+    -- * Raw.Context functions
+    , Raw.Context
     , ContextRef
     , contextCreate
     , contextDispose
@@ -40,7 +40,7 @@ module LLVM.FFI.Core
     , getMDKindIDInContext
 
       -- * Modules
-    , Module
+    , Raw.Module
     , ModuleRef
     , moduleCreateWithName
     , moduleCreateWithNameInContext
@@ -62,7 +62,7 @@ module LLVM.FFI.Core
     , getModuleContext
 
     -- * Types
-    , Type
+    , Raw.Type
     , TypeRef
     , TypeKind(..)
 
@@ -140,7 +140,7 @@ module LLVM.FFI.Core
     , x86MMXType
 
     -- * Values
-    , Value
+    , Raw.Value
     , ValueRef
     , typeOf
     , getValueName
@@ -152,7 +152,7 @@ module LLVM.FFI.Core
     , setMetadata
 
     -- ** Uses
-    , OpaqueUse
+    , Raw.OpaqueUse
     , UseRef
     , getFirstUse
     , getNextUse
@@ -269,6 +269,14 @@ module LLVM.FFI.Core
     , constInlineAsm
     , blockAddress
 
+    -- ** Comparison predicates
+    , IntPredicate(..)
+    , fromIntPredicate
+    , toIntPredicate
+    , FPPredicate(..)
+    , fromRealPredicate
+    , toRealPredicate
+
     -- ** Floating point attributes
     , setFastMath
     , setHasUnsafeAlgebra
@@ -320,7 +328,8 @@ module LLVM.FFI.Core
     , addAlias
 
     -- * Parameter passing
-    , Attribute
+    , Raw.Attribute
+    , AttributeRef
     , AttributeKind(..)
 
     -- ** Calling conventions
@@ -342,7 +351,7 @@ module LLVM.FFI.Core
     , getGC
     , setGC
     , AttributeIndex(AttributeIndex)
-    , attributeReturnIndex, attributeFunctionIndex
+    , Raw.attributeReturnIndex, Raw.attributeFunctionIndex
     , getEnumAttributeKindForName
     , getLastEnumAttributeKind
     , createEnumAttribute
@@ -382,7 +391,7 @@ module LLVM.FFI.Core
     , setParamAlignment
 
     -- ** Basic blocks
-    , BasicBlock
+    , Raw.BasicBlock
     , BasicBlockRef
     , basicBlockAsValue
     , valueIsBasicBlock
@@ -435,7 +444,7 @@ module LLVM.FFI.Core
     , getIncomingBlock
 
     -- * Instruction building
-    , Builder
+    , Raw.Builder
     , BuilderRef
     , createBuilderInContext
     , createBuilder
@@ -558,19 +567,19 @@ module LLVM.FFI.Core
     , buildPtrDiff
 
     -- * Memory buffers
-    , MemoryBuffer
+    , Raw.MemoryBuffer
     , MemoryBufferRef
     , createMemoryBufferWithContentsOfFile
     , createMemoryBufferWithSTDIN
     , disposeMemoryBuffer
 
-    -- ** PassRegistry
-    , PassRegistry
+    -- ** Raw.PassRegistry
+    , Raw.PassRegistry
     , PassRegistryRef
     , getGlobalPassRegistry
 
     -- ** Pass manager
-    , PassManager
+    , Raw.PassManager
     , PassManagerRef
     , ptrDisposePassManager
 
@@ -585,12 +594,19 @@ module LLVM.FFI.Core
     -- ** Functions from extras.cpp
     , getNumUses
     , instGetOpcode
-    , cmpInstGetPredicate
+    , cmpInstGetIntPredicate
+    , cmpInstGetRealPredicate
 
     ) where
 
 import qualified LLVM.FFI.Version as Version
 import qualified LLVM.FFI.Base as LLVM
+import qualified LLVM.Raw.Core as Raw
+import LLVM.Raw.Core (
+         PassRegistryRef, ContextRef, AttributeRef, AttributeIndex,
+         ModuleRef, TypeRef,
+         BasicBlockRef, ValueRef, UseRef, BuilderRef,
+         MemoryBufferRef, PassManagerRef, PassRegistryRef, ContextRef)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
@@ -598,10 +614,10 @@ import Foreign.Ptr (Ptr, FunPtr)
 
 import Data.Typeable (Typeable)
 
-import Data.Word (Word32, Word64)
+import Data.Word (Word8, Word64)
 
 import Prelude
-         (IO, Eq, Ord, Int, Bounded, Enum, Show, Read, String,
+         (IO, Eq, Ord, Bounded, Enum, Show, Read, String,
           ($), (++), (.), error,
            fmap, fromIntegral, show, toEnum, )
 
@@ -612,60 +628,11 @@ type CUInt    = C.CUInt
 type CLLong   = C.CLLong
 type CULLong  = C.CULLong
 
+type FunctionRef = ValueRef
+
 
 #include <llvm/Config/llvm-config.h>
 #include <llvm-c/Core.h>
-
-
-data Module
-    deriving (Typeable)
-type ModuleRef = Ptr Module
-
-data Type
-    deriving (Typeable)
-type TypeRef = Ptr Type
-
-data BasicBlock
-    deriving (Typeable)
-type BasicBlockRef = Ptr BasicBlock
-
-data Value
-    deriving (Typeable)
-type ValueRef = Ptr Value
-
-data OpaqueUse
-    deriving (Typeable)
-type UseRef = Ptr OpaqueUse
-
-data Builder
-    deriving (Typeable)
-type BuilderRef = Ptr Builder
-
-data MemoryBuffer
-    deriving (Typeable)
-type MemoryBufferRef = Ptr MemoryBuffer
-
-data PassManager
-    deriving (Typeable)
-type PassManagerRef = Ptr PassManager
-
-data PassRegistry
-    deriving (Typeable)
-type PassRegistryRef = Ptr PassRegistry
-
-data Context
-    deriving (Typeable)
-type ContextRef = Ptr Context
-
-data Attribute
-    deriving (Typeable)
-type AttributeRef = Ptr Attribute
-
-newtype AttributeIndex = AttributeIndex (#type LLVMAttributeIndex)
-
-attributeReturnIndex, attributeFunctionIndex :: AttributeIndex
-attributeReturnIndex   = AttributeIndex (#const LLVMAttributeReturnIndex)
-attributeFunctionIndex = AttributeIndex (#const LLVMAttributeFunctionIndex)
 
 
 defaultTargetTriple, hostTriple :: String
@@ -691,7 +658,7 @@ data TypeKind
     deriving (Eq, Ord, Enum, Bounded, Show, Read, Typeable)
 
 getTypeKind :: TypeRef -> IO TypeKind
-getTypeKind = fmap (toEnum . fromIntegral) . getTypeKindCUInt
+getTypeKind = fmap (toEnum . fromIntegral . Raw.unTypeKind) . getTypeKindRaw
 
 data CallingConvention = C
                        | Fast
@@ -701,8 +668,9 @@ data CallingConvention = C
                        | GHC
                          deriving (Show, Eq, Ord, Enum, Bounded, Typeable)
 
-fromCallingConvention :: CallingConvention -> CUInt
+fromCallingConvention :: CallingConvention -> Raw.CallingConvention
 fromCallingConvention c =
+    Raw.CallingConvention $
     case c of
         C -> (#const LLVMCCallConv)
         Fast -> (#const LLVMFastCallConv)
@@ -711,8 +679,8 @@ fromCallingConvention c =
         X86FastCall -> (#const LLVMX86StdcallCallConv)
         GHC -> 10
 
-toCallingConvention :: CUInt -> CallingConvention
-toCallingConvention c =
+toCallingConvention :: Raw.CallingConvention -> CallingConvention
+toCallingConvention (Raw.CallingConvention c) =
     case c of
         (#const LLVMCCallConv) -> C
         (#const LLVMFastCallConv) -> Fast
@@ -745,8 +713,9 @@ data Linkage
     | LinkerPrivateWeakLinkage -- ^Like LinkerPrivate, but is weak.
     deriving (Show, Eq, Ord, Enum, Typeable)
 
-fromLinkage :: Linkage -> CUInt
+fromLinkage :: Linkage -> Raw.Linkage
 fromLinkage c =
+    Raw.Linkage $
     case c of
         ExternalLinkage             -> (#const LLVMExternalLinkage)
         AvailableExternallyLinkage  -> (#const LLVMAvailableExternallyLinkage)
@@ -766,8 +735,8 @@ fromLinkage c =
         LinkerPrivateLinkage        -> (#const LLVMLinkerPrivateLinkage)
         LinkerPrivateWeakLinkage    -> (#const LLVMLinkerPrivateWeakLinkage)
 
-toLinkage :: CUInt -> Linkage
-toLinkage c =
+toLinkage :: Raw.Linkage -> Linkage
+toLinkage (Raw.Linkage c) =
     case c of
         (#const LLVMExternalLinkage)             -> ExternalLinkage
         (#const LLVMAvailableExternallyLinkage)  -> AvailableExternallyLinkage
@@ -795,882 +764,1311 @@ data Visibility
     | ProtectedVisibility -- ^The GV is protected
     deriving (Show, Eq, Ord, Enum)
 
-fromVisibility :: Visibility -> CUInt
+fromVisibility :: Visibility -> Raw.Visibility
 fromVisibility c =
+    Raw.Visibility $
     case c of
         DefaultVisibility   -> (#const LLVMDefaultVisibility)
         HiddenVisibility    -> (#const LLVMHiddenVisibility)
         ProtectedVisibility -> (#const LLVMProtectedVisibility)
 
-toVisibility :: CUInt -> Visibility
-toVisibility c =
+toVisibility :: Raw.Visibility -> Visibility
+toVisibility (Raw.Visibility c) =
     case c of
         (#const LLVMDefaultVisibility)   -> DefaultVisibility
         (#const LLVMHiddenVisibility)    -> HiddenVisibility
         (#const LLVMProtectedVisibility) -> ProtectedVisibility
         _ -> error "toVisibility: bad value"
 
+
+data IntPredicate =
+      IntEQ   -- ^ equal
+    | IntNE   -- ^ not equal
+    | IntUGT  -- ^ unsigned greater than
+    | IntUGE  -- ^ unsigned greater or equal
+    | IntULT  -- ^ unsigned less than
+    | IntULE  -- ^ unsigned less or equal
+    | IntSGT  -- ^ signed greater than
+    | IntSGE  -- ^ signed greater or equal
+    | IntSLT  -- ^ signed less than
+    | IntSLE  -- ^ signed less or equal
+    deriving (Eq, Ord, Enum, Show, Typeable)
+
+fromIntPredicate :: IntPredicate -> Raw.IntPredicate
+fromIntPredicate p =
+    Raw.IntPredicate $
+    case p of
+        IntEQ  -> (#const LLVMIntEQ )
+        IntNE  -> (#const LLVMIntNE )
+        IntUGT -> (#const LLVMIntUGT)
+        IntUGE -> (#const LLVMIntUGE)
+        IntULT -> (#const LLVMIntULT)
+        IntULE -> (#const LLVMIntULE)
+        IntSGT -> (#const LLVMIntSGT)
+        IntSGE -> (#const LLVMIntSGE)
+        IntSLT -> (#const LLVMIntSLT)
+        IntSLE -> (#const LLVMIntSLE)
+
+toIntPredicate :: Raw.IntPredicate -> IntPredicate
+toIntPredicate (Raw.IntPredicate p) =
+    case p of
+        (#const LLVMIntEQ ) -> IntEQ
+        (#const LLVMIntNE ) -> IntNE
+        (#const LLVMIntUGT) -> IntUGT
+        (#const LLVMIntUGE) -> IntUGE
+        (#const LLVMIntULT) -> IntULT
+        (#const LLVMIntULE) -> IntULE
+        (#const LLVMIntSGT) -> IntSGT
+        (#const LLVMIntSGE) -> IntSGE
+        (#const LLVMIntSLT) -> IntSLT
+        (#const LLVMIntSLE) -> IntSLE
+        _ -> error "toIntPredicate: bad value"
+
+data FPPredicate =
+      FPFalse -- ^ Always false (always folded)
+    | FPOEQ   -- ^ True if ordered and equal
+    | FPOGT   -- ^ True if ordered and greater than
+    | FPOGE   -- ^ True if ordered and greater than or equal
+    | FPOLT   -- ^ True if ordered and less than
+    | FPOLE   -- ^ True if ordered and less than or equal
+    | FPONE   -- ^ True if ordered and operands are unequal
+    | FPORD   -- ^ True if ordered (no nans)
+    | FPUNO   -- ^ True if unordered: isnan(X) | isnan(Y)
+    | FPUEQ   -- ^ True if unordered or equal
+    | FPUGT   -- ^ True if unordered or greater than
+    | FPUGE   -- ^ True if unordered, greater than, or equal
+    | FPULT   -- ^ True if unordered or less than
+    | FPULE   -- ^ True if unordered, less than, or equal
+    | FPUNE   -- ^ True if unordered or not equal
+    | FPTrue  -- ^ Always true (always folded)
+    deriving (Eq, Ord, Enum, Show, Typeable)
+
+fromRealPredicate :: FPPredicate -> Raw.RealPredicate
+fromRealPredicate p =
+    Raw.RealPredicate $
+    case p of
+        FPFalse -> (#const LLVMRealPredicateFalse)
+        FPTrue  -> (#const LLVMRealPredicateTrue)
+        FPOEQ -> (#const LLVMRealOEQ)
+        FPOGT -> (#const LLVMRealOGT)
+        FPOGE -> (#const LLVMRealOGE)
+        FPOLT -> (#const LLVMRealOLT)
+        FPOLE -> (#const LLVMRealOLE)
+        FPONE -> (#const LLVMRealONE)
+        FPORD -> (#const LLVMRealORD)
+        FPUNO -> (#const LLVMRealUNO)
+        FPUEQ -> (#const LLVMRealUEQ)
+        FPUGT -> (#const LLVMRealUGT)
+        FPUGE -> (#const LLVMRealUGE)
+        FPULT -> (#const LLVMRealULT)
+        FPULE -> (#const LLVMRealULE)
+        FPUNE -> (#const LLVMRealUNE)
+
+toRealPredicate :: Raw.RealPredicate -> FPPredicate
+toRealPredicate (Raw.RealPredicate p) =
+    case p of
+        (#const LLVMRealPredicateFalse) -> FPFalse
+        (#const LLVMRealPredicateTrue) -> FPTrue
+        (#const LLVMRealOEQ) -> FPOEQ
+        (#const LLVMRealOGT) -> FPOGT
+        (#const LLVMRealOGE) -> FPOGE
+        (#const LLVMRealOLT) -> FPOLT
+        (#const LLVMRealOLE) -> FPOLE
+        (#const LLVMRealONE) -> FPONE
+        (#const LLVMRealORD) -> FPORD
+        (#const LLVMRealUNO) -> FPUNO
+        (#const LLVMRealUEQ) -> FPUEQ
+        (#const LLVMRealUGT) -> FPUGT
+        (#const LLVMRealUGE) -> FPUGE
+        (#const LLVMRealULT) -> FPULT
+        (#const LLVMRealULE) -> FPULE
+        (#const LLVMRealUNE) -> FPUNE
+        _ -> error "toRealPredicate: bad value"
+
+
+
 -- ** Initialization
-foreign import ccall unsafe "LLVMInitializeCore" initializeCore
-    :: PassRegistryRef -> IO ()
+initializeCore :: PassRegistryRef -> IO ()
+initializeCore = Raw.initializeCore
 
 -- ** Error Handling
-foreign import ccall unsafe "LLVMDisposeMessage" disposeMessage
-    :: CString -> IO ()
+disposeMessage :: CString -> IO ()
+disposeMessage = Raw.disposeMessage
 
 -- ** Contexts
-foreign import ccall unsafe "LLVMContextCreate" contextCreate
-    :: IO ContextRef
-foreign import ccall unsafe "LLVMGetGlobalContext" getGlobalContext
-    :: IO ContextRef
-foreign import ccall unsafe "LLVMContextDispose" contextDispose
-    :: ContextRef -> IO ()
-foreign import ccall unsafe "LLVMGetMDKindIDInContext" getMDKindIDInContext
-    :: ContextRef -> CString -> CUInt -> IO CUInt
-foreign import ccall unsafe "LLVMGetMDKindID" getMDKindID
-    :: CString -> CUInt -> IO CUInt
+contextCreate :: IO ContextRef
+contextCreate = Raw.contextCreate
+
+getGlobalContext :: IO ContextRef
+getGlobalContext = Raw.getGlobalContext
+
+contextDispose :: ContextRef -> IO ()
+contextDispose = Raw.contextDispose
+
+getMDKindIDInContext :: ContextRef -> CString -> CUInt -> IO CUInt
+getMDKindIDInContext = Raw.getMDKindIDInContext
+
+getMDKindID :: CString -> CUInt -> IO CUInt
+getMDKindID = Raw.getMDKindID
 
 -- ** Attributes
 
 newtype AttributeKind = AttributeKind CUInt
 
-foreign import ccall unsafe "LLVMGetEnumAttributeKindForName" getEnumAttributeKindForName
-    :: CString -> C.CSize -> IO AttributeKind
+getEnumAttributeKindForName :: CString -> C.CSize -> IO AttributeKind
+getEnumAttributeKindForName name slen =
+   fmap AttributeKind $ Raw.getEnumAttributeKindForName name slen
 
-foreign import ccall unsafe "LLVMGetLastEnumAttributeKind" getLastEnumAttributeKind
-    :: IO AttributeKind
+getLastEnumAttributeKind :: IO AttributeKind
+getLastEnumAttributeKind = fmap AttributeKind $ Raw.getLastEnumAttributeKind
 
-foreign import ccall unsafe "LLVMCreateEnumAttribute" createEnumAttribute
-    :: ContextRef -> AttributeKind -> Word64 -> IO AttributeRef
+createEnumAttribute :: ContextRef -> AttributeKind -> Word64 -> IO AttributeRef
+createEnumAttribute c (AttributeKind kindId) = Raw.createEnumAttribute c kindId
 
-foreign import ccall unsafe "LLVMGetEnumAttributeKind" getEnumAttributeKind
-    :: AttributeRef -> IO AttributeKind
+getEnumAttributeKind :: AttributeRef -> IO AttributeKind
+getEnumAttributeKind = fmap AttributeKind . Raw.getEnumAttributeKind
 
-foreign import ccall unsafe "LLVMGetEnumAttributeValue" getEnumAttributeValue
-    :: AttributeRef -> IO Word64
+getEnumAttributeValue :: AttributeRef -> IO Word64
+getEnumAttributeValue = Raw.getEnumAttributeValue
 
-foreign import ccall unsafe "LLVMCreateStringAttribute" createStringAttribute
-    :: ContextRef -> CString -> CUInt -> CString -> CUInt -> IO AttributeRef
+createStringAttribute ::
+   ContextRef -> CString -> CUInt -> CString -> CUInt -> IO AttributeRef
+createStringAttribute = Raw.createStringAttribute
 
-foreign import ccall unsafe "LLVMGetStringAttributeKind" getStringAttributeKind
-    :: AttributeRef -> Ptr CUInt -> IO CString
+getStringAttributeKind :: AttributeRef -> Ptr CUInt -> IO CString
+getStringAttributeKind = Raw.getStringAttributeKind
 
-foreign import ccall unsafe "LLVMGetStringAttributeValue" getStringAttributeValue
-    :: AttributeRef -> Ptr CUInt -> IO CString
+getStringAttributeValue :: AttributeRef -> Ptr CUInt -> IO CString
+getStringAttributeValue = Raw.getStringAttributeValue
 
-foreign import ccall unsafe "LLVMIsEnumAttribute" isEnumAttribute
-    :: AttributeRef -> IO LLVM.Bool
+isEnumAttribute :: AttributeRef -> IO LLVM.Bool
+isEnumAttribute = Raw.isEnumAttribute
 
-foreign import ccall unsafe "LLVMIsStringAttribute" isStringAttribute
-    :: AttributeRef -> IO LLVM.Bool
+isStringAttribute :: AttributeRef -> IO LLVM.Bool
+isStringAttribute = Raw.isStringAttribute
 
 -- ** Modules
-foreign import ccall unsafe "LLVMModuleCreateWithName" moduleCreateWithName
-    :: CString -> IO ModuleRef
-foreign import ccall unsafe "LLVMModuleCreateWithNameInContext"
-        moduleCreateWithNameInContext
-    :: CString -> ContextRef -> IO ModuleRef
-foreign import ccall unsafe "LLVMDisposeModule" disposeModule
-    :: ModuleRef -> IO ()
+moduleCreateWithName :: CString -> IO ModuleRef
+moduleCreateWithName = Raw.moduleCreateWithName
+
+moduleCreateWithNameInContext :: CString -> ContextRef -> IO ModuleRef
+moduleCreateWithNameInContext = Raw.moduleCreateWithNameInContext
+
+disposeModule :: ModuleRef -> IO ()
+disposeModule = Raw.disposeModule
+
 foreign import ccall unsafe "&LLVMDisposeModule" ptrDisposeModule
     :: FunPtr (ModuleRef -> IO ())
 
 -- ** Data Layout
-foreign import ccall unsafe "LLVMGetDataLayout" getDataLayout
-    :: ModuleRef -> IO CString
-foreign import ccall unsafe "LLVMSetDataLayout" setDataLayout
-    :: ModuleRef -> CString -> IO ()
+getDataLayout :: ModuleRef -> IO CString
+getDataLayout = Raw.getDataLayout
+
+setDataLayout :: ModuleRef -> CString -> IO ()
+setDataLayout = Raw.setDataLayout
+
 
 -- ** Targets
-foreign import ccall unsafe "LLVMGetTarget" getTarget
-    :: ModuleRef -> IO CString
-foreign import ccall unsafe "LLVMSetTarget" setTarget
-    :: ModuleRef -> CString -> IO ()
+getTarget :: ModuleRef -> IO CString
+getTarget = Raw.getTarget
+
+setTarget :: ModuleRef -> CString -> IO ()
+setTarget = Raw.setTarget
+
 
 -- ** Dump module
-foreign import ccall unsafe "LLVMDumpModule" dumpModule
-    :: ModuleRef -> IO ()
-foreign import ccall unsafe "LLVMSetModuleInlineAsm" setModuleInlineAsm
-    :: ModuleRef -> CString -> IO ()
-foreign import ccall unsafe "LLVMGetModuleContext" getModuleContext
-    :: ModuleRef -> IO ContextRef
+dumpModule :: ModuleRef -> IO ()
+dumpModule = Raw.dumpModule
+
+setModuleInlineAsm :: ModuleRef -> CString -> IO ()
+setModuleInlineAsm = Raw.setModuleInlineAsm
+
+getModuleContext :: ModuleRef -> IO ContextRef
+getModuleContext = Raw.getModuleContext
+
 
 -- ** Functions
-foreign import ccall unsafe "LLVMAddFunction" addFunction
-    :: ModuleRef                -- ^ module
-    -> CString                  -- ^ name
-    -> TypeRef                  -- ^ type
-    -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNamedFunction" getNamedFunction
-    :: ModuleRef                -- ^ module
-    -> CString                  -- ^ name
-    -> IO ValueRef              -- ^ function (@nullPtr@ if not found)
-foreign import ccall unsafe "LLVMGetFirstFunction" getFirstFunction
-    :: ModuleRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetLastFunction" getLastFunction
-    :: ModuleRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNextFunction" getNextFunction
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetPreviousFunction" getPreviousFunction
-    :: ValueRef -> IO ValueRef
+addFunction :: ModuleRef -> CString -> TypeRef -> IO FunctionRef
+addFunction = Raw.addFunction
+
+getNamedFunction :: ModuleRef -> CString -> IO FunctionRef
+getNamedFunction = Raw.getNamedFunction
+
+getFirstFunction :: ModuleRef -> IO ValueRef
+getFirstFunction = Raw.getFirstFunction
+
+getLastFunction :: ModuleRef -> IO ValueRef
+getLastFunction = Raw.getLastFunction
+
+getNextFunction :: ValueRef -> IO ValueRef
+getNextFunction = Raw.getNextFunction
+
+getPreviousFunction :: ValueRef -> IO ValueRef
+getPreviousFunction = Raw.getPreviousFunction
 
 
 -- ** Types
-foreign import ccall unsafe "LLVMGetTypeKind" getTypeKindCUInt
-    :: TypeRef -> IO CUInt
-foreign import ccall unsafe "LLVMTypeIsSized" typeIsSized
-    :: TypeRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMGetTypeContext" getTypeContext
-    :: TypeRef -> IO ContextRef
+getTypeKindRaw :: TypeRef -> IO Raw.TypeKind
+getTypeKindRaw = Raw.getTypeKind
+
+typeIsSized :: TypeRef -> IO LLVM.Bool
+typeIsSized = Raw.typeIsSized
+
+getTypeContext :: TypeRef -> IO ContextRef
+getTypeContext = Raw.getTypeContext
+
 
 -- ** Integer types
-foreign import ccall unsafe "LLVMInt1TypeInContext" int1TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMInt8TypeInContext" int8TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMInt16TypeInContext" int16TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMInt32TypeInContext" int32TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMInt64TypeInContext" int64TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMIntTypeInContext" intTypeInContext
-    :: ContextRef -> CUInt -> IO TypeRef
+int1TypeInContext :: ContextRef -> IO TypeRef
+int1TypeInContext = Raw.int1TypeInContext
 
-foreign import ccall unsafe "LLVMInt1Type" int1Type :: IO TypeRef
-foreign import ccall unsafe "LLVMInt8Type" int8Type :: IO TypeRef
-foreign import ccall unsafe "LLVMInt16Type" int16Type :: IO TypeRef
-foreign import ccall unsafe "LLVMInt32Type" int32Type :: IO TypeRef
-foreign import ccall unsafe "LLVMInt64Type" int64Type :: IO TypeRef
-foreign import ccall unsafe "LLVMIntType" integerType :: CUInt -> IO TypeRef
-foreign import ccall unsafe "LLVMGetIntTypeWidth" getIntTypeWidth
-    :: TypeRef -> IO CUInt
+int8TypeInContext :: ContextRef -> IO TypeRef
+int8TypeInContext = Raw.int8TypeInContext
+
+int16TypeInContext :: ContextRef -> IO TypeRef
+int16TypeInContext = Raw.int16TypeInContext
+
+int32TypeInContext :: ContextRef -> IO TypeRef
+int32TypeInContext = Raw.int32TypeInContext
+
+int64TypeInContext :: ContextRef -> IO TypeRef
+int64TypeInContext = Raw.int64TypeInContext
+
+intTypeInContext :: ContextRef -> CUInt -> IO TypeRef
+intTypeInContext = Raw.intTypeInContext
+
+
+int1Type :: IO TypeRef
+int1Type = Raw.int1Type
+int8Type :: IO TypeRef
+int8Type = Raw.int8Type
+int16Type :: IO TypeRef
+int16Type = Raw.int16Type
+int32Type :: IO TypeRef
+int32Type = Raw.int32Type
+int64Type :: IO TypeRef
+int64Type = Raw.int64Type
+integerType :: CUInt -> IO TypeRef
+integerType = Raw.intType
+getIntTypeWidth :: TypeRef -> IO CUInt
+getIntTypeWidth = Raw.getIntTypeWidth
+
 
 -- ** Real types
-foreign import ccall unsafe "LLVMFloatTypeInContext" floatTypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMDoubleTypeInContext" doubleTypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMX86FP80TypeInContext" x86FP80TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMFP128TypeInContext" fp128TypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMPPCFP128TypeInContext" ppcFP128TypeInContext
-    :: ContextRef -> IO TypeRef
+floatTypeInContext :: ContextRef -> IO TypeRef
+floatTypeInContext = Raw.floatTypeInContext
 
-foreign import ccall unsafe "LLVMFloatType" floatType :: IO TypeRef
-foreign import ccall unsafe "LLVMDoubleType" doubleType :: IO TypeRef
-foreign import ccall unsafe "LLVMX86FP80Type" x86FP80Type :: IO TypeRef
-foreign import ccall unsafe "LLVMFP128Type" fp128Type :: IO TypeRef
-foreign import ccall unsafe "LLVMPPCFP128Type" ppcFP128Type :: IO TypeRef
+doubleTypeInContext :: ContextRef -> IO TypeRef
+doubleTypeInContext = Raw.doubleTypeInContext
+
+x86FP80TypeInContext :: ContextRef -> IO TypeRef
+x86FP80TypeInContext = Raw.x86FP80TypeInContext
+
+fp128TypeInContext :: ContextRef -> IO TypeRef
+fp128TypeInContext = Raw.fP128TypeInContext
+
+ppcFP128TypeInContext :: ContextRef -> IO TypeRef
+ppcFP128TypeInContext = Raw.pPCFP128TypeInContext
+
+
+floatType :: IO TypeRef
+floatType = Raw.floatType
+
+doubleType :: IO TypeRef
+doubleType = Raw.doubleType
+
+x86FP80Type :: IO TypeRef
+x86FP80Type = Raw.x86FP80Type
+
+fp128Type :: IO TypeRef
+fp128Type = Raw.fP128Type
+
+ppcFP128Type :: IO TypeRef
+ppcFP128Type = Raw.pPCFP128Type
+
 
 -- ** Function types
 -- | Create a function type.
-foreign import ccall unsafe "LLVMFunctionType" functionType
+functionType
         :: TypeRef              -- ^ return type
         -> Ptr TypeRef          -- ^ array of argument types
         -> CUInt                -- ^ number of elements in array
         -> LLVM.Bool                 -- ^ non-zero if function is varargs
         -> IO TypeRef
+functionType = Raw.functionType
 
 -- | Indicate whether a function takes varargs.
-foreign import ccall unsafe "LLVMIsFunctionVarArg" isFunctionVarArg
-        :: TypeRef -> IO LLVM.Bool
+isFunctionVarArg :: TypeRef -> IO LLVM.Bool
+isFunctionVarArg = Raw.isFunctionVarArg
 
 -- | Give a function's return type.
-foreign import ccall unsafe "LLVMGetReturnType" getReturnType
-        :: TypeRef -> IO TypeRef
+getReturnType :: TypeRef -> IO TypeRef
+getReturnType = Raw.getReturnType
 
 -- | Give the number of fixed parameters that a function takes.
-foreign import ccall unsafe "LLVMCountParamTypes" countParamTypes
-        :: TypeRef -> IO CUInt
+countParamTypes :: TypeRef -> IO CUInt
+countParamTypes = Raw.countParamTypes
 
 -- | Fill out an array with the types of a function's fixed
 -- parameters.
-foreign import ccall unsafe "LLVMGetParamTypes" getParamTypes
-        :: TypeRef -> Ptr TypeRef -> IO ()
+getParamTypes     :: TypeRef -> Ptr TypeRef -> IO ()
+getParamTypes = Raw.getParamTypes
 
--- ** Struct Type
-foreign import ccall unsafe "LLVMStructTypeInContext" structTypeInContext
-    :: ContextRef -> Ptr TypeRef -> CUInt -> LLVM.Bool -> IO TypeRef
-foreign import ccall unsafe "LLVMStructType" structType
-    :: Ptr TypeRef -> CUInt -> LLVM.Bool -> IO TypeRef
-foreign import ccall unsafe "LLVMStructCreateNamed" structCreateNamed
-    :: ContextRef -> CString -> IO TypeRef
-foreign import ccall unsafe "LLVMGetStructName" getStructName
-    :: TypeRef -> IO CString
-foreign import ccall unsafe "LLVMStructSetBody" structSetBody
-    :: TypeRef -> Ptr TypeRef -> CUInt -> LLVM.Bool -> IO ()
-foreign import ccall unsafe "LLVMCountStructElementTypes"
-    countStructElementTypes :: TypeRef -> IO CUInt
-foreign import ccall unsafe "LLVMGetStructElementTypes" getStructElementTypes
-    :: TypeRef -> Ptr TypeRef -> IO ()
-foreign import ccall unsafe "LLVMIsPackedStruct" isPackedStruct
-    :: TypeRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMIsOpaqueStruct" isOpaqueStruct
-    :: TypeRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMGetTypeByName" getTypeByName
-    :: ModuleRef -> CString -> IO TypeRef
+
+-- ** Struct Raw.Type
+structTypeInContext :: ContextRef -> Ptr TypeRef -> CUInt -> LLVM.Bool -> IO TypeRef
+structTypeInContext = Raw.structTypeInContext
+
+structType :: Ptr TypeRef -> CUInt -> LLVM.Bool -> IO TypeRef
+structType = Raw.structType
+
+structCreateNamed :: ContextRef -> CString -> IO TypeRef
+structCreateNamed = Raw.structCreateNamed
+
+getStructName :: TypeRef -> IO CString
+getStructName = Raw.getStructName
+
+structSetBody :: TypeRef -> Ptr TypeRef -> CUInt -> LLVM.Bool -> IO ()
+structSetBody = Raw.structSetBody
+
+countStructElementTypes :: TypeRef -> IO CUInt
+countStructElementTypes = Raw.countStructElementTypes
+
+getStructElementTypes :: TypeRef -> Ptr TypeRef -> IO ()
+getStructElementTypes = Raw.getStructElementTypes
+
+isPackedStruct :: TypeRef -> IO LLVM.Bool
+isPackedStruct = Raw.isPackedStruct
+
+isOpaqueStruct :: TypeRef -> IO LLVM.Bool
+isOpaqueStruct = Raw.isOpaqueStruct
+
+getTypeByName :: ModuleRef -> CString -> IO TypeRef
+getTypeByName = Raw.getTypeByName
+
 
 -- ** Array, Pointer, and Vector types
-foreign import ccall unsafe "LLVMArrayType" arrayType
+arrayType
     :: TypeRef                  -- ^ element type
     -> CUInt                    -- ^ element count
     -> IO TypeRef
-foreign import ccall unsafe "LLVMPointerType" pointerType
+arrayType = Raw.arrayType
+
+pointerType
     :: TypeRef                  -- ^ pointed-to type
     -> CUInt                    -- ^ address space
     -> IO TypeRef
-foreign import ccall unsafe "LLVMVectorType" vectorType
+pointerType = Raw.pointerType
+
+vectorType
     :: TypeRef                  -- ^ element type
     -> CUInt                    -- ^ element count
     -> IO TypeRef
+vectorType = Raw.vectorType
 
 
 -- | Get the type of a sequential type's elements.
-foreign import ccall unsafe "LLVMGetElementType" getElementType
-    :: TypeRef -> IO TypeRef
-foreign import ccall unsafe "LLVMGetArrayLength" getArrayLength
-    :: TypeRef -> IO CUInt
-foreign import ccall unsafe "LLVMGetPointerAddressSpace" getPointerAddressSpace
-    :: TypeRef -> IO CUInt
-foreign import ccall unsafe "LLVMGetVectorSize" getVectorSize
-    :: TypeRef -> IO CUInt
+getElementType :: TypeRef -> IO TypeRef
+getElementType = Raw.getElementType
+
+getArrayLength :: TypeRef -> IO CUInt
+getArrayLength = Raw.getArrayLength
+
+getPointerAddressSpace :: TypeRef -> IO CUInt
+getPointerAddressSpace = Raw.getPointerAddressSpace
+
+getVectorSize :: TypeRef -> IO CUInt
+getVectorSize = Raw.getVectorSize
 
 
 -- ** Other Types
 
-foreign import ccall unsafe "LLVMVoidTypeInContext" voidTypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMLabelTypeInContext" labelTypeInContext
-    :: ContextRef -> IO TypeRef
-foreign import ccall unsafe "LLVMX86MMXTypeInContext" x86MMXTypeInContext
-    :: ContextRef -> IO TypeRef
+voidTypeInContext :: ContextRef -> IO TypeRef
+voidTypeInContext = Raw.voidTypeInContext
+
+labelTypeInContext :: ContextRef -> IO TypeRef
+labelTypeInContext = Raw.labelTypeInContext
+
+x86MMXTypeInContext :: ContextRef -> IO TypeRef
+x86MMXTypeInContext = Raw.x86MMXTypeInContext
+
 
 foreign import ccall unsafe "LLVMVoidType" voidType :: IO TypeRef
 foreign import ccall unsafe "LLVMLabelType" labelType :: IO TypeRef
 foreign import ccall unsafe "LLVMX86MMXType" x86MMXType :: IO TypeRef
 
 -- ** Values
-foreign import ccall unsafe "LLVMTypeOf" typeOf
-    :: ValueRef -> IO TypeRef
-foreign import ccall unsafe "LLVMGetValueName" getValueName
-    :: ValueRef -> IO CString
-foreign import ccall unsafe "LLVMSetValueName" setValueName
-    :: ValueRef -> CString -> IO ()
-foreign import ccall unsafe "LLVMDumpValue" dumpValue
-    :: ValueRef -> IO ()
-foreign import ccall unsafe "LLVMReplaceAllUsesWith" replaceAllUsesWith
-    :: ValueRef -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMHasMetadata" hasMetadata
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMGetMetadata" getMetadata
-    :: ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMSetMetadata" setMetadata
-    :: ValueRef -> CUInt -> ValueRef -> IO ()
+typeOf :: ValueRef -> IO TypeRef
+typeOf = Raw.typeOf
+
+getValueName :: ValueRef -> IO CString
+getValueName = Raw.getValueName
+
+setValueName :: ValueRef -> CString -> IO ()
+setValueName = Raw.setValueName
+
+dumpValue :: ValueRef -> IO ()
+dumpValue = Raw.dumpValue
+
+replaceAllUsesWith :: ValueRef -> ValueRef -> IO ()
+replaceAllUsesWith = Raw.replaceAllUsesWith
+
+hasMetadata :: ValueRef -> IO LLVM.Bool
+hasMetadata = fmap (LLVM.Bool . fromIntegral) . Raw.hasMetadata
+
+getMetadata :: ValueRef -> CUInt -> IO ValueRef
+getMetadata = Raw.getMetadata
+
+setMetadata :: ValueRef -> CUInt -> ValueRef -> IO ()
+setMetadata = Raw.setMetadata
+
 
 -- ** Uses
-foreign import ccall unsafe "LLVMGetFirstUse" getFirstUse
-    :: ValueRef -> IO UseRef
-foreign import ccall unsafe "LLVMGetNextUse" getNextUse
-    :: UseRef -> IO UseRef
-foreign import ccall unsafe "LLVMGetUser" getUser
-    :: UseRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetUsedValue" getUsedValue
-    :: UseRef -> IO ValueRef
+getFirstUse :: ValueRef -> IO UseRef
+getFirstUse = Raw.getFirstUse
+
+getNextUse :: UseRef -> IO UseRef
+getNextUse = Raw.getNextUse
+
+getUser :: UseRef -> IO ValueRef
+getUser = Raw.getUser
+
+getUsedValue :: UseRef -> IO ValueRef
+getUsedValue = Raw.getUsedValue
+
 
 -- ** Users
-foreign import ccall unsafe "LLVMGetOperand" getOperand
-    :: ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMSetOperand" setOperand
-    :: ValueRef -> CUInt -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMGetNumOperands" getNumOperands
-    :: ValueRef -> IO CUInt
+getOperand :: ValueRef -> CUInt -> IO ValueRef
+getOperand = Raw.getOperand
+
+setOperand :: ValueRef -> CUInt -> ValueRef -> IO ()
+setOperand = Raw.setOperand
+
+getNumOperands :: ValueRef -> IO CUInt
+getNumOperands = fmap fromIntegral . Raw.getNumOperands
+
 
 -- ** Constants
-foreign import ccall unsafe "LLVMConstNull" constNull
-    :: TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstAllOnes" constAllOnes
-    :: TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetUndef" getUndef
-    :: TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMIsConstant" isConstant
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMIsUndef" isUndef
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMIsNull" isNull
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMConstPointerNull" constPointerNull
-    :: TypeRef -> IO ValueRef
+constNull :: TypeRef -> IO ValueRef
+constNull = Raw.constNull
+
+constAllOnes :: TypeRef -> IO ValueRef
+constAllOnes = Raw.constAllOnes
+
+getUndef :: TypeRef -> IO ValueRef
+getUndef = Raw.getUndef
+
+isConstant :: ValueRef -> IO LLVM.Bool
+isConstant = Raw.isConstant
+
+isUndef :: ValueRef -> IO LLVM.Bool
+isUndef = Raw.isUndef
+
+isNull :: ValueRef -> IO LLVM.Bool
+isNull = Raw.isNull
+
+constPointerNull :: TypeRef -> IO ValueRef
+constPointerNull = Raw.constPointerNull
+
 
 -- ** Metadata
-foreign import ccall unsafe "LLVMMDStringInContext" mDStringInContext
-    :: ContextRef -> CString -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMMDString" mDString
-    :: CString -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMMDNodeInContext" mDNodeInContext
-    :: ContextRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMMDNode" mDNode
-    :: Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMGetMDString" getMDString
-    :: ValueRef -> Ptr CUInt -> IO CString
+mDStringInContext :: ContextRef -> CString -> CUInt -> IO ValueRef
+mDStringInContext = Raw.mDStringInContext
+
+mDString :: CString -> CUInt -> IO ValueRef
+mDString = Raw.mDString
+
+mDNodeInContext :: ContextRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+mDNodeInContext = Raw.mDNodeInContext
+
+mDNode :: Ptr ValueRef -> CUInt -> IO ValueRef
+mDNode = Raw.mDNode
+
+getMDString :: ValueRef -> Ptr CUInt -> IO CString
+getMDString = Raw.getMDString
+
 {-
-foreign import ccall unsafe "LLVMGetMDNodeNumOperands" getMDNodeNumOperands
-    :: ValueRef -> IO CInt
-foreign import ccall unsafe "LLVMGetMDNodeOperand" getMDNodeOperand
-    :: ValueRef -> CUInt -> IO (Ptr ValueRef)
+getMDNodeNumOperands :: ValueRef -> IO CInt
+getMDNodeNumOperands = Raw.getMDNodeNumOperands
+
+getMDNodeOperand :: ValueRef -> CUInt -> IO (Ptr ValueRef)
+getMDNodeOperand = Raw.getMDNodeOperand
 -}
-foreign import ccall unsafe "LLVMGetNamedMetadataNumOperands" getNamedMetadataNumOperands
-    :: ModuleRef -> CString -> IO CUInt
-foreign import ccall unsafe "LLVMGetNamedMetadataOperands" getNamedMetadataOperands
-    :: ModuleRef -> CString -> Ptr ValueRef -> IO ()
+
+getNamedMetadataNumOperands :: ModuleRef -> CString -> IO CUInt
+getNamedMetadataNumOperands = Raw.getNamedMetadataNumOperands
+
+getNamedMetadataOperands :: ModuleRef -> CString -> Ptr ValueRef -> IO ()
+getNamedMetadataOperands = Raw.getNamedMetadataOperands
+
 
 -- ** Scalar Constants
-foreign import ccall unsafe "LLVMConstInt" constInt
-    :: TypeRef -> CULLong -> LLVM.Bool -> IO ValueRef
-foreign import ccall unsafe "LLVMConstIntOfArbitraryPrecision" constIntOfArbitraryPrecision
-    :: TypeRef -> CUInt -> Ptr CULLong -> IO ValueRef
-foreign import ccall unsafe "LLVMConstIntOfString" constIntOfString
-    :: TypeRef -> CString -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstIntOfStringAndSize" constIntOfStringAndSize
-    :: TypeRef -> CString -> CUInt -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstReal" constReal
-    :: TypeRef -> CDouble -> IO ValueRef
-foreign import ccall unsafe "LLVMConstRealOfString" constRealOfString
-    :: TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMConstRealOfStringAndSize" constRealOfStringAndSize
-    :: TypeRef -> CString -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstIntGetZExtValue" constIntGetZExtValue
-    :: ValueRef -> IO CULLong
-foreign import ccall unsafe "LLVMConstIntGetSExtValue" constIntGetSExtValue
-    :: ValueRef -> IO CLLong
+constInt :: TypeRef -> CULLong -> LLVM.Bool -> IO ValueRef
+constInt = Raw.constInt
+
+constIntOfArbitraryPrecision :: TypeRef -> CUInt -> Ptr Word64 -> IO ValueRef
+constIntOfArbitraryPrecision = Raw.constIntOfArbitraryPrecision
+
+constIntOfString :: TypeRef -> CString -> Word8 -> IO ValueRef
+constIntOfString = Raw.constIntOfString
+
+constIntOfStringAndSize :: TypeRef -> CString -> CUInt -> Word8 -> IO ValueRef
+constIntOfStringAndSize = Raw.constIntOfStringAndSize
+
+constReal :: TypeRef -> CDouble -> IO ValueRef
+constReal = Raw.constReal
+
+constRealOfString :: TypeRef -> CString -> IO ValueRef
+constRealOfString = Raw.constRealOfString
+
+constRealOfStringAndSize :: TypeRef -> CString -> CUInt -> IO ValueRef
+constRealOfStringAndSize = Raw.constRealOfStringAndSize
+
+constIntGetZExtValue :: ValueRef -> IO CULLong
+constIntGetZExtValue = Raw.constIntGetZExtValue
+
+constIntGetSExtValue :: ValueRef -> IO CLLong
+constIntGetSExtValue = Raw.constIntGetSExtValue
+
 
 -- ** Composite Constants
-foreign import ccall unsafe "LLVMConstStringInContext" constStringInContext
-    :: ContextRef -> CString -> CUInt -> LLVM.Bool -> IO ValueRef
-foreign import ccall unsafe "LLVMConstStructInContext" constStructInContext
-    :: ContextRef -> Ptr ValueRef -> CUInt -> LLVM.Bool -> IO ValueRef
-foreign import ccall unsafe "LLVMConstString" constString
-    :: CString -> CUInt -> LLVM.Bool -> IO ValueRef
-foreign import ccall unsafe "LLVMConstArray" constArray
-    :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstStruct" constStruct
-    :: Ptr ValueRef -> CUInt -> LLVM.Bool -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNamedStruct" constNamedStruct
-    :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstVector" constVector
-    :: Ptr ValueRef -> CUInt -> IO ValueRef
+constStringInContext :: ContextRef -> CString -> CUInt -> LLVM.Bool -> IO ValueRef
+constStringInContext = Raw.constStringInContext
+
+constStructInContext :: ContextRef -> Ptr ValueRef -> CUInt -> LLVM.Bool -> IO ValueRef
+constStructInContext = Raw.constStructInContext
+
+constString :: CString -> CUInt -> LLVM.Bool -> IO ValueRef
+constString = Raw.constString
+
+constArray :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+constArray = Raw.constArray
+
+constStruct :: Ptr ValueRef -> CUInt -> LLVM.Bool -> IO ValueRef
+constStruct = Raw.constStruct
+
+constNamedStruct :: TypeRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+constNamedStruct = Raw.constNamedStruct
+
+constVector :: Ptr ValueRef -> CUInt -> IO ValueRef
+constVector = Raw.constVector
+
 
 -- ** Constant expressions
-foreign import ccall unsafe "LLVMGetConstOpcode" getConstOpcode
-    :: ValueRef -> IO CUInt {-Opcode-}
-foreign import ccall unsafe "LLVMAlignOf" alignOf
-    :: TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMSizeOf" sizeOf
-    :: TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNeg" constNeg
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNSWNeg" constNSWNeg
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNUWNeg" constNUWNeg
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFNeg" constFNeg
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNot" constNot
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstAdd" constAdd
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNSWAdd" constNSWAdd
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNUWAdd" constNUWAdd
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFAdd" constFAdd
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSub" constSub
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNSWSub" constNSWSub
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNUWSub" constNUWSub
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFSub" constFSub
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstMul" constMul
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNSWMul" constNSWMul
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstNUWMul" constNUWMul
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFMul" constFMul
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstUDiv" constUDiv
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSDiv" constSDiv
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstExactSDiv" constExactSDiv
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFDiv" constFDiv
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstURem" constURem
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSRem" constSRem
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFRem" constFRem
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstAnd" constAnd
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstOr" constOr
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstXor" constXor
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstICmp" constICmp
-    :: CInt -> ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFCmp" constFCmp
-    :: CInt -> ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstShl" constShl
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstLShr" constLShr
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstAShr" constAShr
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstGEP" constGEP
-    :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstInBoundsGEP" constInBoundsGEP
-    :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstTrunc" constTrunc
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSExt" constSExt
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstZExt" constZExt
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFPTrunc" constFPTrunc
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFPExt" constFPExt
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstUIToFP" constUIToFP
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSIToFP" constSIToFP
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFPToUI" constFPToUI
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFPToSI" constFPToSI
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstPtrToInt" constPtrToInt
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstIntToPtr" constIntToPtr
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstBitCast" constBitCast
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSExtOrBitCast" constSExtOrBitCast
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstZExtOrBitCast" constZExtOrBitCast
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstTruncOrBitCast" constTruncOrBitCast
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstPointerCast" constPointerCast
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstIntCast" constIntCast
-    :: ValueRef -> TypeRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstFPCast" constFPCast
-    :: ValueRef -> TypeRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstSelect" constSelect
-    :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstExtractElement" constExtractElement
-    :: ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstInsertElement" constInsertElement
-    :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstShuffleVector" constShuffleVector
-    :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMConstExtractValue" constExtractValue
-    :: ValueRef -> Ptr CUInt -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstInsertValue" constInsertValue
-    :: ValueRef -> ValueRef -> Ptr CUInt -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMConstInlineAsm" constInlineAsm
-    :: TypeRef -> CString -> CString -> LLVM.Bool -> LLVM.Bool -> IO ValueRef
-foreign import ccall unsafe "LLVMBlockAddress" blockAddress
-    :: ValueRef -> BasicBlockRef -> IO ValueRef
+getConstOpcode :: ValueRef -> IO Raw.Opcode
+getConstOpcode = Raw.getConstOpcode
+
+alignOf :: TypeRef -> IO ValueRef
+alignOf = Raw.alignOf
+
+sizeOf :: TypeRef -> IO ValueRef
+sizeOf = Raw.sizeOf
+
+constNeg :: ValueRef -> IO ValueRef
+constNeg = Raw.constNeg
+
+constNSWNeg :: ValueRef -> IO ValueRef
+constNSWNeg = Raw.constNSWNeg
+
+constNUWNeg :: ValueRef -> IO ValueRef
+constNUWNeg = Raw.constNUWNeg
+
+constFNeg :: ValueRef -> IO ValueRef
+constFNeg = Raw.constFNeg
+
+constNot :: ValueRef -> IO ValueRef
+constNot = Raw.constNot
+
+constAdd :: ValueRef -> ValueRef -> IO ValueRef
+constAdd = Raw.constAdd
+
+constNSWAdd :: ValueRef -> ValueRef -> IO ValueRef
+constNSWAdd = Raw.constNSWAdd
+
+constNUWAdd :: ValueRef -> ValueRef -> IO ValueRef
+constNUWAdd = Raw.constNUWAdd
+
+constFAdd :: ValueRef -> ValueRef -> IO ValueRef
+constFAdd = Raw.constFAdd
+
+constSub :: ValueRef -> ValueRef -> IO ValueRef
+constSub = Raw.constSub
+
+constNSWSub :: ValueRef -> ValueRef -> IO ValueRef
+constNSWSub = Raw.constNSWSub
+
+constNUWSub :: ValueRef -> ValueRef -> IO ValueRef
+constNUWSub = Raw.constNUWSub
+
+constFSub :: ValueRef -> ValueRef -> IO ValueRef
+constFSub = Raw.constFSub
+
+constMul :: ValueRef -> ValueRef -> IO ValueRef
+constMul = Raw.constMul
+
+constNSWMul :: ValueRef -> ValueRef -> IO ValueRef
+constNSWMul = Raw.constNSWMul
+
+constNUWMul :: ValueRef -> ValueRef -> IO ValueRef
+constNUWMul = Raw.constNUWMul
+
+constFMul :: ValueRef -> ValueRef -> IO ValueRef
+constFMul = Raw.constFMul
+
+constUDiv :: ValueRef -> ValueRef -> IO ValueRef
+constUDiv = Raw.constUDiv
+
+constSDiv :: ValueRef -> ValueRef -> IO ValueRef
+constSDiv = Raw.constSDiv
+
+constExactSDiv :: ValueRef -> ValueRef -> IO ValueRef
+constExactSDiv = Raw.constExactSDiv
+
+constFDiv :: ValueRef -> ValueRef -> IO ValueRef
+constFDiv = Raw.constFDiv
+
+constURem :: ValueRef -> ValueRef -> IO ValueRef
+constURem = Raw.constURem
+
+constSRem :: ValueRef -> ValueRef -> IO ValueRef
+constSRem = Raw.constSRem
+
+constFRem :: ValueRef -> ValueRef -> IO ValueRef
+constFRem = Raw.constFRem
+
+constAnd :: ValueRef -> ValueRef -> IO ValueRef
+constAnd = Raw.constAnd
+
+constOr :: ValueRef -> ValueRef -> IO ValueRef
+constOr = Raw.constOr
+
+constXor :: ValueRef -> ValueRef -> IO ValueRef
+constXor = Raw.constXor
+
+constICmp :: Raw.IntPredicate -> ValueRef -> ValueRef -> IO ValueRef
+constICmp = Raw.constICmp
+
+constFCmp :: Raw.RealPredicate -> ValueRef -> ValueRef -> IO ValueRef
+constFCmp = Raw.constFCmp
+
+constShl :: ValueRef -> ValueRef -> IO ValueRef
+constShl = Raw.constShl
+
+constLShr :: ValueRef -> ValueRef -> IO ValueRef
+constLShr = Raw.constLShr
+
+constAShr :: ValueRef -> ValueRef -> IO ValueRef
+constAShr = Raw.constAShr
+
+constGEP :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+constGEP = Raw.constGEP
+
+constInBoundsGEP :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+constInBoundsGEP = Raw.constInBoundsGEP
+
+constTrunc :: ValueRef -> TypeRef -> IO ValueRef
+constTrunc = Raw.constTrunc
+
+constSExt :: ValueRef -> TypeRef -> IO ValueRef
+constSExt = Raw.constSExt
+
+constZExt :: ValueRef -> TypeRef -> IO ValueRef
+constZExt = Raw.constZExt
+
+constFPTrunc :: ValueRef -> TypeRef -> IO ValueRef
+constFPTrunc = Raw.constFPTrunc
+
+constFPExt :: ValueRef -> TypeRef -> IO ValueRef
+constFPExt = Raw.constFPExt
+
+constUIToFP :: ValueRef -> TypeRef -> IO ValueRef
+constUIToFP = Raw.constUIToFP
+
+constSIToFP :: ValueRef -> TypeRef -> IO ValueRef
+constSIToFP = Raw.constSIToFP
+
+constFPToUI :: ValueRef -> TypeRef -> IO ValueRef
+constFPToUI = Raw.constFPToUI
+
+constFPToSI :: ValueRef -> TypeRef -> IO ValueRef
+constFPToSI = Raw.constFPToSI
+
+constPtrToInt :: ValueRef -> TypeRef -> IO ValueRef
+constPtrToInt = Raw.constPtrToInt
+
+constIntToPtr :: ValueRef -> TypeRef -> IO ValueRef
+constIntToPtr = Raw.constIntToPtr
+
+constBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constBitCast = Raw.constBitCast
+
+constSExtOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constSExtOrBitCast = Raw.constSExtOrBitCast
+
+constZExtOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constZExtOrBitCast = Raw.constZExtOrBitCast
+
+constTruncOrBitCast :: ValueRef -> TypeRef -> IO ValueRef
+constTruncOrBitCast = Raw.constTruncOrBitCast
+
+constPointerCast :: ValueRef -> TypeRef -> IO ValueRef
+constPointerCast = Raw.constPointerCast
+
+constIntCast :: ValueRef -> TypeRef -> LLVM.Bool -> IO ValueRef
+constIntCast = Raw.constIntCast
+
+constFPCast :: ValueRef -> TypeRef -> IO ValueRef
+constFPCast = Raw.constFPCast
+
+constSelect :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
+constSelect = Raw.constSelect
+
+constExtractElement :: ValueRef -> ValueRef -> IO ValueRef
+constExtractElement = Raw.constExtractElement
+
+constInsertElement :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
+constInsertElement = Raw.constInsertElement
+
+constShuffleVector :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
+constShuffleVector = Raw.constShuffleVector
+
+constExtractValue :: ValueRef -> Ptr CUInt -> CUInt -> IO ValueRef
+constExtractValue = Raw.constExtractValue
+
+constInsertValue :: ValueRef -> ValueRef -> Ptr CUInt -> CUInt -> IO ValueRef
+constInsertValue = Raw.constInsertValue
+
+constInlineAsm :: TypeRef -> CString -> CString -> LLVM.Bool -> LLVM.Bool -> IO ValueRef
+constInlineAsm = Raw.constInlineAsm
+
+blockAddress :: ValueRef -> BasicBlockRef -> IO ValueRef
+blockAddress = Raw.blockAddress
+
 
 -- ** Operations on globals
-foreign import ccall unsafe "LLVMGetGlobalParent" getGlobalParent
-    :: ValueRef -> IO ModuleRef
-foreign import ccall unsafe "LLVMIsDeclaration" isDeclaration
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMGetLinkage" getLinkage
-    :: ValueRef -> IO CUInt
-foreign import ccall unsafe "LLVMSetLinkage" setLinkage
-    :: ValueRef -> CUInt -> IO ()
-foreign import ccall unsafe "LLVMGetSection" getSection
-    :: ValueRef -> IO CString
-foreign import ccall unsafe "LLVMSetSection" setSection
-    :: ValueRef -> CString -> IO ()
-foreign import ccall unsafe "LLVMGetVisibility" getVisibility
-    :: ValueRef -> IO CUInt
-foreign import ccall unsafe "LLVMSetVisibility" setVisibility
-    :: ValueRef -> CUInt -> IO ()
-foreign import ccall unsafe "LLVMGetAlignment" getAlignment
-    :: ValueRef -> IO CUInt
-foreign import ccall unsafe "LLVMSetAlignment" setAlignment
-    :: ValueRef -> CUInt -> IO ()
+getGlobalParent :: ValueRef -> IO ModuleRef
+getGlobalParent = Raw.getGlobalParent
+
+isDeclaration :: ValueRef -> IO LLVM.Bool
+isDeclaration = Raw.isDeclaration
+
+getLinkage :: ValueRef -> IO Raw.Linkage
+getLinkage = Raw.getLinkage
+
+setLinkage :: ValueRef -> Raw.Linkage -> IO ()
+setLinkage = Raw.setLinkage
+
+getSection :: ValueRef -> IO CString
+getSection = Raw.getSection
+
+setSection :: ValueRef -> CString -> IO ()
+setSection = Raw.setSection
+
+getVisibility :: ValueRef -> IO Raw.Visibility
+getVisibility = Raw.getVisibility
+
+setVisibility :: ValueRef -> Raw.Visibility -> IO ()
+setVisibility = Raw.setVisibility
+
+getAlignment :: ValueRef -> IO CUInt
+getAlignment = Raw.getAlignment
+
+setAlignment :: ValueRef -> CUInt -> IO ()
+setAlignment = Raw.setAlignment
+
 
 -- ** Global Variables
-foreign import ccall unsafe "LLVMAddGlobal" addGlobal
-    :: ModuleRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMAddGlobalInAddressSpace" addGlobalInAddressSpace
-    :: ModuleRef -> TypeRef -> CString -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNamedGlobal" getNamedGlobal
-    :: ModuleRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMGetFirstGlobal" getFirstGlobal
-    :: ModuleRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetLastGlobal" getLastGlobal
-    :: ModuleRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNextGlobal" getNextGlobal
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetPreviousGlobal" getPreviousGlobal
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMDeleteGlobal" deleteGlobal
-    :: ValueRef -> IO ()
-foreign import ccall unsafe "LLVMSetInitializer" setInitializer
-    :: ValueRef -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMGetInitializer" getInitializer
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMIsThreadLocal" isThreadLocal
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMSetThreadLocal" setThreadLocal
-    :: ValueRef -> LLVM.Bool -> IO ()
-foreign import ccall unsafe "LLVMIsGlobalConstant" isGlobalConstant
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMSetGlobalConstant" setGlobalConstant
-    :: ValueRef -> LLVM.Bool -> IO ()
+addGlobal :: ModuleRef -> TypeRef -> CString -> IO ValueRef
+addGlobal = Raw.addGlobal
+
+addGlobalInAddressSpace :: ModuleRef -> TypeRef -> CString -> CUInt -> IO ValueRef
+addGlobalInAddressSpace = Raw.addGlobalInAddressSpace
+
+getNamedGlobal :: ModuleRef -> CString -> IO ValueRef
+getNamedGlobal = Raw.getNamedGlobal
+
+getFirstGlobal :: ModuleRef -> IO ValueRef
+getFirstGlobal = Raw.getFirstGlobal
+
+getLastGlobal :: ModuleRef -> IO ValueRef
+getLastGlobal = Raw.getLastGlobal
+
+getNextGlobal :: ValueRef -> IO ValueRef
+getNextGlobal = Raw.getNextGlobal
+
+getPreviousGlobal :: ValueRef -> IO ValueRef
+getPreviousGlobal = Raw.getPreviousGlobal
+
+deleteGlobal :: ValueRef -> IO ()
+deleteGlobal = Raw.deleteGlobal
+
+setInitializer :: ValueRef -> ValueRef -> IO ()
+setInitializer = Raw.setInitializer
+
+getInitializer :: ValueRef -> IO ValueRef
+getInitializer = Raw.getInitializer
+
+isThreadLocal :: ValueRef -> IO LLVM.Bool
+isThreadLocal = Raw.isThreadLocal
+
+setThreadLocal :: ValueRef -> LLVM.Bool -> IO ()
+setThreadLocal = Raw.setThreadLocal
+
+isGlobalConstant :: ValueRef -> IO LLVM.Bool
+isGlobalConstant = Raw.isGlobalConstant
+
+setGlobalConstant :: ValueRef -> LLVM.Bool -> IO ()
+setGlobalConstant = Raw.setGlobalConstant
+
 
 -- ** Aliases
-foreign import ccall unsafe "LLVMAddAlias" addAlias
-    :: ModuleRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
+addAlias :: ModuleRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
+addAlias = Raw.addAlias
 
-foreign import ccall unsafe "LLVMDeleteFunction" deleteFunction
-    :: ValueRef                 -- ^ function
-    -> IO ()
-foreign import ccall unsafe "LLVMGetIntrinsicID" getIntrinsicID
-    :: ValueRef                 -- ^ function
-    -> IO CUInt
-foreign import ccall unsafe "LLVMGetFunctionCallConv" getFunctionCallConv
-    :: ValueRef                 -- ^ function
-    -> IO CUInt
-foreign import ccall unsafe "LLVMSetFunctionCallConv" setFunctionCallConv
-    :: ValueRef                 -- ^ function
-    -> CUInt
-    -> IO ()
-foreign import ccall unsafe "LLVMGetGC" getGC
-    :: ValueRef -> IO CString
-foreign import ccall unsafe "LLVMSetGC" setGC
-    :: ValueRef -> CString -> IO ()
+deleteFunction :: FunctionRef -> IO ()
+deleteFunction = Raw.deleteFunction
 
--- ** Attribute attachment
+getIntrinsicID :: FunctionRef -> IO CUInt
+getIntrinsicID = Raw.getIntrinsicID
 
-foreign import ccall unsafe "LLVMAddAttributeAtIndex" addAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
+getFunctionCallConv :: FunctionRef -> IO Raw.CallingConvention
+getFunctionCallConv = fmap Raw.CallingConvention . Raw.getFunctionCallConv
 
-foreign import ccall unsafe "LLVMGetAttributeCountAtIndex" getAttributeCountAtIndex
-    :: ValueRef -> AttributeIndex -> IO CUInt
+setFunctionCallConv :: FunctionRef -> Raw.CallingConvention -> IO ()
+setFunctionCallConv f = Raw.setFunctionCallConv f . Raw.unCallingConvention
 
-foreign import ccall unsafe "LLVMGetAttributesAtIndex" getAttributesAtIndex
-    :: ValueRef -> AttributeIndex -> Ptr AttributeRef -> IO ()
+getGC :: ValueRef -> IO CString
+getGC = Raw.getGC
 
-foreign import ccall unsafe "LLVMGetEnumAttributeAtIndex" getEnumAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
+setGC :: ValueRef -> CString -> IO ()
+setGC = Raw.setGC
 
-foreign import ccall unsafe "LLVMGetStringAttributeAtIndex" getStringAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
 
-foreign import ccall unsafe "LLVMRemoveEnumAttributeAtIndex" removeEnumAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> AttributeKind -> IO ()
+-- ** Raw.Attribute attachment
 
-foreign import ccall unsafe "LLVMRemoveStringAttributeAtIndex" removeStringAttributeAtIndex
-    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
+addAttributeAtIndex :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
+addAttributeAtIndex = Raw.addAttributeAtIndex
 
-foreign import ccall unsafe "LLVMAddTargetDependentFunctionAttr" addTargetDependentFunctionAttr
-    :: ValueRef -> CString -> CString -> IO ()
+getAttributeCountAtIndex :: ValueRef -> AttributeIndex -> IO CUInt
+getAttributeCountAtIndex = Raw.getAttributeCountAtIndex
+
+getAttributesAtIndex :: ValueRef -> AttributeIndex -> Ptr AttributeRef -> IO ()
+getAttributesAtIndex = Raw.getAttributesAtIndex
+
+getEnumAttributeAtIndex :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
+getEnumAttributeAtIndex v i (AttributeKind kindId) = Raw.getEnumAttributeAtIndex v i kindId
+
+getStringAttributeAtIndex :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
+getStringAttributeAtIndex = Raw.getStringAttributeAtIndex
+
+removeEnumAttributeAtIndex :: ValueRef -> AttributeIndex -> AttributeKind -> IO ()
+removeEnumAttributeAtIndex v i (AttributeKind kindId) = Raw.removeEnumAttributeAtIndex v i kindId
+
+removeStringAttributeAtIndex :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
+removeStringAttributeAtIndex = Raw.removeStringAttributeAtIndex
+
+addTargetDependentFunctionAttr :: ValueRef -> CString -> CString -> IO ()
+addTargetDependentFunctionAttr = Raw.addTargetDependentFunctionAttr
+
 
 -- ** Parameters
-foreign import ccall unsafe "LLVMCountParams" countParams
-    :: ValueRef                 -- ^ function
-    -> IO CUInt
-foreign import ccall unsafe "LLVMGetParams" getParams
-    :: ValueRef                 -- ^ function
+countParams :: FunctionRef -> IO CUInt
+countParams = Raw.countParams
+
+getParams
+    :: FunctionRef
     -> Ptr ValueRef             -- ^ array to fill out
     -> IO ()
-foreign import ccall unsafe "LLVMGetParam" getParam
-    :: ValueRef                 -- ^ function
+getParams = Raw.getParams
+
+getParam
+    :: FunctionRef
     -> CUInt                    -- ^ offset into array
     -> IO ValueRef
-foreign import ccall unsafe "LLVMGetParamParent" getParamParent
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetFirstParam" getFirstParam
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetLastParam" getLastParam
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetNextParam" getNextParam
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetPreviousParam" getPreviousParam
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMSetParamAlignment" setParamAlignment
-    :: ValueRef -> CUInt -> IO ()
+getParam = Raw.getParam
+
+getParamParent :: ValueRef -> IO ValueRef
+getParamParent = Raw.getParamParent
+
+getFirstParam :: ValueRef -> IO ValueRef
+getFirstParam = Raw.getFirstParam
+
+getLastParam :: ValueRef -> IO ValueRef
+getLastParam = Raw.getLastParam
+
+getNextParam :: ValueRef -> IO ValueRef
+getNextParam = Raw.getNextParam
+
+getPreviousParam :: ValueRef -> IO ValueRef
+getPreviousParam = Raw.getPreviousParam
+
+setParamAlignment :: ValueRef -> CUInt -> IO ()
+setParamAlignment = Raw.setParamAlignment
+
 
 -- ** Basic Blocks
-foreign import ccall unsafe "LLVMBasicBlockAsValue" basicBlockAsValue
-    :: BasicBlockRef -> IO ValueRef
-foreign import ccall unsafe "LLVMValueIsBasicBlock" valueIsBasicBlock
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMValueAsBasicBlock" valueAsBasicBlock
+basicBlockAsValue :: BasicBlockRef -> IO ValueRef
+basicBlockAsValue = Raw.basicBlockAsValue
+
+valueIsBasicBlock :: ValueRef -> IO LLVM.Bool
+valueIsBasicBlock = Raw.valueIsBasicBlock
+
+valueAsBasicBlock
     :: ValueRef                 -- ^ basic block
     -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMGetBasicBlockName" getBasicBlockName
-    :: BasicBlockRef -> IO CString
-foreign import ccall unsafe "LLVMGetBasicBlockParent" getBasicBlockParent
-    :: BasicBlockRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetBasicBlockTerminator" getBasicBlockTerminator
-    :: BasicBlockRef -> IO ValueRef
-foreign import ccall unsafe "LLVMCountBasicBlocks" countBasicBlocks
+valueAsBasicBlock = Raw.valueAsBasicBlock
+
+getBasicBlockName :: BasicBlockRef -> IO CString
+getBasicBlockName = Raw.getBasicBlockName
+
+getBasicBlockParent :: BasicBlockRef -> IO ValueRef
+getBasicBlockParent = Raw.getBasicBlockParent
+
+getBasicBlockTerminator :: BasicBlockRef -> IO ValueRef
+getBasicBlockTerminator = Raw.getBasicBlockTerminator
+
+countBasicBlocks
     :: ValueRef                 -- ^ function
     -> IO CUInt
-foreign import ccall unsafe "LLVMGetBasicBlocks" getBasicBlocks
+countBasicBlocks = Raw.countBasicBlocks
+
+getBasicBlocks
     :: ValueRef                 -- ^ function
     -> Ptr BasicBlockRef        -- ^ array to fill out
     -> IO ()
-foreign import ccall unsafe "LLVMGetFirstBasicBlock" getFirstBasicBlock
-    :: ValueRef -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMGetLastBasicBlock" getLastBasicBlock
-    :: ValueRef -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMGetNextBasicBlock" getNextBasicBlock
-    :: BasicBlockRef -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMGetPreviousBasicBlock" getPreviousBasicBlock
-    :: BasicBlockRef -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMGetEntryBasicBlock" getEntryBasicBlock
+getBasicBlocks = Raw.getBasicBlocks
+
+getFirstBasicBlock :: ValueRef -> IO BasicBlockRef
+getFirstBasicBlock = Raw.getFirstBasicBlock
+
+getLastBasicBlock :: ValueRef -> IO BasicBlockRef
+getLastBasicBlock = Raw.getLastBasicBlock
+
+getNextBasicBlock :: BasicBlockRef -> IO BasicBlockRef
+getNextBasicBlock = Raw.getNextBasicBlock
+
+getPreviousBasicBlock :: BasicBlockRef -> IO BasicBlockRef
+getPreviousBasicBlock = Raw.getPreviousBasicBlock
+
+getEntryBasicBlock
     :: ValueRef                 -- ^ function
     -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMAppendBasicBlockInContext" appendBasicBlockInContext
-    :: ContextRef -> ValueRef -> CString -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMInsertBasicBlockInContext" insertBasicBlockInContext
-    :: ContextRef -> BasicBlockRef -> CString -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMAppendBasicBlock" appendBasicBlock
+getEntryBasicBlock = Raw.getEntryBasicBlock
+
+appendBasicBlockInContext :: ContextRef -> ValueRef -> CString -> IO BasicBlockRef
+appendBasicBlockInContext = Raw.appendBasicBlockInContext
+
+insertBasicBlockInContext :: ContextRef -> BasicBlockRef -> CString -> IO BasicBlockRef
+insertBasicBlockInContext = Raw.insertBasicBlockInContext
+
+appendBasicBlock
     :: ValueRef                 -- ^ function
     -> CString                  -- ^ name for label
     -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMInsertBasicBlock" insertBasicBlock
+appendBasicBlock = Raw.appendBasicBlock
+
+insertBasicBlock
     :: BasicBlockRef            -- ^ insert before this one
     -> CString                  -- ^ name for label
     -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMDeleteBasicBlock" deleteBasicBlock
-    :: BasicBlockRef -> IO ()
-foreign import ccall unsafe "LLVMRemoveBasicBlockFromParent" removeBasicBlockFromParent
-    :: BasicBlockRef -> IO ()
-foreign import ccall unsafe "LLVMMoveBasicBlockBefore" moveBasicBlockBefore
-    :: BasicBlockRef -> BasicBlockRef -> IO ()
-foreign import ccall unsafe "LLVMMoveBasicBlockAfter" moveBasicBlockAfter
-    :: BasicBlockRef -> BasicBlockRef -> IO ()
-foreign import ccall unsafe "LLVMGetFirstInstruction" getFirstInstruction
-    :: BasicBlockRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetLastInstruction" getLastInstruction
-    :: BasicBlockRef -> IO ValueRef
+insertBasicBlock = Raw.insertBasicBlock
+
+deleteBasicBlock :: BasicBlockRef -> IO ()
+deleteBasicBlock = Raw.deleteBasicBlock
+
+removeBasicBlockFromParent :: BasicBlockRef -> IO ()
+removeBasicBlockFromParent = Raw.removeBasicBlockFromParent
+
+moveBasicBlockBefore :: BasicBlockRef -> BasicBlockRef -> IO ()
+moveBasicBlockBefore = Raw.moveBasicBlockBefore
+
+moveBasicBlockAfter :: BasicBlockRef -> BasicBlockRef -> IO ()
+moveBasicBlockAfter = Raw.moveBasicBlockAfter
+
+getFirstInstruction :: BasicBlockRef -> IO ValueRef
+getFirstInstruction = Raw.getFirstInstruction
+
+getLastInstruction :: BasicBlockRef -> IO ValueRef
+getLastInstruction = Raw.getLastInstruction
+
 
 -- ** Instructions
-foreign import ccall unsafe "LLVMGetInstructionParent" getInstructionParent
-    :: ValueRef -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMGetNextInstruction" getNextInstruction
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMGetPreviousInstruction" getPreviousInstruction
-    :: ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMInstructionEraseFromParent" instructionEraseFromParent
-    :: ValueRef -> IO ()
-foreign import ccall unsafe "LLVMGetInstructionOpcode" getInstructionOpcode
-    :: ValueRef -> IO Int
-foreign import ccall unsafe "LLVMGetICmpPredicate" getICmpPredicate
-    :: ValueRef -> IO Int
+getInstructionParent :: ValueRef -> IO BasicBlockRef
+getInstructionParent = Raw.getInstructionParent
+
+getNextInstruction :: ValueRef -> IO ValueRef
+getNextInstruction = Raw.getNextInstruction
+
+getPreviousInstruction :: ValueRef -> IO ValueRef
+getPreviousInstruction = Raw.getPreviousInstruction
+
+instructionEraseFromParent :: ValueRef -> IO ()
+instructionEraseFromParent = Raw.instructionEraseFromParent
+
+getInstructionOpcode :: ValueRef -> IO Raw.Opcode
+getInstructionOpcode = Raw.getInstructionOpcode
+
+getICmpPredicate :: ValueRef -> IO Raw.IntPredicate
+getICmpPredicate = Raw.getICmpPredicate
+
 
 -- ** Call sites
-foreign import ccall unsafe "LLVMSetInstructionCallConv" setInstructionCallConv
-    :: ValueRef -> CUInt -> IO ()
-foreign import ccall unsafe "LLVMGetInstructionCallConv" getInstructionCallConv
-    :: ValueRef -> IO CUInt
-foreign import ccall unsafe "LLVMSetInstrParamAlignment" setInstrParamAlignment
-    :: ValueRef -> CUInt -> CUInt -> IO ()
+setInstructionCallConv :: ValueRef -> Raw.CallingConvention -> IO ()
+setInstructionCallConv v =
+   Raw.setInstructionCallConv v . Raw.unCallingConvention
 
-foreign import ccall unsafe "LLVMAddCallSiteAttribute" addCallSiteAttribute
-    :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
+getInstructionCallConv :: ValueRef -> IO Raw.CallingConvention
+getInstructionCallConv =
+   fmap Raw.CallingConvention . Raw.getInstructionCallConv
 
-foreign import ccall unsafe "LLVMGetCallSiteAttributeCount" getCallSiteAttributeCount
-    :: ValueRef -> AttributeIndex -> IO CUInt
+setInstrParamAlignment :: ValueRef -> CUInt -> CUInt -> IO ()
+setInstrParamAlignment = Raw.setInstrParamAlignment
 
-foreign import ccall unsafe "LLVMGetCallSiteAttributes" getCallSiteAttributes
-    :: ValueRef -> AttributeIndex -> Ptr AttributeRef -> IO ()
 
-foreign import ccall unsafe "LLVMGetCallSiteEnumAttribute" getCallSiteEnumAttribute
-    :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
+addCallSiteAttribute :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
+addCallSiteAttribute = Raw.addCallSiteAttribute
 
-foreign import ccall unsafe "LLVMGetCallSiteStringAttribute" getCallSiteStringAttribute
-    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
+getCallSiteAttributeCount :: ValueRef -> AttributeIndex -> IO CUInt
+getCallSiteAttributeCount = Raw.getCallSiteAttributeCount
 
-foreign import ccall unsafe "LLVMRemoveCallSiteEnumAttribute" removeCallSiteEnumAttribute
-    :: ValueRef -> AttributeIndex -> AttributeKind -> IO ()
+getCallSiteAttributes :: ValueRef -> AttributeIndex -> Ptr AttributeRef -> IO ()
+getCallSiteAttributes = Raw.getCallSiteAttributes
 
-foreign import ccall unsafe "LLVMRemoveCallSiteStringAttribute" removeCallSiteStringAttribute
-    :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
+getCallSiteEnumAttribute :: ValueRef -> AttributeIndex -> AttributeKind -> IO AttributeRef
+getCallSiteEnumAttribute v i (AttributeKind kindId) = Raw.getCallSiteEnumAttribute v i kindId
 
-foreign import ccall unsafe "LLVMGetCalledValue" getCalledValue
-    :: ValueRef -> IO ValueRef
+getCallSiteStringAttribute :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO AttributeRef
+getCallSiteStringAttribute = Raw.getCallSiteStringAttribute
+
+removeCallSiteEnumAttribute :: ValueRef -> AttributeIndex -> AttributeKind -> IO ()
+removeCallSiteEnumAttribute v i (AttributeKind kindId) = Raw.removeCallSiteEnumAttribute v i kindId
+
+removeCallSiteStringAttribute :: ValueRef -> AttributeIndex -> CString -> CUInt -> IO ()
+removeCallSiteStringAttribute = Raw.removeCallSiteStringAttribute
+
+getCalledValue :: ValueRef -> IO ValueRef
+getCalledValue = Raw.getCalledValue
+
 
 -- ** Call instructions
-foreign import ccall unsafe "LLVMIsTailCall" isTailCall
-    :: ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMSetTailCall" setTailCall
-    :: ValueRef -> LLVM.Bool -> IO ()
+isTailCall :: ValueRef -> IO LLVM.Bool
+isTailCall = Raw.isTailCall
+
+setTailCall :: ValueRef -> LLVM.Bool -> IO ()
+setTailCall = Raw.setTailCall
+
 
 -- ** Switch Instructions
-foreign import ccall unsafe "LLVMGetSwitchDefaultDest" getSwitchDefaultDest
-    :: ValueRef -> IO BasicBlockRef
+getSwitchDefaultDest :: ValueRef -> IO BasicBlockRef
+getSwitchDefaultDest = Raw.getSwitchDefaultDest
+
 
 -- ** Phi Nodes
-foreign import ccall unsafe "LLVMAddIncoming" addIncoming
-    :: ValueRef -> Ptr ValueRef -> Ptr BasicBlockRef -> CUInt -> IO ()
-foreign import ccall unsafe "LLVMCountIncoming" countIncoming
-    :: ValueRef -> IO CUInt
-foreign import ccall unsafe "LLVMGetIncomingValue" getIncomingValue
-    :: ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMGetIncomingBlock" getIncomingBlock
-    :: ValueRef -> CUInt -> IO BasicBlockRef
+addIncoming :: ValueRef -> Ptr ValueRef -> Ptr BasicBlockRef -> CUInt -> IO ()
+addIncoming = Raw.addIncoming
+
+countIncoming :: ValueRef -> IO CUInt
+countIncoming = Raw.countIncoming
+
+getIncomingValue :: ValueRef -> CUInt -> IO ValueRef
+getIncomingValue = Raw.getIncomingValue
+
+getIncomingBlock :: ValueRef -> CUInt -> IO BasicBlockRef
+getIncomingBlock = Raw.getIncomingBlock
+
 
 -- ** Builders
-foreign import ccall unsafe "LLVMCreateBuilderInContext" createBuilderInContext
-    :: ContextRef -> IO BuilderRef
-foreign import ccall unsafe "LLVMCreateBuilder" createBuilder
-    :: IO BuilderRef
-foreign import ccall unsafe "LLVMPositionBuilder" positionBuilder
-    :: BuilderRef -> BasicBlockRef -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMPositionBuilderBefore" positionBefore
-    :: BuilderRef -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMPositionBuilderAtEnd" positionAtEnd
-    :: BuilderRef -> BasicBlockRef -> IO ()
-foreign import ccall unsafe "LLVMGetInsertBlock" getInsertBlock
-    :: BuilderRef -> IO BasicBlockRef
-foreign import ccall unsafe "LLVMClearInsertionPosition" clearInsertionPosition
-    :: BuilderRef -> IO ()
-foreign import ccall unsafe "LLVMInsertIntoBuilder" insertIntoBuilder
-    :: BuilderRef -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMInsertIntoBuilderWithName" insertIntoBuilderWithName
-    :: BuilderRef -> ValueRef -> CString -> IO ()
+createBuilderInContext :: ContextRef -> IO BuilderRef
+createBuilderInContext = Raw.createBuilderInContext
+
+createBuilder :: IO BuilderRef
+createBuilder = Raw.createBuilder
+
+positionBuilder :: BuilderRef -> BasicBlockRef -> ValueRef -> IO ()
+positionBuilder = Raw.positionBuilder
+
+positionBefore :: BuilderRef -> ValueRef -> IO ()
+positionBefore = Raw.positionBuilderBefore
+
+positionAtEnd :: BuilderRef -> BasicBlockRef -> IO ()
+positionAtEnd = Raw.positionBuilderAtEnd
+
+getInsertBlock :: BuilderRef -> IO BasicBlockRef
+getInsertBlock = Raw.getInsertBlock
+
+clearInsertionPosition :: BuilderRef -> IO ()
+clearInsertionPosition = Raw.clearInsertionPosition
+
+insertIntoBuilder :: BuilderRef -> ValueRef -> IO ()
+insertIntoBuilder = Raw.insertIntoBuilder
+
+insertIntoBuilderWithName :: BuilderRef -> ValueRef -> CString -> IO ()
+insertIntoBuilderWithName = Raw.insertIntoBuilderWithName
+
 foreign import ccall unsafe "&LLVMDisposeBuilder" ptrDisposeBuilder
     :: FunPtr (BuilderRef -> IO ())
 
+
 -- ** Metadata
-foreign import ccall unsafe "LLVMGetCurrentDebugLocation" getCurrentDebugLocation
-    :: BuilderRef -> IO ValueRef
-foreign import ccall unsafe "LLVMSetCurrentDebugLocation" setCurrentDebugLocation
-    :: BuilderRef -> ValueRef -> IO ()
-foreign import ccall unsafe "LLVMSetInstDebugLocation" setInstDebugLocation
-    :: BuilderRef -> ValueRef -> IO ()
+getCurrentDebugLocation :: BuilderRef -> IO ValueRef
+getCurrentDebugLocation = Raw.getCurrentDebugLocation
+
+setCurrentDebugLocation :: BuilderRef -> ValueRef -> IO ()
+setCurrentDebugLocation = Raw.setCurrentDebugLocation
+
+setInstDebugLocation :: BuilderRef -> ValueRef -> IO ()
+setInstDebugLocation = Raw.setInstDebugLocation
+
 
 -- ** Terminators
-foreign import ccall unsafe "LLVMBuildRetVoid" buildRetVoid
-    :: BuilderRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildRet" buildRet
-    :: BuilderRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildAggregateRet" buildAggregateRet
-    :: BuilderRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildBr" buildBr
-    :: BuilderRef -> BasicBlockRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildCondBr" buildCondBr
-    :: BuilderRef -> ValueRef -> BasicBlockRef -> BasicBlockRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSwitch" buildSwitch
-    :: BuilderRef -> ValueRef -> BasicBlockRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildIndirectBr" buildIndirectBr
-    :: BuilderRef -> ValueRef -> CUInt -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildInvoke" buildInvoke
-    :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt
-    -> BasicBlockRef -> BasicBlockRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildLandingPad" buildLandingPad
-    :: BuilderRef -> TypeRef -> ValueRef -> CUInt -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildResume" buildResume
-    :: BuilderRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildUnreachable" buildUnreachable
-    :: BuilderRef -> IO ValueRef
+buildRetVoid :: BuilderRef -> IO ValueRef
+buildRetVoid = Raw.buildRetVoid
+
+buildRet :: BuilderRef -> ValueRef -> IO ValueRef
+buildRet = Raw.buildRet
+
+buildAggregateRet :: BuilderRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
+buildAggregateRet = Raw.buildAggregateRet
+
+buildBr :: BuilderRef -> BasicBlockRef -> IO ValueRef
+buildBr = Raw.buildBr
+
+buildCondBr :: BuilderRef -> ValueRef -> BasicBlockRef -> BasicBlockRef -> IO ValueRef
+buildCondBr = Raw.buildCondBr
+
+buildSwitch :: BuilderRef -> ValueRef -> BasicBlockRef -> CUInt -> IO ValueRef
+buildSwitch = Raw.buildSwitch
+
+buildIndirectBr :: BuilderRef -> ValueRef -> CUInt -> IO ValueRef
+buildIndirectBr = Raw.buildIndirectBr
+
+buildInvoke :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> BasicBlockRef -> BasicBlockRef -> CString -> IO ValueRef
+buildInvoke = Raw.buildInvoke
+
+buildLandingPad :: BuilderRef -> TypeRef -> ValueRef -> CUInt -> CString -> IO ValueRef
+buildLandingPad = Raw.buildLandingPad
+
+buildResume :: BuilderRef -> ValueRef -> IO ValueRef
+buildResume = Raw.buildResume
+
+buildUnreachable :: BuilderRef -> IO ValueRef
+buildUnreachable = Raw.buildUnreachable
+
 
 -- ** Switch instructions
-foreign import ccall unsafe "LLVMAddCase" addCase
-    :: ValueRef -> ValueRef -> BasicBlockRef -> IO ()
+addCase :: ValueRef -> ValueRef -> BasicBlockRef -> IO ()
+addCase = Raw.addCase
+
 
 -- ** IndirectBr instructions
-foreign import ccall unsafe "LLVMAddDestination" addDestination
-    :: ValueRef -> BasicBlockRef -> IO ()
+addDestination :: ValueRef -> BasicBlockRef -> IO ()
+addDestination = Raw.addDestination
+
 
 -- ** LandingPad instructions
-foreign import ccall unsafe "LLVMAddClause" addClause
-    :: ValueRef -> ValueRef -> IO ()
+addClause :: ValueRef -> ValueRef -> IO ()
+addClause = Raw.addClause
+
 
 -- ** Resume instructions
-foreign import ccall unsafe "LLVMSetCleanup" setCleanup
-    :: ValueRef -> LLVM.Bool -> IO ()
+setCleanup :: ValueRef -> LLVM.Bool -> IO ()
+setCleanup = Raw.setCleanup
+
 
 -- ** Arithmetic
-foreign import ccall unsafe "LLVMBuildAdd" buildAdd
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNSWAdd" buildNSWAdd
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNUWAdd" buildNUWAdd
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFAdd" buildFAdd
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSub" buildSub
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNSWSub" buildNSWSub
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNUWSub" buildNUWSub
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFSub" buildFSub
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildMul" buildMul
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNSWMul" buildNSWMul
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNUWMul" buildNUWMul
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFMul" buildFMul
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildUDiv" buildUDiv
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSDiv" buildSDiv
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildExactSDiv" buildExactSDiv
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFDiv" buildFDiv
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildURem" buildURem
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSRem" buildSRem
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFRem" buildFRem
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildShl" buildShl
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildLShr" buildLShr
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildAShr" buildAShr
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildAnd" buildAnd
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildOr" buildOr
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildXor" buildXor
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildBinOp" buildBinOp
-    :: BuilderRef -> CUInt{-Opcode-} -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNeg" buildNeg
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNSWNeg" buildNSWNeg
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNUWNeg" buildNUWNeg
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFNeg" buildFNeg
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildNot" buildNot
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildAdd :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildAdd = Raw.buildAdd
+
+buildNSWAdd :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildNSWAdd = Raw.buildNSWAdd
+
+buildNUWAdd :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildNUWAdd = Raw.buildNUWAdd
+
+buildFAdd :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildFAdd = Raw.buildFAdd
+
+buildSub :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildSub = Raw.buildSub
+
+buildNSWSub :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildNSWSub = Raw.buildNSWSub
+
+buildNUWSub :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildNUWSub = Raw.buildNUWSub
+
+buildFSub :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildFSub = Raw.buildFSub
+
+buildMul :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildMul = Raw.buildMul
+
+buildNSWMul :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildNSWMul = Raw.buildNSWMul
+
+buildNUWMul :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildNUWMul = Raw.buildNUWMul
+
+buildFMul :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildFMul = Raw.buildFMul
+
+buildUDiv :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildUDiv = Raw.buildUDiv
+
+buildSDiv :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildSDiv = Raw.buildSDiv
+
+buildExactSDiv :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildExactSDiv = Raw.buildExactSDiv
+
+buildFDiv :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildFDiv = Raw.buildFDiv
+
+buildURem :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildURem = Raw.buildURem
+
+buildSRem :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildSRem = Raw.buildSRem
+
+buildFRem :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildFRem = Raw.buildFRem
+
+buildShl :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildShl = Raw.buildShl
+
+buildLShr :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildLShr = Raw.buildLShr
+
+buildAShr :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildAShr = Raw.buildAShr
+
+buildAnd :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildAnd = Raw.buildAnd
+
+buildOr :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildOr = Raw.buildOr
+
+buildXor :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildXor = Raw.buildXor
+
+buildBinOp :: BuilderRef -> Raw.Opcode -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildBinOp = Raw.buildBinOp
+
+buildNeg :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildNeg = Raw.buildNeg
+
+buildNSWNeg :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildNSWNeg = Raw.buildNSWNeg
+
+buildNUWNeg :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildNUWNeg = Raw.buildNUWNeg
+
+buildFNeg :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildFNeg = Raw.buildFNeg
+
+buildNot :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildNot = Raw.buildNot
+
 
 -- ** Floating point attributes
 foreign import ccall unsafe "LLVMSetHasUnsafeAlgebra" setFastMath
@@ -1692,139 +2090,196 @@ foreign import ccall unsafe "LLVMSetHasApproxFunc" setHasApproxFunc
 
 
 -- ** Memory
-foreign import ccall unsafe "LLVMBuildMalloc" buildMalloc
-    :: BuilderRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildArrayMalloc" buildArrayMalloc
-    :: BuilderRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildAlloca" buildAlloca
-    :: BuilderRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildArrayAlloca" buildArrayAlloca
-    :: BuilderRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFree" buildFree
-    :: BuilderRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildLoad" buildLoad
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildStore" buildStore
-    :: BuilderRef -> ValueRef -> ValueRef -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildGEP" buildGEP
-    :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString
-    -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildInBoundsGEP" buildInBoundsGEP
-    :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildStructGEP" buildStructGEP
-    :: BuilderRef -> ValueRef -> CUInt -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildGlobalString" buildGlobalString
-    :: BuilderRef -> CString -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildGlobalStringPtr" buildGlobalStringPtr
-    :: BuilderRef -> CString -> CString -> IO ValueRef
+buildMalloc :: BuilderRef -> TypeRef -> CString -> IO ValueRef
+buildMalloc = Raw.buildMalloc
+
+buildArrayMalloc :: BuilderRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
+buildArrayMalloc = Raw.buildArrayMalloc
+
+buildAlloca :: BuilderRef -> TypeRef -> CString -> IO ValueRef
+buildAlloca = Raw.buildAlloca
+
+buildArrayAlloca :: BuilderRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
+buildArrayAlloca = Raw.buildArrayAlloca
+
+buildFree :: BuilderRef -> ValueRef -> IO ValueRef
+buildFree = Raw.buildFree
+
+buildLoad :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildLoad = Raw.buildLoad
+
+buildStore :: BuilderRef -> ValueRef -> ValueRef -> IO ValueRef
+buildStore = Raw.buildStore
+
+buildGEP :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
+buildGEP = Raw.buildGEP
+
+buildInBoundsGEP :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
+buildInBoundsGEP = Raw.buildInBoundsGEP
+
+buildStructGEP :: BuilderRef -> ValueRef -> CUInt -> CString -> IO ValueRef
+buildStructGEP = Raw.buildStructGEP
+
+buildGlobalString :: BuilderRef -> CString -> CString -> IO ValueRef
+buildGlobalString = Raw.buildGlobalString
+
+buildGlobalStringPtr :: BuilderRef -> CString -> CString -> IO ValueRef
+buildGlobalStringPtr = Raw.buildGlobalStringPtr
+
 
 -- Casts
-foreign import ccall unsafe "LLVMBuildTrunc" buildTrunc
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildZExt" buildZExt
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSExt" buildSExt
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFPToUI" buildFPToUI
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFPToSI" buildFPToSI
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildUIToFP" buildUIToFP
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSIToFP" buildSIToFP
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFPTrunc" buildFPTrunc
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFPExt" buildFPExt
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildPtrToInt" buildPtrToInt
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildIntToPtr" buildIntToPtr
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildBitCast" buildBitCast
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildZExtOrBitCast" buildZExtOrBitCast
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSExtOrBitCast" buildSExtOrBitCast
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildTruncOrBitCast" buildTruncOrBitCast
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildCast" buildCast
-    :: BuilderRef -> CUInt{-Opcode-} -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildPointerCast" buildPointerCast
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildTrunc :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildTrunc = Raw.buildTrunc
+
+buildZExt :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildZExt = Raw.buildZExt
+
+buildSExt :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildSExt = Raw.buildSExt
+
+buildFPToUI :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildFPToUI = Raw.buildFPToUI
+
+buildFPToSI :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildFPToSI = Raw.buildFPToSI
+
+buildUIToFP :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildUIToFP = Raw.buildUIToFP
+
+buildSIToFP :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildSIToFP = Raw.buildSIToFP
+
+buildFPTrunc :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildFPTrunc = Raw.buildFPTrunc
+
+buildFPExt :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildFPExt = Raw.buildFPExt
+
+buildPtrToInt :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildPtrToInt = Raw.buildPtrToInt
+
+buildIntToPtr :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildIntToPtr = Raw.buildIntToPtr
+
+buildBitCast :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildBitCast = Raw.buildBitCast
+
+buildZExtOrBitCast :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildZExtOrBitCast = Raw.buildZExtOrBitCast
+
+buildSExtOrBitCast :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildSExtOrBitCast = Raw.buildSExtOrBitCast
+
+buildTruncOrBitCast :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildTruncOrBitCast = Raw.buildTruncOrBitCast
+
+buildCast :: BuilderRef -> Raw.Opcode -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildCast = Raw.buildCast
+
+buildPointerCast :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildPointerCast = Raw.buildPointerCast
+
 foreign import ccall unsafe "LLVMBuildIntCast" buildIntCast
     :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFPCast" buildFPCast
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+
+buildFPCast :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildFPCast = Raw.buildFPCast
+
 
 -- Comparisons
-foreign import ccall unsafe "LLVMBuildICmp" buildICmp
-    :: BuilderRef -> CInt -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildFCmp" buildFCmp
-    :: BuilderRef -> CInt -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildICmp :: BuilderRef -> Raw.IntPredicate -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildICmp = Raw.buildICmp
+
+buildFCmp :: BuilderRef -> Raw.RealPredicate -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildFCmp = Raw.buildFCmp
+
 
 -- Miscellaneous instructions
-foreign import ccall unsafe "LLVMBuildPhi" buildPhi
-    :: BuilderRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildCall" buildCall
-    :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildSelect" buildSelect
-    :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildVAArg" buildVAArg
-    :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildExtractElement" buildExtractElement
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildInsertElement" buildInsertElement
-    :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildShuffleVector" buildShuffleVector
-    :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildExtractValue" buildExtractValue
-    :: BuilderRef -> ValueRef -> CUInt -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildInsertValue" buildInsertValue
-    :: BuilderRef -> ValueRef -> ValueRef -> CUInt -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildIsNull" buildIsNull
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildIsNotNull" buildIsNotNull
-    :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-foreign import ccall unsafe "LLVMBuildPtrDiff" buildPtrDiff
-    :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildPhi :: BuilderRef -> TypeRef -> CString -> IO ValueRef
+buildPhi = Raw.buildPhi
+
+buildCall :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
+buildCall = Raw.buildCall
+
+buildSelect :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildSelect = Raw.buildSelect
+
+buildVAArg :: BuilderRef -> ValueRef -> TypeRef -> CString -> IO ValueRef
+buildVAArg = Raw.buildVAArg
+
+buildExtractElement :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildExtractElement = Raw.buildExtractElement
+
+buildInsertElement :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildInsertElement = Raw.buildInsertElement
+
+buildShuffleVector :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildShuffleVector = Raw.buildShuffleVector
+
+buildExtractValue :: BuilderRef -> ValueRef -> CUInt -> CString -> IO ValueRef
+buildExtractValue = Raw.buildExtractValue
+
+buildInsertValue :: BuilderRef -> ValueRef -> ValueRef -> CUInt -> CString -> IO ValueRef
+buildInsertValue = Raw.buildInsertValue
+
+buildIsNull :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildIsNull = Raw.buildIsNull
+
+buildIsNotNull :: BuilderRef -> ValueRef -> CString -> IO ValueRef
+buildIsNotNull = Raw.buildIsNotNull
+
+buildPtrDiff :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildPtrDiff = Raw.buildPtrDiff
 
 
 -- ** Memory Buffers
-foreign import ccall unsafe "LLVMCreateMemoryBufferWithContentsOfFile" createMemoryBufferWithContentsOfFile
-    :: CString -> Ptr MemoryBufferRef -> Ptr CString -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMCreateMemoryBufferWithSTDIN" createMemoryBufferWithSTDIN
-    :: Ptr MemoryBufferRef -> Ptr CString -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMDisposeMemoryBuffer" disposeMemoryBuffer
-    :: MemoryBufferRef -> IO ()
+createMemoryBufferWithContentsOfFile :: CString -> Ptr MemoryBufferRef -> Ptr CString -> IO LLVM.Bool
+createMemoryBufferWithContentsOfFile = Raw.createMemoryBufferWithContentsOfFile
+
+createMemoryBufferWithSTDIN :: Ptr MemoryBufferRef -> Ptr CString -> IO LLVM.Bool
+createMemoryBufferWithSTDIN = Raw.createMemoryBufferWithSTDIN
+
+disposeMemoryBuffer :: MemoryBufferRef -> IO ()
+disposeMemoryBuffer = Raw.disposeMemoryBuffer
+
 
 -- ** Pass Registry
-foreign import ccall unsafe "LLVMGetGlobalPassRegistry" getGlobalPassRegistry
-    :: IO PassRegistryRef
+getGlobalPassRegistry :: IO PassRegistryRef
+getGlobalPassRegistry = Raw.getGlobalPassRegistry
+
 
 -- ** Pass Managers
-foreign import ccall unsafe "LLVMCreatePassManager" createPassManager
-    :: IO PassManagerRef
-foreign import ccall unsafe "LLVMCreateFunctionPassManagerForModule" createFunctionPassManagerForModule
-    :: ModuleRef -> IO PassManagerRef
-foreign import ccall unsafe "LLVMRunPassManager" runPassManager
-    :: PassManagerRef -> ModuleRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMInitializeFunctionPassManager" initializeFunctionPassManager
-    :: PassManagerRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMRunFunctionPassManager" runFunctionPassManager
-    :: PassManagerRef -> ValueRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMFinalizeFunctionPassManager" finalizeFunctionPassManager
-    :: PassManagerRef -> IO LLVM.Bool
-foreign import ccall unsafe "LLVMDisposePassManager" disposePassManager
-    :: PassManagerRef -> IO ()
+createPassManager :: IO PassManagerRef
+createPassManager = Raw.createPassManager
+
+createFunctionPassManagerForModule :: ModuleRef -> IO PassManagerRef
+createFunctionPassManagerForModule = Raw.createFunctionPassManagerForModule
+
+runPassManager :: PassManagerRef -> ModuleRef -> IO LLVM.Bool
+runPassManager = Raw.runPassManager
+
+initializeFunctionPassManager :: PassManagerRef -> IO LLVM.Bool
+initializeFunctionPassManager = Raw.initializeFunctionPassManager
+
+runFunctionPassManager :: PassManagerRef -> ValueRef -> IO LLVM.Bool
+runFunctionPassManager = Raw.runFunctionPassManager
+
+finalizeFunctionPassManager :: PassManagerRef -> IO LLVM.Bool
+finalizeFunctionPassManager = Raw.finalizeFunctionPassManager
+
+disposePassManager :: PassManagerRef -> IO ()
+disposePassManager = Raw.disposePassManager
+
 foreign import ccall unsafe "&LLVMDisposePassManager" ptrDisposePassManager
     :: FunPtr (PassManagerRef -> IO ())
+
 
 -- ** Functions from extras.cpp
 foreign import ccall unsafe "LLVMValueGetNumUses" getNumUses
     :: ValueRef -> IO CInt
 foreign import ccall unsafe "LLVMInstGetOpcode" instGetOpcode
     :: ValueRef -> IO CInt
-foreign import ccall unsafe "LLVMCmpInstGetPredicate" cmpInstGetPredicate
-    :: ValueRef -> IO CInt
+foreign import ccall unsafe "LLVMCmpInstGetPredicate" cmpInstGetIntPredicate
+    :: ValueRef -> IO Raw.IntPredicate
+foreign import ccall unsafe "LLVMCmpInstGetPredicate" cmpInstGetRealPredicate
+    :: ValueRef -> IO Raw.RealPredicate
