@@ -142,7 +142,7 @@ main = do
             EE.createExecutionEngineForModuleCPU execEngineRef modul errorMsgRef
          when (err/=Core.false) $ do
             noResult $
-               printf "Core.createExecutionEngine: %s\n"
+               printf "createExecutionEngine: %s\n"
                   =<< CStr.peekCString =<< peek errorMsgRef
             Exit.exitFailure
 
