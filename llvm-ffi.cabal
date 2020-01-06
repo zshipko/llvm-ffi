@@ -240,7 +240,6 @@ Library
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
-  CPP-Options: -D__STDC_LIMIT_MACROS
   Include-Dirs: include
   Extra-Libraries: stdc++
   Cxx-Options: -std=c++0x -std=c++11
