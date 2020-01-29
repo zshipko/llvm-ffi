@@ -15,11 +15,6 @@ import Data.Typeable (Typeable)
 
 import Data.Word (Word8, Word32, Word64)
 
-import Prelude
-         (IO, Eq, Ord, Int, Bounded, Enum, Show, Read, String,
-          ($), (++), (.), error,
-           fmap, fromIntegral, show, toEnum, )
-
 
 type CDouble  = C.CDouble
 type CInt     = C.CInt
