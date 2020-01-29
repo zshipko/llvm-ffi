@@ -10,7 +10,6 @@ import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr, FunPtr)
 
--- import qualified Data.Enum.Bits as StEnum
 import Data.Typeable (Typeable)
 
 import Data.Word (Word8, Word32, Word64)
