@@ -1093,7 +1093,7 @@ functionType
         :: TypeRef              -- ^ return type
         -> Ptr TypeRef          -- ^ array of argument types
         -> CUInt                -- ^ number of elements in array
-        -> LLVM.Bool                 -- ^ non-zero if function is varargs
+        -> LLVM.Bool            -- ^ non-zero if function is varargs
         -> IO TypeRef
 functionType = Raw.functionType
 
