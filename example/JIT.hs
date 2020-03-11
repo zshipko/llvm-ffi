@@ -23,7 +23,7 @@ import Foreign.C.Types (CUInt, CFloat)
 import Foreign.Storable (Storable, peek, sizeOf)
 import Foreign.Ptr (Ptr, FunPtr)
 
-import Control.Exception (bracket, bracket_, finally)
+import Control.Exception (bracket, bracket_)
 import Control.Monad (when, void)
 
 import Data.Tuple.HT (mapSnd)
@@ -136,23 +136,25 @@ main = do
 
          void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 
-   Alloc.alloca $ \execEngineRef -> do
-      Alloc.alloca $ \errorMsgRef -> do
-         err <-
-            EE.createExecutionEngineForModuleCPU execEngineRef modul errorMsgRef
-         when (err/=Core.false) $ do
-            bracket (peek errorMsgRef) Alloc.free $ \errorMsg -> do
-               noResult $
-                  printf "createExecutionEngine: %s\n"
-                     =<< CStr.peekCString errorMsg
-            Exit.exitFailure
+   let createEE =
+         Alloc.alloca $ \execEngineRef ->
+         Alloc.alloca $ \errorMsgRef -> do
+            err <-
+               EE.createExecutionEngineForModuleCPU
+                  execEngineRef modul errorMsgRef
+            when (err/=Core.false) $ do
+               bracket (peek errorMsgRef) Alloc.free $ \errorMsg -> do
+                  noResult $
+                     printf "createExecutionEngine: %s\n"
+                        =<< CStr.peekCString errorMsg
+               Exit.exitFailure
+            peek execEngineRef
 
-      execEngine <- peek execEngineRef
-      flip finally (EE.disposeExecutionEngine execEngine) $ do
-         let vector = take vectorSize $ iterate (1+) (-1.3 :: CFloat)
-         funcPtr <- EE.getPointerToFunction execEngine func
-         let size = sum $ map sizeOf vector
-         Alloc.allocaBytesAligned size size $ \ptr -> do
-            Array.pokeArray ptr vector
-            derefFuncPtr funcPtr ptr
-            print =<< Array.peekArray vectorSize ptr
+   bracket createEE EE.disposeExecutionEngine $ \execEngine -> do
+      let vector = take vectorSize $ iterate (1+) (-1.3 :: CFloat)
+      funcPtr <- EE.getPointerToFunction execEngine func
+      let size = sum $ map sizeOf vector
+      Alloc.allocaBytesAligned size size $ \ptr -> do
+         Array.pokeArray ptr vector
+         derefFuncPtr funcPtr ptr
+         print =<< Array.peekArray vectorSize ptr
