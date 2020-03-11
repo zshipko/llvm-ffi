@@ -141,9 +141,10 @@ main = do
          err <-
             EE.createExecutionEngineForModuleCPU execEngineRef modul errorMsgRef
          when (err/=Core.false) $ do
-            noResult $
-               printf "createExecutionEngine: %s\n"
-                  =<< CStr.peekCString =<< peek errorMsgRef
+            bracket (peek errorMsgRef) Alloc.free $ \errorMsg -> do
+               noResult $
+                  printf "createExecutionEngine: %s\n"
+                     =<< CStr.peekCString errorMsg
             Exit.exitFailure
 
       execEngine <- peek execEngineRef
