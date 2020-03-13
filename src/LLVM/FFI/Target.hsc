@@ -39,6 +39,10 @@ type TargetLibraryInfoRef = Ptr TargetLibraryInfo
 
 foreign import ccall unsafe "LLVMCreateTargetData" createTargetData
     :: CString -> IO TargetDataRef
+foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
+    :: TargetDataRef -> IO ()
+foreign import ccall unsafe "&LLVMDisposeTargetData" ptrDisposeTargetData
+    :: FunPtr (TargetDataRef -> IO ())
 foreign import ccall unsafe "LLVMAddTargetLibraryInfo" addTargetLibraryInfo
     :: TargetLibraryInfoRef -> PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMCopyStringRepOfTargetData" copyStringRepOfTargetData
@@ -67,7 +71,3 @@ foreign import ccall unsafe "LLVMElementAtOffset" elementAtOffset
     :: TargetDataRef -> TypeRef -> CULLong -> IO CUInt
 foreign import ccall unsafe "LLVMOffsetOfElement" offsetOfElement
     :: TargetDataRef -> TypeRef -> CUInt -> IO CULLong
-foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
-    :: TargetDataRef -> IO ()
-foreign import ccall unsafe "&LLVMDisposeTargetData" ptrDisposeTargetData
-    :: FunPtr (TargetDataRef -> IO ())
