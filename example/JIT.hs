@@ -7,13 +7,11 @@ It let us check whether Haskell bindings match C functions.
 -}
 module Main where
 
-import Common (withArrayLen, getString, createExecutionEngine)
+import Common (withArrayLen, createExecutionEngine)
 
 import qualified LLVM.FFI.Transforms.PassManagerBuilder as PMB
 import qualified LLVM.FFI.Transforms.Scalar as Transform
 import qualified LLVM.FFI.ExecutionEngine as EE
-import qualified LLVM.FFI.Target as Target
-import qualified LLVM.FFI.Support.Host as Host
 import qualified LLVM.FFI.BitWriter as BW
 import qualified LLVM.FFI.Core as Core
 import qualified LLVM.Target.Native as Native
@@ -49,8 +47,6 @@ foreign import ccall safe "dynamic" derefFuncPtr :: Importer (Ptr a -> IO ())
 main :: IO ()
 main = do
    Native.initializeNativeTarget
-
-   putStrLn =<< getString Host.getHostCPUName
 
    modul <- withCString "_module" Core.moduleCreateWithName
    withCString Core.hostTriple $ Core.setTarget modul
@@ -130,8 +126,6 @@ main = do
 
    bracket (createExecutionEngine modul) EE.disposeExecutionEngine $
          \execEngine -> do
-      td <- EE.getExecutionEngineTargetData execEngine
-      putStrLn =<< getString (Target.copyStringRepOfTargetData td)
       let vector = take vectorSize $ iterate (1+) (-1.3 :: CFloat)
       funcPtr <- EE.getPointerToFunction execEngine func
       let size = sum $ map sizeOf vector
