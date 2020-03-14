@@ -7,7 +7,7 @@ It let us check whether Haskell bindings match C functions.
 -}
 module Main where
 
-import Common (withArrayLen, noResult)
+import Common (withArrayLen, getString, createExecutionEngine)
 
 import qualified LLVM.FFI.Transforms.PassManagerBuilder as PMB
 import qualified LLVM.FFI.Transforms.Scalar as Transform
@@ -23,16 +23,13 @@ import qualified Foreign.Marshal.Array as Array
 import qualified Foreign.Marshal.Alloc as Alloc
 import Foreign.C.String (withCString)
 import Foreign.C.Types (CFloat)
-import Foreign.Storable (peek, sizeOf)
+import Foreign.Storable (sizeOf)
 import Foreign.Ptr (Ptr, FunPtr)
 
 import Control.Exception (bracket, bracket_)
 import Control.Monad (when, void)
 
 import Data.Tuple.HT (mapSnd)
-
-import qualified System.Exit as Exit
-import Text.Printf (printf)
 
 
 vectorSize :: Int
@@ -42,9 +39,6 @@ roundName :: String
    if False
      then (4, "llvm.x86.sse41.round.ps")
      else (8, "llvm.x86.avx.round.ps.256")
-
-getString :: IO CStr.CString -> IO String
-getString get = bracket get Core.disposeMessage CStr.peekCString
 
 type Importer f = FunPtr f -> f
 
@@ -134,21 +128,8 @@ main = do
 
          void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 
-   let createEE =
-         Alloc.alloca $ \execEngineRef ->
-         Alloc.alloca $ \errorMsgRef -> do
-            err <-
-               EE.createExecutionEngineForModuleCPU
-                  execEngineRef modul errorMsgRef
-            when (err/=Core.false) $ do
-               bracket (peek errorMsgRef) Alloc.free $ \errorMsg -> do
-                  noResult $
-                     printf "createExecutionEngine: %s\n"
-                        =<< CStr.peekCString errorMsg
-               Exit.exitFailure
-            peek execEngineRef
-
-   bracket createEE EE.disposeExecutionEngine $ \execEngine -> do
+   bracket (createExecutionEngine modul) EE.disposeExecutionEngine $
+         \execEngine -> do
       td <- EE.getExecutionEngineTargetData execEngine
       putStrLn =<< getString (Target.copyStringRepOfTargetData td)
       let vector = take vectorSize $ iterate (1+) (-1.3 :: CFloat)

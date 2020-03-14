@@ -1,22 +1,16 @@
 module Main where
 
-import Common (withArrayLen, noResult)
+import Common (withArrayLen, createExecutionEngine)
 
 import qualified LLVM.FFI.ExecutionEngine as EE
 import qualified LLVM.FFI.Target as Target
 import qualified LLVM.FFI.Core as LLVM
 import qualified LLVM.Target.Native as Native
 
-import qualified Foreign.Marshal.Alloc as Alloc
-import Foreign.C.String (withCString, peekCString)
+import Foreign.C.String (withCString)
 import Foreign.C.Types (CULLong)
-import Foreign.Storable (peek)
 
-import qualified System.Exit as Exit
-import Control.Exception (finally)
-import Control.Monad (when)
-
-import Text.Printf (printf)
+import Control.Exception (bracket)
 
 
 offset :: IO CULLong
@@ -54,21 +48,10 @@ offsetTarget = do
    modul <- withCString "_module" LLVM.moduleCreateWithName
    withCString LLVM.hostTriple $ LLVM.setTarget modul
 
-   Alloc.alloca $ \execEngineRef -> do
-      Alloc.alloca $ \errorMsgRef -> do
-         err <-
-            EE.createExecutionEngineForModuleCPU
-               execEngineRef modul errorMsgRef
-         when (err/=LLVM.false) $ do
-            noResult $
-               printf "createExecutionEngine: %s\n"
-                  =<< peekCString =<< peek errorMsgRef
-            Exit.exitFailure
-
-      execEngine <- peek execEngineRef
-      flip finally (EE.disposeExecutionEngine execEngine) $ do
-         td <- EE.getExecutionEngineTargetData execEngine
-         mapM (Target.offsetOfElement td structType) [0..2]
+   bracket (createExecutionEngine modul) EE.disposeExecutionEngine $
+         \execEngine -> do
+      td <- EE.getExecutionEngineTargetData execEngine
+      mapM (Target.offsetOfElement td structType) [0..2]
 
 main :: IO ()
 main = print =<< offsetTarget
