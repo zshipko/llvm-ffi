@@ -1,16 +1,16 @@
 module Main where
 
+import Common (withArrayLen, noResult)
+
 import qualified LLVM.FFI.ExecutionEngine as EE
 import qualified LLVM.FFI.Target as Target
 import qualified LLVM.FFI.Core as LLVM
 import qualified LLVM.Target.Native as Native
 
-import qualified Foreign.Marshal.Array as Array
 import qualified Foreign.Marshal.Alloc as Alloc
 import Foreign.C.String (withCString, peekCString)
-import Foreign.C.Types (CUInt, CULLong)
-import Foreign.Storable (Storable, peek)
-import Foreign.Ptr (Ptr)
+import Foreign.C.Types (CULLong)
+import Foreign.Storable (peek)
 
 import qualified System.Exit as Exit
 import Control.Exception (finally)
@@ -18,10 +18,6 @@ import Control.Monad (when)
 
 import Text.Printf (printf)
 
-
-withArrayLen :: (Storable a) => [a] -> (CUInt -> Ptr a -> IO b) -> IO b
-withArrayLen xs act =
-   Array.withArrayLen xs $ \len ptr -> act (fromIntegral len) ptr
 
 offset :: IO CULLong
 offset = do
@@ -44,9 +40,6 @@ offset = do
    putStrLn "ptrToInt"
    elementOffset <- LLVM.constPtrToInt elementPtr int64Type
    LLVM.constIntGetZExtValue elementOffset
-
-noResult :: IO () -> IO ()
-noResult = id
 
 offsetTarget :: IO [CULLong]
 offsetTarget = do

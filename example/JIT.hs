@@ -7,6 +7,8 @@ It let us check whether Haskell bindings match C functions.
 -}
 module Main where
 
+import Common (withArrayLen, noResult)
+
 import qualified LLVM.FFI.Transforms.PassManagerBuilder as PMB
 import qualified LLVM.FFI.Transforms.Scalar as Transform
 import qualified LLVM.FFI.ExecutionEngine as EE
@@ -20,8 +22,8 @@ import qualified Foreign.C.String as CStr
 import qualified Foreign.Marshal.Array as Array
 import qualified Foreign.Marshal.Alloc as Alloc
 import Foreign.C.String (withCString)
-import Foreign.C.Types (CUInt, CFloat)
-import Foreign.Storable (Storable, peek, sizeOf)
+import Foreign.C.Types (CFloat)
+import Foreign.Storable (peek, sizeOf)
 import Foreign.Ptr (Ptr, FunPtr)
 
 import Control.Exception (bracket, bracket_)
@@ -40,13 +42,6 @@ roundName :: String
    if False
      then (4, "llvm.x86.sse41.round.ps")
      else (8, "llvm.x86.avx.round.ps.256")
-
-withArrayLen :: (Storable a) => [a] -> (CUInt -> Ptr a -> IO b) -> IO b
-withArrayLen xs act =
-   Array.withArrayLen xs $ \len ptr -> act (fromIntegral len) ptr
-
-noResult :: IO () -> IO ()
-noResult = id
 
 getString :: IO CStr.CString -> IO String
 getString get = bracket get Core.disposeMessage CStr.peekCString

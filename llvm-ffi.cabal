@@ -273,6 +273,7 @@ Executable llvm-ffi-jit
   GHC-Options: -Wall
   Default-Language: Haskell2010
   Main-Is: JIT.hs
+  Other-Modules: Common
 
 Executable llvm-ffi-offset
   If flag(buildExamples)
@@ -290,3 +291,4 @@ Executable llvm-ffi-offset
   GHC-Options: -Wall
   Default-Language: Haskell2010
   Main-Is: Offset.hs
+  Other-Modules: Common
