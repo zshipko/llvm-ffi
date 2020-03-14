@@ -257,6 +257,24 @@ Library
   Cxx-Sources:
     cbits/support.cpp
 
+Executable llvm-ffi-host
+  If flag(buildExamples)
+    Build-Depends:
+      llvm-ffi,
+      utility-ht >=0.0.9 && <0.1,
+      base
+  Else
+    Buildable: False
+
+  If flag(developer)
+    GHC-Options: -Werror
+
+  Hs-Source-Dirs: example
+  GHC-Options: -Wall
+  Default-Language: Haskell2010
+  Main-Is: Host.hs
+  Other-Modules: Common
+
 Executable llvm-ffi-jit
   If flag(buildExamples)
     Build-Depends:

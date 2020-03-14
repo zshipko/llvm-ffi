@@ -2,6 +2,7 @@ test:
 	runhaskell Setup configure --user -fbuildExamples -fpkgConfig
 	runhaskell Setup build
 	runhaskell Setup haddock
+	./dist/build/llvm-ffi-host/llvm-ffi-host
 	./dist/build/llvm-ffi-jit/llvm-ffi-jit
 
 	make test800
