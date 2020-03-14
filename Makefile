@@ -2,7 +2,7 @@ test:
 	runhaskell Setup configure --user -fbuildExamples -fpkgConfig
 	runhaskell Setup build
 	runhaskell Setup haddock
-	./dist/build/llvm-ffi-example/llvm-ffi-example
+	./dist/build/llvm-ffi-jit/llvm-ffi-jit
 
 	make test800
 	make test700
@@ -21,7 +21,7 @@ test%:
 	runhaskell Setup clean
 	runhaskell Setup configure --user -fbuildExamples -fpkgConfig -fllvm$*
 	runhaskell Setup build
-	./dist/build/llvm-ffi-example/llvm-ffi-example
+	./dist/build/llvm-ffi-jit/llvm-ffi-jit
 
 
 ctest/fastmath.o:	ctest/fastmath.c

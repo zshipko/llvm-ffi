@@ -257,7 +257,7 @@ Library
   Cxx-Sources:
     cbits/support.cpp
 
-Executable llvm-ffi-example
+Executable llvm-ffi-jit
   If flag(buildExamples)
     Build-Depends:
       llvm-ffi,
