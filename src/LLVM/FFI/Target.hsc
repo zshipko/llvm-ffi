@@ -5,7 +5,7 @@
 
 module LLVM.FFI.Target where
 
-import LLVM.FFI.Core (ValueRef, TypeRef, PassManagerRef)
+import LLVM.FFI.Core (ValueRef, TypeRef, PassManagerRef, ModuleRef)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
@@ -37,6 +37,10 @@ data TargetLibraryInfo
     deriving (Typeable)
 type TargetLibraryInfoRef = Ptr TargetLibraryInfo
 
+foreign import ccall unsafe "LLVMGetModuleDataLayout" getModuleDataLayout
+    :: ModuleRef -> IO TargetDataRef
+foreign import ccall unsafe "LLVMSetModuleDataLayout" setModuleDataLayout
+    :: ModuleRef -> TargetDataRef -> IO ()
 foreign import ccall unsafe "LLVMCreateTargetData" createTargetData
     :: CString -> IO TargetDataRef
 foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
