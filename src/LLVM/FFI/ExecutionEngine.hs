@@ -62,6 +62,7 @@ import LLVM.FFI.Target(TargetDataRef)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
+import Foreign.ForeignPtr (FinalizerPtr)
 import Foreign.Ptr (Ptr, FunPtr)
 
 import qualified Data.EnumBitSet as EnumSet
@@ -110,7 +111,7 @@ foreign import ccall unsafe "LLVMGenericValueToPointer" genericValueToPointer
 foreign import ccall unsafe "LLVMGenericValueToFloat" genericValueToFloat
     :: TypeRef -> GenericValueRef -> IO CDouble
 foreign import ccall unsafe "&LLVMDisposeGenericValue" ptrDisposeGenericValue
-    :: FunPtr (GenericValueRef -> IO ())
+    :: FinalizerPtr GenericValueRef
 
 
 data EngineKind
@@ -152,7 +153,7 @@ foreign import ccall unsafe "LLVMCreateMCJITCompilerForModule" createMCJITCompil
 foreign import ccall unsafe "LLVMDisposeExecutionEngine" disposeExecutionEngine
     :: ExecutionEngineRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposeExecutionEngine" ptrDisposeExecutionEngine
-    :: FunPtr (ExecutionEngineRef -> IO ())
+    :: FinalizerPtr ExecutionEngineRef
 foreign import ccall unsafe "LLVMRunStaticConstructors" runStaticConstructors
     :: ExecutionEngineRef -> IO ()
 foreign import ccall unsafe "LLVMRunStaticDestructors" runStaticDestructors

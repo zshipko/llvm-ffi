@@ -610,7 +610,8 @@ import LLVM.Raw.Core (
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
-import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.ForeignPtr (FinalizerPtr)
+import Foreign.Ptr (Ptr)
 
 import Data.Typeable (Typeable)
 
@@ -958,7 +959,7 @@ disposeModule :: ModuleRef -> IO ()
 disposeModule = Raw.disposeModule
 
 foreign import ccall unsafe "&LLVMDisposeModule" ptrDisposeModule
-    :: FunPtr (ModuleRef -> IO ())
+    :: FinalizerPtr ModuleRef
 
 -- ** Data Layout
 getDataLayout :: ModuleRef -> IO CString
@@ -1906,7 +1907,7 @@ insertIntoBuilderWithName :: BuilderRef -> ValueRef -> CString -> IO ()
 insertIntoBuilderWithName = Raw.insertIntoBuilderWithName
 
 foreign import ccall unsafe "&LLVMDisposeBuilder" ptrDisposeBuilder
-    :: FunPtr (BuilderRef -> IO ())
+    :: FinalizerPtr BuilderRef
 
 
 -- ** Metadata
@@ -2271,7 +2272,7 @@ disposePassManager :: PassManagerRef -> IO ()
 disposePassManager = Raw.disposePassManager
 
 foreign import ccall unsafe "&LLVMDisposePassManager" ptrDisposePassManager
-    :: FunPtr (PassManagerRef -> IO ())
+    :: FinalizerPtr PassManagerRef
 
 
 -- ** Functions from extras.cpp

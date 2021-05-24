@@ -9,7 +9,8 @@ import LLVM.FFI.Core (ValueRef, TypeRef, PassManagerRef, ModuleRef)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
-import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.ForeignPtr (FinalizerPtr)
+import Foreign.Ptr (Ptr)
 
 import Data.Typeable (Typeable)
 import Data.Word (Word32)
@@ -46,7 +47,7 @@ foreign import ccall unsafe "LLVMCreateTargetData" createTargetData
 foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
     :: TargetDataRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposeTargetData" ptrDisposeTargetData
-    :: FunPtr (TargetDataRef -> IO ())
+    :: FinalizerPtr TargetDataRef
 foreign import ccall unsafe "LLVMAddTargetLibraryInfo" addTargetLibraryInfo
     :: TargetLibraryInfoRef -> PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMCopyStringRepOfTargetData" copyStringRepOfTargetData
