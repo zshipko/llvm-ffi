@@ -58,11 +58,11 @@ module LLVM.FFI.ExecutionEngine
 
 import qualified LLVM.FFI.Core as LLVM
 import LLVM.FFI.Core (ModuleRef, TypeRef, ValueRef)
-import LLVM.FFI.Target(TargetDataRef)
+import LLVM.FFI.Target (TargetDataRef)
+import LLVM.FFI.Base (FinalizerPtr)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
-import Foreign.ForeignPtr (FinalizerPtr)
 import Foreign.Ptr (Ptr, FunPtr)
 
 import qualified Data.EnumBitSet as EnumSet

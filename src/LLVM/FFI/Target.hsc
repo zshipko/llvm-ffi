@@ -6,10 +6,10 @@
 module LLVM.FFI.Target where
 
 import LLVM.FFI.Core (ValueRef, TypeRef, PassManagerRef, ModuleRef)
+import LLVM.FFI.Base (FinalizerPtr)
 
 import qualified Foreign.C.Types as C
 import Foreign.C.String (CString)
-import Foreign.ForeignPtr (FinalizerPtr)
 import Foreign.Ptr (Ptr)
 
 import Data.Typeable (Typeable)

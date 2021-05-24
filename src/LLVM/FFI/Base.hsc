@@ -1,13 +1,19 @@
 {-# LANGUAGE Safe #-}
 module LLVM.FFI.Base where
 
+-- import Foreign.ForeignPtr (FinalizerPtr) -- unsafe before GHC-7.10
+import Foreign.Ptr (Ptr, FunPtr)
+
 import qualified Data.Bool as Bool
 import Data.Int (Int32)
 
 import Prelude
-         (Eq, Enum, Show, fromIntegral, show, fromEnum, toEnum, (.), (==))
+         (IO, Eq, Enum, Show, fromIntegral, show, fromEnum, toEnum, (.), (==))
 
 #include <llvm-c/Core.h>
+
+
+type FinalizerPtr a = FunPtr (Ptr a -> IO ())
 
 
 newtype Bool = Bool (#type LLVMBool)
