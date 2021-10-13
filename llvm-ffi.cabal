@@ -110,12 +110,12 @@ Flag llvm800
 
 Source-Repository head
   Type:     darcs
-  Location: http://hub.darcs.net/thielema/llvm-ffi/
+  Location: https://hub.darcs.net/thielema/llvm-ffi/
 
 Source-Repository this
   Tag:      9.1.1
   Type:     darcs
-  Location: http://hub.darcs.net/thielema/llvm-ffi/
+  Location: https://hub.darcs.net/thielema/llvm-ffi/
 
 Library
   Build-Depends:
