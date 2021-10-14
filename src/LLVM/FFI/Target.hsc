@@ -47,7 +47,7 @@ foreign import ccall unsafe "LLVMCreateTargetData" createTargetData
 foreign import ccall unsafe "LLVMDisposeTargetData" disposeTargetData
     :: TargetDataRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposeTargetData" ptrDisposeTargetData
-    :: FinalizerPtr TargetDataRef
+    :: FinalizerPtr TargetData
 foreign import ccall unsafe "LLVMAddTargetLibraryInfo" addTargetLibraryInfo
     :: TargetLibraryInfoRef -> PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMCopyStringRepOfTargetData" copyStringRepOfTargetData

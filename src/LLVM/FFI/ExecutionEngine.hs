@@ -111,7 +111,7 @@ foreign import ccall unsafe "LLVMGenericValueToPointer" genericValueToPointer
 foreign import ccall unsafe "LLVMGenericValueToFloat" genericValueToFloat
     :: TypeRef -> GenericValueRef -> IO CDouble
 foreign import ccall unsafe "&LLVMDisposeGenericValue" ptrDisposeGenericValue
-    :: FinalizerPtr GenericValueRef
+    :: FinalizerPtr GenericValue
 
 
 data EngineKind
@@ -153,7 +153,7 @@ foreign import ccall unsafe "LLVMCreateMCJITCompilerForModule" createMCJITCompil
 foreign import ccall unsafe "LLVMDisposeExecutionEngine" disposeExecutionEngine
     :: ExecutionEngineRef -> IO ()
 foreign import ccall unsafe "&LLVMDisposeExecutionEngine" ptrDisposeExecutionEngine
-    :: FinalizerPtr ExecutionEngineRef
+    :: FinalizerPtr ExecutionEngine
 foreign import ccall unsafe "LLVMRunStaticConstructors" runStaticConstructors
     :: ExecutionEngineRef -> IO ()
 foreign import ccall unsafe "LLVMRunStaticDestructors" runStaticDestructors
