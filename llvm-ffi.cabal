@@ -148,7 +148,6 @@ Library
       LLVM.FFI.Base
       LLVM.FFI.Version
       LLVM.Target.ARM
-      LLVM.Target.CppBackend
       LLVM.Target.Hexagon
       LLVM.Target.MSP430
       LLVM.Target.Mips
