@@ -17,7 +17,7 @@ Description:
   to the LLVM installation directories manually.
   On Ubuntu this would look like this:
   .
-  > cabal install --extra-include-dirs=/usr/lib/llvm-9/include --extra-lib-dirs=/usr/lib/llvm-9/lib llvm-ffi
+  > cabal install --extra-include-dirs=/usr/lib/llvm-10/include --extra-lib-dirs=/usr/lib/llvm-10/lib llvm-ffi
   .
   For @cabal new-build@ this does not work,
   because every package build is bound to all influencing flags.
@@ -27,8 +27,8 @@ Description:
   you may specify the extra directories in the global Cabal configuration.
   I.e. you may add the following lines to @.cabal/config@:
   .
-  > extra-include-dirs: /usr/lib/llvm-9/include
-  > extra-lib-dirs: /usr/lib/llvm-9/lib
+  > extra-include-dirs: /usr/lib/llvm-10/include
+  > extra-lib-dirs: /usr/lib/llvm-10/lib
   .
   You can store such paths permanently in a @pkg-config@ file like @llvm.pc@.
   The optimal way would be if LLVM installations or GNU/Linux distributions
@@ -40,7 +40,7 @@ Description:
   > cabal install -fpkgConfig
   .
   We try to stay up to date with LLVM releases.
-  The current version of this package is compatible with LLVM 3.9-9.
+  The current version of this package is compatible with LLVM 3.9-10.
   Please understand that the package may or may not work
   against older LLVM releases.
   .
@@ -107,6 +107,10 @@ Flag llvm700
 
 Flag llvm800
   Description: use LLVM-8 instead of latest supported LLVM
+  Default: False
+
+Flag llvm900
+  Description: use LLVM-9 instead of latest supported LLVM
   Default: False
 
 Source-Repository head
@@ -237,17 +241,30 @@ Library
               Cxx-Options: -DHS_LLVM_VERSION=800
               CPP-Options: -DHS_LLVM_VERSION=800
             Else
-              If flag(pkgConfig)
-                If flag(specificPkgConfig)
-                  PkgConfig-Depends: llvm-9
+              If flag(llvm900)
+                If flag(pkgConfig)
+                  If flag(specificPkgConfig)
+                    PkgConfig-Depends: llvm-9
+                  Else
+                    PkgConfig-Depends: llvm == 9.*
                 Else
-                  PkgConfig-Depends: llvm == 9.*
+                  Extra-Libraries: LLVM-9
+                Hs-Source-Dirs: src/9
+                CC-Options: -DHS_LLVM_VERSION=900
+                Cxx-Options: -DHS_LLVM_VERSION=900
+                CPP-Options: -DHS_LLVM_VERSION=900
               Else
-                Extra-Libraries: LLVM-9
-              Hs-Source-Dirs: src/9
-              CC-Options: -DHS_LLVM_VERSION=900
-              Cxx-Options: -DHS_LLVM_VERSION=900
-              CPP-Options: -DHS_LLVM_VERSION=900
+                If flag(pkgConfig)
+                  If flag(specificPkgConfig)
+                    PkgConfig-Depends: llvm-10
+                  Else
+                    PkgConfig-Depends: llvm == 10.*
+                Else
+                  Extra-Libraries: LLVM-10
+                Hs-Source-Dirs: src/10
+                CC-Options: -DHS_LLVM_VERSION=1000
+                Cxx-Options: -DHS_LLVM_VERSION=1000
+                CPP-Options: -DHS_LLVM_VERSION=1000
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
