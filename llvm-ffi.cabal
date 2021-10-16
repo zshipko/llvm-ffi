@@ -81,7 +81,7 @@ Flag pkgConfig
   Default: False
 
 Flag specificPkgConfig
-  Description: use llvm-3.x.pc instead of llvm.pc
+  Description: use llvm-x.pc instead of llvm.pc
   Default: True
 
 Flag llvm309
@@ -101,11 +101,11 @@ Flag llvm600
   Default: False
 
 Flag llvm700
-  Description: use LLVM-7.0 instead of latest supported LLVM
+  Description: use LLVM-7 instead of latest supported LLVM
   Default: False
 
 Flag llvm800
-  Description: use LLVM-8.0 instead of latest supported LLVM
+  Description: use LLVM-8 instead of latest supported LLVM
   Default: False
 
 Source-Repository head
