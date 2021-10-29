@@ -23,8 +23,6 @@ foreign import ccall unsafe "LLVMAddGlobalDCEPass" addGlobalDCEPass
     :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddGlobalOptimizerPass" addGlobalOptimizerPass
     :: PassManagerRef -> IO ()
-foreign import ccall unsafe "LLVMAddIPConstantPropagationPass" addIPConstantPropagationPass
-    :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddPruneEHPass" addPruneEHPass
     :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddIPSCCPPass" addIPSCCPPass

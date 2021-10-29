@@ -52,8 +52,6 @@ foreign import ccall unsafe "LLVMAddSimplifyLibCallsPass" addSimplifyLibCallsPas
     :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddTailCallEliminationPass" addTailCallEliminationPass
     :: PassManagerRef -> IO ()
-foreign import ccall unsafe "LLVMAddConstantPropagationPass" addConstantPropagationPass
-    :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddDemoteMemoryToRegisterPass" addDemoteMemoryToRegisterPass
     :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddVerifierPass" addVerifierPass

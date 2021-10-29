@@ -140,6 +140,10 @@ Flag llvm1000
   Description: use LLVM-10 instead of latest supported LLVM
   Default: False
 
+Flag llvm1100
+  Description: use LLVM-11 instead of latest supported LLVM
+  Default: False
+
 Source-Repository head
   Type:     darcs
   Location: https://hub.darcs.net/thielema/llvm-ffi/
@@ -295,17 +299,30 @@ Library
                   Cxx-Options: -DHS_LLVM_VERSION=1000
                   CPP-Options: -DHS_LLVM_VERSION=1000
                 Else
-                  If flag(pkgConfig)
-                    If flag(specificPkgConfig)
-                      PkgConfig-Depends: llvm-11
+                  If flag(llvm1100)
+                    If flag(pkgConfig)
+                      If flag(specificPkgConfig)
+                        PkgConfig-Depends: llvm-11
+                      Else
+                        PkgConfig-Depends: llvm == 11.*
                     Else
-                      PkgConfig-Depends: llvm == 11.*
+                      Extra-Libraries: LLVM-11
+                    Hs-Source-Dirs: src/11
+                    CC-Options: -DHS_LLVM_VERSION=1100
+                    Cxx-Options: -DHS_LLVM_VERSION=1100
+                    CPP-Options: -DHS_LLVM_VERSION=1100
                   Else
-                    Extra-Libraries: LLVM-11
-                  Hs-Source-Dirs: src/11
-                  CC-Options: -DHS_LLVM_VERSION=1100
-                  Cxx-Options: -DHS_LLVM_VERSION=1100
-                  CPP-Options: -DHS_LLVM_VERSION=1100
+                    If flag(pkgConfig)
+                      If flag(specificPkgConfig)
+                        PkgConfig-Depends: llvm-12
+                      Else
+                        PkgConfig-Depends: llvm == 12.*
+                    Else
+                      Extra-Libraries: LLVM-12
+                    Hs-Source-Dirs: src/12
+                    CC-Options: -DHS_LLVM_VERSION=1200
+                    Cxx-Options: -DHS_LLVM_VERSION=1200
+                    CPP-Options: -DHS_LLVM_VERSION=1200
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
