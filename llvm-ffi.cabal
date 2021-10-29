@@ -144,6 +144,10 @@ Flag llvm1100
   Description: use LLVM-11 instead of latest supported LLVM
   Default: False
 
+Flag llvm1200
+  Description: use LLVM-12 instead of latest supported LLVM
+  Default: False
+
 Source-Repository head
   Type:     darcs
   Location: https://hub.darcs.net/thielema/llvm-ffi/
@@ -312,17 +316,30 @@ Library
                     Cxx-Options: -DHS_LLVM_VERSION=1100
                     CPP-Options: -DHS_LLVM_VERSION=1100
                   Else
-                    If flag(pkgConfig)
-                      If flag(specificPkgConfig)
-                        PkgConfig-Depends: llvm-12
+                    If flag(llvm1200)
+                      If flag(pkgConfig)
+                        If flag(specificPkgConfig)
+                          PkgConfig-Depends: llvm-12
+                        Else
+                          PkgConfig-Depends: llvm == 12.*
                       Else
-                        PkgConfig-Depends: llvm == 12.*
+                        Extra-Libraries: LLVM-12
+                      Hs-Source-Dirs: src/12
+                      CC-Options: -DHS_LLVM_VERSION=1200
+                      Cxx-Options: -DHS_LLVM_VERSION=1200
+                      CPP-Options: -DHS_LLVM_VERSION=1200
                     Else
-                      Extra-Libraries: LLVM-12
-                    Hs-Source-Dirs: src/12
-                    CC-Options: -DHS_LLVM_VERSION=1200
-                    Cxx-Options: -DHS_LLVM_VERSION=1200
-                    CPP-Options: -DHS_LLVM_VERSION=1200
+                      If flag(pkgConfig)
+                        If flag(specificPkgConfig)
+                          PkgConfig-Depends: llvm-13
+                        Else
+                          PkgConfig-Depends: llvm == 13.*
+                      Else
+                        Extra-Libraries: LLVM-13
+                      Hs-Source-Dirs: src/13
+                      CC-Options: -DHS_LLVM_VERSION=1300
+                      Cxx-Options: -DHS_LLVM_VERSION=1300
+                      CPP-Options: -DHS_LLVM_VERSION=1300
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
