@@ -1,6 +1,6 @@
 Cabal-Version: 2.2
 Name:          llvm-ffi
-Version:       12.0
+Version:       13.0
 License:       BSD-3-Clause
 License-File:  LICENSE
 Synopsis:      FFI bindings to the LLVM compiler toolkit.
@@ -149,7 +149,7 @@ Source-Repository head
   Location: https://hub.darcs.net/thielema/llvm-ffi/
 
 Source-Repository this
-  Tag:      12.0
+  Tag:      13.0
   Type:     darcs
   Location: https://hub.darcs.net/thielema/llvm-ffi/
 
