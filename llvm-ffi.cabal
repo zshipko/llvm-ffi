@@ -61,6 +61,18 @@ Description:
   You must make sure that the stuff in @cbits@ is re-compiled.
   Cabal or GHC may forget about that.
   You are safe if you run @cabal clean@.
+  .
+  Caution: Ugly crashes can occur
+  if you have configured paths for LLVM version X in @.cabal/config@
+  and try to build @llvm-ffi@ for a different LLVM version Y.
+  Counterintuitively, global search paths have higher precedence
+  than local ones: <https://github.com/haskell/cabal/issues/7782>.
+  But that does not simply mean
+  that the local configuration is ignored completely.
+  Instead the local library file is found,
+  because its name libLLVM-Y.so is unique,
+  whereas the include file names clash,
+  thus the ones from the global include directory are used.
 Author:        Henning Thielemann, Bryan O'Sullivan, Lennart Augustsson
 Maintainer:    Henning Thielemann <llvm@henning-thielemann.de>
 Homepage:      http://haskell.org/haskellwiki/LLVM
