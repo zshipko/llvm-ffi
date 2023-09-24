@@ -1821,7 +1821,7 @@ getInstructionCallConv :: ValueRef -> IO Raw.CallingConvention
 getInstructionCallConv =
    fmap Raw.CallingConvention . Raw.getInstructionCallConv
 
-setInstrParamAlignment :: ValueRef -> CUInt -> CUInt -> IO ()
+setInstrParamAlignment :: ValueRef -> AttributeIndex -> CUInt -> IO ()
 setInstrParamAlignment = Raw.setInstrParamAlignment
 
 

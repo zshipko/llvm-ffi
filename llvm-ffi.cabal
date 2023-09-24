@@ -17,15 +17,15 @@ Description:
   to the LLVM installation directories manually.
   It is recommended to add options to your global @.cabal/config@:
   .
-  > extra-include-dirs: /usr/lib/llvm-13/include
-  > extra-lib-dirs: /usr/lib/llvm-13/lib
+  > extra-include-dirs: /usr/lib/llvm-14/include
+  > extra-lib-dirs: /usr/lib/llvm-14/lib
   .
   This works for both @v1-build@ and @v2-build@.
   The shown paths work for Debian and Ubuntu
   using the LLVM repositories at <https://apt.llvm.org/>.
   You can obtain them with
   .
-  > llvm-config-13 --includedir --libdir
+  > llvm-config-14 --includedir --libdir
   .
   You can choose specific LLVM versions per project.
   For @v1-builds@ it works like so:
@@ -51,7 +51,7 @@ Description:
   > cabal install -fpkgConfig
   .
   We try to stay up to date with LLVM releases.
-  The current version of this package is compatible with LLVM 3.9-13.
+  The current version of this package is compatible with LLVM 3.9-14.
   Please understand that the package may or may not work
   against older LLVM releases.
   .
@@ -146,6 +146,10 @@ Flag llvm1100
 
 Flag llvm1200
   Description: use LLVM-12 instead of latest supported LLVM
+  Default: False
+
+Flag llvm1300
+  Description: use LLVM-13 instead of latest supported LLVM
   Default: False
 
 Source-Repository head
@@ -329,17 +333,30 @@ Library
                       Cxx-Options: -DHS_LLVM_VERSION=1200
                       CPP-Options: -DHS_LLVM_VERSION=1200
                     Else
-                      If flag(pkgConfig)
-                        If flag(specificPkgConfig)
-                          PkgConfig-Depends: llvm-13
+                      If flag(llvm1300)
+                        If flag(pkgConfig)
+                          If flag(specificPkgConfig)
+                            PkgConfig-Depends: llvm-13
+                          Else
+                            PkgConfig-Depends: llvm == 13.*
                         Else
-                          PkgConfig-Depends: llvm == 13.*
+                          Extra-Libraries: LLVM-13
+                        Hs-Source-Dirs: src/13
+                        CC-Options: -DHS_LLVM_VERSION=1300
+                        Cxx-Options: -DHS_LLVM_VERSION=1300
+                        CPP-Options: -DHS_LLVM_VERSION=1300
                       Else
-                        Extra-Libraries: LLVM-13
-                      Hs-Source-Dirs: src/13
-                      CC-Options: -DHS_LLVM_VERSION=1300
-                      Cxx-Options: -DHS_LLVM_VERSION=1300
-                      CPP-Options: -DHS_LLVM_VERSION=1300
+                        If flag(pkgConfig)
+                          If flag(specificPkgConfig)
+                            PkgConfig-Depends: llvm-14
+                          Else
+                            PkgConfig-Depends: llvm == 14.*
+                        Else
+                          Extra-Libraries: LLVM-14
+                        Hs-Source-Dirs: src/14
+                        CC-Options: -DHS_LLVM_VERSION=1400
+                        Cxx-Options: -DHS_LLVM_VERSION=1400
+                        CPP-Options: -DHS_LLVM_VERSION=1400
 
   CC-Options: -DHAVE_LLVM_SUPPORT_DYNAMICLIBRARY_H=1
   CPP-Options: -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS
