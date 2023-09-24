@@ -40,6 +40,7 @@ ctest/fastmath:	ctest/fastmath.o dist/build/cbits/support.o
 raw-modules:	$(patsubst %, src/%/LLVM/Raw/Core.hsc, 14 13 12 11 10 9 8 7 6.0 5.0 4.0 3.9)
 
 src/%/LLVM/Raw/Core.hsc:	/usr/lib/llvm-%/include/llvm-c/Core.h src/LLVM/Raw/Core_tmpl.hsc
+	mkdir -p $$(dirname $@)
 	cp src/LLVM/Raw/Core_tmpl.hsc $@
 	fgrep -v DumpType $< | fgrep -v LLVMConstGEP2 | fgrep -v LLVMConstInBoundsGEP2 \
 	  | llvm-function-mangler >>$@
