@@ -1117,7 +1117,7 @@ foreign import ccall unsafe "LLVMGetInstructionCallConv" getInstructionCallConv
     :: ValueRef -> IO CUInt
 
 foreign import ccall unsafe "LLVMSetInstrParamAlignment" setInstrParamAlignment
-    :: ValueRef -> CUInt -> CUInt -> IO ()
+    :: ValueRef -> AttributeIndex -> CUInt -> IO ()
 
 foreign import ccall unsafe "LLVMAddCallSiteAttribute" addCallSiteAttribute
     :: ValueRef -> AttributeIndex -> AttributeRef -> IO ()
