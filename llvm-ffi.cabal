@@ -102,54 +102,67 @@ Flag buildExamples
 
 Flag pkgConfig
   Description: use pkgconfig (llvm.pc) instead of extra-libraries
+  Manual: True
   Default: False
 
 Flag specificPkgConfig
   Description: use llvm-x.pc instead of llvm.pc
+  Manual: True
   Default: True
 
 Flag llvm309
   Description: use LLVM-3.9 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm400
   Description: use LLVM-4.0 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm500
   Description: use LLVM-5.0 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm600
   Description: use LLVM-6.0 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm700
   Description: use LLVM-7 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm800
   Description: use LLVM-8 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm900
   Description: use LLVM-9 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm1000
   Description: use LLVM-10 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm1100
   Description: use LLVM-11 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm1200
   Description: use LLVM-12 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Flag llvm1300
   Description: use LLVM-13 instead of latest supported LLVM
+  Manual: True
   Default: False
 
 Source-Repository head
