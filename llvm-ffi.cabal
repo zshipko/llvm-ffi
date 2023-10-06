@@ -219,6 +219,7 @@ Library
       LLVM.Target.X86
       LLVM.Target.XCore
       LLVM.Raw.Core
+      LLVM.FFI.Core14
 
   If flag(llvm309)
     If flag(pkgConfig)
@@ -228,7 +229,7 @@ Library
         PkgConfig-Depends: llvm == 3.9.*
     Else
       Extra-Libraries: LLVM-3.9
-    Hs-Source-Dirs: src/3.9
+    Hs-Source-Dirs: src/3.9, src/before14
     CC-Options: -DHS_LLVM_VERSION=309
     Cxx-Options: -DHS_LLVM_VERSION=309
     CPP-Options: -DHS_LLVM_VERSION=309
@@ -241,7 +242,7 @@ Library
           PkgConfig-Depends: llvm == 4.0.*
       Else
         Extra-Libraries: LLVM-4.0
-      Hs-Source-Dirs: src/4.0
+      Hs-Source-Dirs: src/4.0, src/before14
       CC-Options: -DHS_LLVM_VERSION=400
       Cxx-Options: -DHS_LLVM_VERSION=400
       CPP-Options: -DHS_LLVM_VERSION=400
@@ -254,7 +255,7 @@ Library
             PkgConfig-Depends: llvm == 5.0.*
         Else
           Extra-Libraries: LLVM-5.0
-        Hs-Source-Dirs: src/5.0
+        Hs-Source-Dirs: src/5.0, src/before14
         CC-Options: -DHS_LLVM_VERSION=500
         Cxx-Options: -DHS_LLVM_VERSION=500
         CPP-Options: -DHS_LLVM_VERSION=500
@@ -267,7 +268,7 @@ Library
               PkgConfig-Depends: llvm == 6.0.*
           Else
             Extra-Libraries: LLVM-6.0
-          Hs-Source-Dirs: src/6.0
+          Hs-Source-Dirs: src/6.0, src/before14
           CC-Options: -DHS_LLVM_VERSION=600
           Cxx-Options: -DHS_LLVM_VERSION=600
           CPP-Options: -DHS_LLVM_VERSION=600
@@ -280,7 +281,7 @@ Library
                 PkgConfig-Depends: llvm == 7.*
             Else
               Extra-Libraries: LLVM-7
-            Hs-Source-Dirs: src/7
+            Hs-Source-Dirs: src/7, src/before14
             CC-Options: -DHS_LLVM_VERSION=700
             Cxx-Options: -DHS_LLVM_VERSION=700
             CPP-Options: -DHS_LLVM_VERSION=700
@@ -293,7 +294,7 @@ Library
                   PkgConfig-Depends: llvm == 8.*
               Else
                 Extra-Libraries: LLVM-8
-              Hs-Source-Dirs: src/8
+              Hs-Source-Dirs: src/8, src/before14
               CC-Options: -DHS_LLVM_VERSION=800
               Cxx-Options: -DHS_LLVM_VERSION=800
               CPP-Options: -DHS_LLVM_VERSION=800
@@ -306,7 +307,7 @@ Library
                     PkgConfig-Depends: llvm == 9.*
                 Else
                   Extra-Libraries: LLVM-9
-                Hs-Source-Dirs: src/9
+                Hs-Source-Dirs: src/9, src/before14
                 CC-Options: -DHS_LLVM_VERSION=900
                 Cxx-Options: -DHS_LLVM_VERSION=900
                 CPP-Options: -DHS_LLVM_VERSION=900
@@ -320,7 +321,7 @@ Library
                       PkgConfig-Depends: llvm == 10.*
                   Else
                     Extra-Libraries: LLVM-10
-                  Hs-Source-Dirs: src/10
+                  Hs-Source-Dirs: src/10, src/before14
                   CC-Options: -DHS_LLVM_VERSION=1000
                   Cxx-Options: -DHS_LLVM_VERSION=1000
                   CPP-Options: -DHS_LLVM_VERSION=1000
@@ -333,7 +334,7 @@ Library
                         PkgConfig-Depends: llvm == 11.*
                     Else
                       Extra-Libraries: LLVM-11
-                    Hs-Source-Dirs: src/11
+                    Hs-Source-Dirs: src/11, src/before14
                     CC-Options: -DHS_LLVM_VERSION=1100
                     Cxx-Options: -DHS_LLVM_VERSION=1100
                     CPP-Options: -DHS_LLVM_VERSION=1100
@@ -346,7 +347,7 @@ Library
                           PkgConfig-Depends: llvm == 12.*
                       Else
                         Extra-Libraries: LLVM-12
-                      Hs-Source-Dirs: src/12
+                      Hs-Source-Dirs: src/12, src/before14
                       CC-Options: -DHS_LLVM_VERSION=1200
                       Cxx-Options: -DHS_LLVM_VERSION=1200
                       CPP-Options: -DHS_LLVM_VERSION=1200
@@ -359,11 +360,12 @@ Library
                             PkgConfig-Depends: llvm == 13.*
                         Else
                           Extra-Libraries: LLVM-13
-                        Hs-Source-Dirs: src/13
+                        Hs-Source-Dirs: src/13, src/before14
                         CC-Options: -DHS_LLVM_VERSION=1300
                         Cxx-Options: -DHS_LLVM_VERSION=1300
                         CPP-Options: -DHS_LLVM_VERSION=1300
                       Else
+                        Hs-Source-Dirs: src/from14
                         If flag(llvm1400)
                           If flag(pkgConfig)
                             If flag(specificPkgConfig)

@@ -834,8 +834,14 @@ foreign import ccall unsafe "LLVMConstAShr" constAShr
 foreign import ccall unsafe "LLVMConstGEP" constGEP
     :: ValueRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
 
+foreign import ccall unsafe "LLVMConstGEP2" constGEP2
+    :: TypeRef -> ValueRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
+
 foreign import ccall unsafe "LLVMConstInBoundsGEP" constInBoundsGEP
     :: ValueRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
+
+foreign import ccall unsafe "LLVMConstInBoundsGEP2" constInBoundsGEP2
+    :: TypeRef -> ValueRef -> (Ptr ValueRef) -> CUInt -> IO ValueRef
 
 foreign import ccall unsafe "LLVMConstTrunc" constTrunc
     :: ValueRef -> TypeRef -> IO ValueRef
@@ -1046,6 +1052,9 @@ foreign import ccall unsafe "LLVMSetExternallyInitialized" setExternallyInitiali
 
 foreign import ccall unsafe "LLVMAddAlias" addAlias
     :: ModuleRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
+
+foreign import ccall unsafe "LLVMAddAlias2" addAlias2
+    :: ModuleRef -> TypeRef -> CUInt -> ValueRef -> CString -> IO ValueRef
 
 foreign import ccall unsafe "LLVMGetNamedGlobalAlias" getNamedGlobalAlias
     :: ModuleRef -> CString -> CSize -> IO ValueRef
@@ -1436,6 +1445,9 @@ foreign import ccall unsafe "LLVMIsInBounds" isInBounds
 
 foreign import ccall unsafe "LLVMSetIsInBounds" setIsInBounds
     :: ValueRef -> LLVM.Bool -> IO ()
+
+foreign import ccall unsafe "LLVMGetGEPSourceElementType" getGEPSourceElementType
+    :: ValueRef -> IO TypeRef
 
 foreign import ccall unsafe "LLVMAddIncoming" addIncoming
     :: ValueRef -> (Ptr ValueRef) -> (Ptr BasicBlockRef) -> CUInt -> IO ()
@@ -1886,6 +1898,9 @@ foreign import ccall unsafe "LLVMBuildIsNotNull" buildIsNotNull
 
 foreign import ccall unsafe "LLVMBuildPtrDiff" buildPtrDiff
     :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+
+foreign import ccall unsafe "LLVMBuildPtrDiff2" buildPtrDiff2
+    :: BuilderRef -> TypeRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
 
 foreign import ccall unsafe "LLVMBuildFence" buildFence
     :: BuilderRef -> AtomicOrdering -> LLVM.Bool -> CString -> IO ValueRef

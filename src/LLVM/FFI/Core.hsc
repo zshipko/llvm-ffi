@@ -230,8 +230,8 @@ module LLVM.FFI.Core
     , constShl
     , constLShr
     , constAShr
-    , constGEP
-    , constInBoundsGEP
+    , constGEP2
+    , constInBoundsGEP2
     , constTrunc
     , constSExt
     , constZExt
@@ -313,7 +313,7 @@ module LLVM.FFI.Core
     , setGlobalConstant
 
     -- ** Aliases
-    , addAlias
+    , addAlias2
 
     -- * Parameter passing
     , Raw.Attribute
@@ -458,7 +458,7 @@ module LLVM.FFI.Core
     , buildCondBr
     , buildSwitch
     , buildIndirectBr
-    , buildInvoke
+    , buildInvoke2
     , buildLandingPad
     , buildResume
     , buildUnreachable
@@ -507,11 +507,11 @@ module LLVM.FFI.Core
     , buildAlloca
     , buildArrayAlloca
     , buildFree
-    , buildLoad
+    , buildLoad2
     , buildStore
-    , buildGEP
-    , buildInBoundsGEP
-    , buildStructGEP
+    , buildGEP2
+    , buildInBoundsGEP2
+    , buildStructGEP2
     , buildGlobalString
     , buildGlobalStringPtr
 
@@ -542,7 +542,7 @@ module LLVM.FFI.Core
 
     -- ** Miscellaneous instructions
     , buildPhi
-    , buildCall
+    , buildCall2
     , buildSelect
     , buildVAArg
     , buildExtractElement
@@ -552,7 +552,7 @@ module LLVM.FFI.Core
     , buildInsertValue
     , buildIsNull
     , buildIsNotNull
-    , buildPtrDiff
+    , buildPtrDiff2
 
     -- * Memory buffers
     , Raw.MemoryBuffer
@@ -589,6 +589,7 @@ module LLVM.FFI.Core
 
 import qualified LLVM.FFI.Version as Version
 import qualified LLVM.FFI.Base as LLVM
+import qualified LLVM.FFI.Core14 as Core14
 import qualified LLVM.Raw.Core as Raw
 import LLVM.Raw.Core (
          PassRegistryRef, ContextRef, AttributeRef, AttributeIndex,
@@ -1418,11 +1419,11 @@ constLShr = Raw.constLShr
 constAShr :: ValueRef -> ValueRef -> IO ValueRef
 constAShr = Raw.constAShr
 
-constGEP :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-constGEP = Raw.constGEP
+constGEP2 :: TypeRef -> ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+constGEP2 = Core14.constGEP2
 
-constInBoundsGEP :: ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
-constInBoundsGEP = Raw.constInBoundsGEP
+constInBoundsGEP2 :: TypeRef -> ValueRef -> Ptr ValueRef -> CUInt -> IO ValueRef
+constInBoundsGEP2 = Core14.constInBoundsGEP2
 
 constTrunc :: ValueRef -> TypeRef -> IO ValueRef
 constTrunc = Raw.constTrunc
@@ -1574,8 +1575,8 @@ setGlobalConstant = Raw.setGlobalConstant
 
 
 -- ** Aliases
-addAlias :: ModuleRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
-addAlias = Raw.addAlias
+addAlias2 :: ModuleRef -> TypeRef -> CUInt -> ValueRef -> CString -> IO ValueRef
+addAlias2 = Core14.addAlias2
 
 deleteFunction :: FunctionRef -> IO ()
 deleteFunction = Raw.deleteFunction
@@ -1894,8 +1895,8 @@ buildSwitch = Raw.buildSwitch
 buildIndirectBr :: BuilderRef -> ValueRef -> CUInt -> IO ValueRef
 buildIndirectBr = Raw.buildIndirectBr
 
-buildInvoke :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> BasicBlockRef -> BasicBlockRef -> CString -> IO ValueRef
-buildInvoke = Raw.buildInvoke
+buildInvoke2 :: BuilderRef -> TypeRef -> ValueRef -> Ptr ValueRef -> CUInt -> BasicBlockRef -> BasicBlockRef -> CString -> IO ValueRef
+buildInvoke2 = Core14.buildInvoke2
 
 buildLandingPad :: BuilderRef -> TypeRef -> ValueRef -> CUInt -> CString -> IO ValueRef
 buildLandingPad = Raw.buildLandingPad
@@ -2057,20 +2058,20 @@ buildArrayAlloca = Raw.buildArrayAlloca
 buildFree :: BuilderRef -> ValueRef -> IO ValueRef
 buildFree = Raw.buildFree
 
-buildLoad :: BuilderRef -> ValueRef -> CString -> IO ValueRef
-buildLoad = Raw.buildLoad
+buildLoad2 :: BuilderRef -> TypeRef -> ValueRef -> CString -> IO ValueRef
+buildLoad2 = Core14.buildLoad2
 
 buildStore :: BuilderRef -> ValueRef -> ValueRef -> IO ValueRef
 buildStore = Raw.buildStore
 
-buildGEP :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
-buildGEP = Raw.buildGEP
+buildGEP2 :: BuilderRef -> TypeRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
+buildGEP2 = Core14.buildGEP2
 
-buildInBoundsGEP :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
-buildInBoundsGEP = Raw.buildInBoundsGEP
+buildInBoundsGEP2 :: BuilderRef -> TypeRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
+buildInBoundsGEP2 = Core14.buildInBoundsGEP2
 
-buildStructGEP :: BuilderRef -> ValueRef -> CUInt -> CString -> IO ValueRef
-buildStructGEP = Raw.buildStructGEP
+buildStructGEP2 :: BuilderRef -> TypeRef -> ValueRef -> CUInt -> CString -> IO ValueRef
+buildStructGEP2 = Core14.buildStructGEP2
 
 buildGlobalString :: BuilderRef -> CString -> CString -> IO ValueRef
 buildGlobalString = Raw.buildGlobalString
@@ -2150,8 +2151,8 @@ buildFCmp = Raw.buildFCmp
 buildPhi :: BuilderRef -> TypeRef -> CString -> IO ValueRef
 buildPhi = Raw.buildPhi
 
-buildCall :: BuilderRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
-buildCall = Raw.buildCall
+buildCall2 :: BuilderRef -> TypeRef -> ValueRef -> Ptr ValueRef -> CUInt -> CString -> IO ValueRef
+buildCall2 = Core14.buildCall2
 
 buildSelect :: BuilderRef -> ValueRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
 buildSelect = Raw.buildSelect
@@ -2180,8 +2181,8 @@ buildIsNull = Raw.buildIsNull
 buildIsNotNull :: BuilderRef -> ValueRef -> CString -> IO ValueRef
 buildIsNotNull = Raw.buildIsNotNull
 
-buildPtrDiff :: BuilderRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
-buildPtrDiff = Raw.buildPtrDiff
+buildPtrDiff2 :: BuilderRef -> TypeRef -> ValueRef -> ValueRef -> CString -> IO ValueRef
+buildPtrDiff2 = Core14.buildPtrDiff2
 
 
 -- ** Memory Buffers

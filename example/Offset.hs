@@ -30,7 +30,7 @@ offset = do
    -- crash
    elementPtr <-
       withArrayLen [zero,one] $ \n ixsPtr ->
-         LLVM.constGEP nullPtr ixsPtr n
+         LLVM.constGEP2 structType nullPtr ixsPtr n
    putStrLn "ptrToInt"
    elementOffset <- LLVM.constPtrToInt elementPtr int64Type
    LLVM.constIntGetZExtValue elementOffset

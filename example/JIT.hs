@@ -67,7 +67,7 @@ main = do
    block <- withCString "_L1" $ Core.appendBasicBlock func
    Core.positionAtEnd builder block
    param <- Core.getParam func 0
-   loaded <- withCString "" $ Core.buildLoad builder param
+   loaded <- withCString "" $ Core.buildLoad2 builder vectorType param
    int32Type <- Core.int32Type
    let funcParams = [vectorType, int32Type]
    funcType <-
@@ -83,7 +83,8 @@ main = do
             let callParams = [loaded, const1]
             call <-
                withArrayLen callParams $ \len ps ->
-               withCString "" $ Core.buildCall builder roundFunc ps len
+               withCString "" $
+                  Core.buildCall2 builder funcType roundFunc ps len
             Core.setInstructionCallConv call $
                Core.fromCallingConvention Core.C
             context <- Core.getGlobalContext
