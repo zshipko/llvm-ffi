@@ -7,8 +7,6 @@ module LLVM.FFI.Transforms.IPO where
 import LLVM.FFI.Core (PassManagerRef)
 
 
-foreign import ccall unsafe "LLVMAddArgumentPromotionPass" addArgumentPromotionPass
-    :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddConstantMergePass" addConstantMergePass
     :: PassManagerRef -> IO ()
 foreign import ccall unsafe "LLVMAddDeadArgEliminationPass" addDeadArgEliminationPass

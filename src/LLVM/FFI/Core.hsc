@@ -216,22 +216,12 @@ module LLVM.FFI.Core
     , constAdd
     , constNSWAdd
     , constNUWAdd
-    , constFAdd
     , constSub
     , constNSWSub
     , constNUWSub
-    , constFSub
     , constMul
     , constNSWMul
     , constNUWMul
-    , constFMul
-    , constUDiv
-    , constSDiv
-    , constExactSDiv
-    , constFDiv
-    , constURem
-    , constSRem
-    , constFRem
     , constAnd
     , constOr
     , constXor
@@ -264,8 +254,6 @@ module LLVM.FFI.Core
     , constExtractElement
     , constInsertElement
     , constShuffleVector
-    , constExtractValue
-    , constInsertValue
     , constInlineAsm
     , blockAddress
 
@@ -1388,9 +1376,6 @@ constNSWAdd = Raw.constNSWAdd
 constNUWAdd :: ValueRef -> ValueRef -> IO ValueRef
 constNUWAdd = Raw.constNUWAdd
 
-constFAdd :: ValueRef -> ValueRef -> IO ValueRef
-constFAdd = Raw.constFAdd
-
 constSub :: ValueRef -> ValueRef -> IO ValueRef
 constSub = Raw.constSub
 
@@ -1400,9 +1385,6 @@ constNSWSub = Raw.constNSWSub
 constNUWSub :: ValueRef -> ValueRef -> IO ValueRef
 constNUWSub = Raw.constNUWSub
 
-constFSub :: ValueRef -> ValueRef -> IO ValueRef
-constFSub = Raw.constFSub
-
 constMul :: ValueRef -> ValueRef -> IO ValueRef
 constMul = Raw.constMul
 
@@ -1411,30 +1393,6 @@ constNSWMul = Raw.constNSWMul
 
 constNUWMul :: ValueRef -> ValueRef -> IO ValueRef
 constNUWMul = Raw.constNUWMul
-
-constFMul :: ValueRef -> ValueRef -> IO ValueRef
-constFMul = Raw.constFMul
-
-constUDiv :: ValueRef -> ValueRef -> IO ValueRef
-constUDiv = Raw.constUDiv
-
-constSDiv :: ValueRef -> ValueRef -> IO ValueRef
-constSDiv = Raw.constSDiv
-
-constExactSDiv :: ValueRef -> ValueRef -> IO ValueRef
-constExactSDiv = Raw.constExactSDiv
-
-constFDiv :: ValueRef -> ValueRef -> IO ValueRef
-constFDiv = Raw.constFDiv
-
-constURem :: ValueRef -> ValueRef -> IO ValueRef
-constURem = Raw.constURem
-
-constSRem :: ValueRef -> ValueRef -> IO ValueRef
-constSRem = Raw.constSRem
-
-constFRem :: ValueRef -> ValueRef -> IO ValueRef
-constFRem = Raw.constFRem
 
 constAnd :: ValueRef -> ValueRef -> IO ValueRef
 constAnd = Raw.constAnd
@@ -1531,12 +1489,6 @@ constInsertElement = Raw.constInsertElement
 
 constShuffleVector :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
 constShuffleVector = Raw.constShuffleVector
-
-constExtractValue :: ValueRef -> Ptr CUInt -> CUInt -> IO ValueRef
-constExtractValue = Raw.constExtractValue
-
-constInsertValue :: ValueRef -> ValueRef -> Ptr CUInt -> CUInt -> IO ValueRef
-constInsertValue = Raw.constInsertValue
 
 constInlineAsm :: TypeRef -> CString -> CString -> LLVM.Bool -> LLVM.Bool -> IO ValueRef
 constInlineAsm = Raw.constInlineAsm

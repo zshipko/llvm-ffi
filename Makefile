@@ -5,6 +5,7 @@ test:
 	./dist/build/llvm-ffi-host/llvm-ffi-host
 	./dist/build/llvm-ffi-jit/llvm-ffi-jit
 
+	make test1400
 	make test1300
 	make test1200
 	make test1100
@@ -21,7 +22,7 @@ test:
 
 # llvm-config-7 --cxxflags lacks the "-std=c++11" option and thus compilation fails
 avx-test:
-	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 14 13 12 11 10 9 8 6.0 5.0 4.0 3.9))
+	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 15 14 13 12 11 10 9 8 6.0 5.0 4.0 3.9))
 
 test%:
 	runhaskell Setup clean
