@@ -34,10 +34,10 @@ test%:
 
 
 ctest/fastmath.o:	ctest/fastmath.c
-	gcc -Wall -c -o $@ $< -Iinclude/ $$(llvm-config-3.9 --cflags)
+	gcc -Wall -c -o $@ $< -Iinclude/ $$(llvm-config-9 --cflags)
 
 ctest/fastmath:	ctest/fastmath.o dist/build/cbits/support.o
-	g++ -o $@ $^ $$(llvm-config-3.9 --ldflags) -lLLVM-3.9
+	g++ -o $@ $^ $$(llvm-config-9 --ldflags) -lLLVM-9
 
 
 raw-modules:	$(patsubst %, src/%/LLVM/Raw/Core.hsc, 17 16 15 14 13 12 11 10 9 8 7 6.0 5.0 4.0 3.9)
