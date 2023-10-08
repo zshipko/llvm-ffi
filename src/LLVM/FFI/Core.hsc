@@ -249,7 +249,6 @@ module LLVM.FFI.Core
     , constPointerCast
     , constIntCast
     , constFPCast
-    , constSelect
     , constExtractElement
     , constInsertElement
     , constShuffleVector
@@ -1474,9 +1473,6 @@ constIntCast = Raw.constIntCast
 
 constFPCast :: ValueRef -> TypeRef -> IO ValueRef
 constFPCast = Raw.constFPCast
-
-constSelect :: ValueRef -> ValueRef -> ValueRef -> IO ValueRef
-constSelect = Raw.constSelect
 
 constExtractElement :: ValueRef -> ValueRef -> IO ValueRef
 constExtractElement = Raw.constExtractElement
