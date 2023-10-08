@@ -207,13 +207,12 @@ Library
       LLVM.FFI.BitWriter
       LLVM.FFI.Core
       LLVM.FFI.Core.Attribute
+      LLVM.FFI.Error
       LLVM.FFI.ExecutionEngine
       LLVM.FFI.Support.Host
       LLVM.FFI.Target
-      LLVM.FFI.Transforms.IPO
-      LLVM.FFI.Transforms.PassManagerBuilder
-      LLVM.FFI.Transforms.Scalar
-      LLVM.FFI.Transforms.Vectorize
+      LLVM.FFI.TargetMachine
+      LLVM.FFI.Transforms.PassBuilder
       LLVM.Target.Native
 
   Other-modules:

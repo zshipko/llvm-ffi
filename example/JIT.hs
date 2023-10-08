@@ -1,7 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {- |
 This program has two purposes:
-First a minimalistic demonstration of how to generate and run code with LLVM.
+First a minimalistic demonstration of
+how to generate and run and optimize code with LLVM.
 Second a test program that forces to run the linker.
 It let us check whether Haskell bindings match C functions.
 -}
@@ -9,22 +10,26 @@ module Main where
 
 import Common (withArrayLen, createExecutionEngine)
 
-import qualified LLVM.FFI.Transforms.PassManagerBuilder as PMB
-import qualified LLVM.FFI.Transforms.Scalar as Transform
+import qualified LLVM.FFI.Transforms.PassBuilder as PB
+import qualified LLVM.FFI.TargetMachine as TM
+import qualified LLVM.FFI.Error as Error
 import qualified LLVM.FFI.ExecutionEngine as EE
 import qualified LLVM.FFI.BitWriter as BW
 import qualified LLVM.FFI.Core as Core
 import qualified LLVM.Target.Native as Native
 
-import qualified Foreign.C.String as CStr
+import qualified System.IO as IO
+import System.Exit (exitFailure)
+
 import qualified Foreign.Marshal.Array as Array
 import qualified Foreign.Marshal.Alloc as Alloc
+import qualified Foreign.C.String as CStr
 import Foreign.C.String (withCString)
 import Foreign.C.Types (CFloat)
-import Foreign.Storable (sizeOf)
-import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.Storable (peek, sizeOf)
+import Foreign.Ptr (Ptr, FunPtr, nullPtr)
 
-import Control.Exception (bracket, bracket_)
+import Control.Exception (bracket)
 import Control.Monad (when, void)
 
 import Data.Tuple.HT (mapSnd)
@@ -43,6 +48,16 @@ type Importer f = FunPtr f -> f
 foreign import ccall safe "dynamic" derefFuncPtr :: Importer (Ptr a -> IO ())
 
 
+
+die :: String -> IO a
+die msg = do
+   IO.hPutStrLn IO.stderr msg
+   exitFailure
+
+exitFromError :: Ptr CStr.CString -> IO a
+exitFromError errorRef =
+   bracket (peek errorRef) Alloc.free $ \errorMsg ->
+      CStr.peekCString errorMsg >>= die
 
 main :: IO ()
 main = do
@@ -107,21 +122,44 @@ main = do
    void $ withCString "round-avx.bc" $ BW.writeBitcodeToFile modul
 
    when True $
-      bracket Core.createPassManager Core.disposePassManager $ \mpasses ->
-      bracket (Core.createFunctionPassManagerForModule modul)
-            Core.disposePassManager $ \fpasses -> do
-         Transform.addVerifierPass mpasses
+      withCString Core.hostTriple $ \triple ->
+      (\cont -> do
+         target <-
+            Alloc.alloca $ \targetRef ->
+            Alloc.alloca $ \errorRef -> do
+               failure <- TM.getTargetFromTriple triple targetRef errorRef
+               if Core.deconsBool failure
+                  then exitFromError errorRef
+                  else peek targetRef
+         cpu <- TM.getHostCPUName
+         cont target cpu) $ \target cpu ->
 
-         bracket PMB.create PMB.dispose $ \passBuilder -> do
-            PMB.setOptLevel passBuilder 3
-            PMB.populateFunctionPassManager passBuilder fpasses
-            PMB.populateModulePassManager passBuilder mpasses
+      bracket
+         (TM.createTargetMachine target triple cpu nullPtr
+            TM.codeGenLevelDefault TM.relocDefault TM.codeModelDefault)
+         TM.disposeTargetMachine $
+            \tm ->
 
-         bracket_
-            (Core.initializeFunctionPassManager fpasses)
-            (Core.finalizeFunctionPassManager fpasses)
-            (void $ Core.runFunctionPassManager fpasses func)
-         void $ Core.runPassManager mpasses modul
+      bracket PB.createPassBuilderOptions PB.disposePassBuilderOptions $
+            \pbOpt ->
+
+      withCString "default<O2>" $ \passName -> do
+         PB.passBuilderOptionsSetVerifyEach pbOpt Core.true
+         do
+            errorRef <- PB.runPasses modul passName tm pbOpt
+            when (errorRef /= nullPtr) $
+               bracket
+                  (Error.getErrorMessage errorRef)
+                  Error.disposeErrorMessage
+                     $ \errorMsg ->
+                  CStr.peekCString errorMsg >>= die
+         withCString "round-avx-opt.s" $ \path ->
+            Alloc.alloca $ \errorRef -> do
+               failure <-
+                  TM.targetMachineEmitToFile
+                     tm modul path TM.assemblyFile errorRef
+               when (Core.deconsBool failure) $
+                  exitFromError errorRef
 
          void $ withCString "round-avx-opt.bc" $ BW.writeBitcodeToFile modul
 

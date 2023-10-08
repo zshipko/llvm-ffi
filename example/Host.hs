@@ -6,8 +6,8 @@ module Main where
 import Common (getString, createExecutionEngine)
 
 import qualified LLVM.FFI.ExecutionEngine as EE
+import qualified LLVM.FFI.TargetMachine as TargetMachine
 import qualified LLVM.FFI.Target as Target
-import qualified LLVM.FFI.Support.Host as Host
 import qualified LLVM.FFI.Core as LLVM
 import qualified LLVM.Target.Native as Native
 
@@ -20,7 +20,7 @@ main :: IO ()
 main = do
    Native.initializeNativeTarget
 
-   putStrLn =<< getString Host.getHostCPUName
+   putStrLn =<< getString TargetMachine.getHostCPUName
    putStrLn LLVM.hostTriple
 
    modul <- withCString "host" LLVM.moduleCreateWithName

@@ -8,7 +8,6 @@ module LLVM.FFI.Support.Host (
     FeatureMapRef,
     FeatureIterator,
     FeatureIteratorRef,
-    getHostCPUName,
     getHostFeatures,
     freeFeatures,
     getFirstFeature,
@@ -22,9 +21,6 @@ import Foreign.C.String (CString)
 import Foreign.Ptr (Ptr)
 
 import Data.Typeable (Typeable)
-
-
-foreign import ccall unsafe "LLVMGetHostCPUName" getHostCPUName :: IO CString
 
 
 data FeatureMap

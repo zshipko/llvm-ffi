@@ -16,8 +16,7 @@
 
 module LLVM.FFI.Core
     (
-      initializeCore
-    , Version.version
+      Version.version
 
     -- * Boolean values
     , LLVM.Bool(LLVM.Bool)
@@ -560,7 +559,6 @@ module LLVM.FFI.Core
     -- ** Raw.PassRegistry
     , Raw.PassRegistry
     , PassRegistryRef
-    , getGlobalPassRegistry
 
     -- ** Pass manager
     , Raw.PassManager
@@ -871,10 +869,6 @@ toRealPredicate (Raw.RealPredicate p) =
         _ -> error "toRealPredicate: bad value"
 
 
-
--- ** Initialization
-initializeCore :: PassRegistryRef -> IO ()
-initializeCore = Raw.initializeCore
 
 -- ** Error Handling
 disposeMessage :: CString -> IO ()
@@ -2176,11 +2170,6 @@ createMemoryBufferWithSTDIN = Raw.createMemoryBufferWithSTDIN
 
 disposeMemoryBuffer :: MemoryBufferRef -> IO ()
 disposeMemoryBuffer = Raw.disposeMemoryBuffer
-
-
--- ** Pass Registry
-getGlobalPassRegistry :: IO PassRegistryRef
-getGlobalPassRegistry = Raw.getGlobalPassRegistry
 
 
 -- ** Pass Managers
