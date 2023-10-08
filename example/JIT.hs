@@ -89,7 +89,7 @@ main = do
                Core.fromCallingConvention Core.C
             context <- Core.getGlobalContext
             attrKind <-
-               CStr.withCStringLen "readnone" $
+               CStr.withCStringLen "nofree" $
                   uncurry Core.getEnumAttributeKindForName . mapSnd fromIntegral
             attr <- Core.createEnumAttribute context attrKind 0
             Core.addCallSiteAttribute call Core.attributeFunctionIndex attr
