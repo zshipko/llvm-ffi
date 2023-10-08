@@ -14,7 +14,11 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Operator.h"
+#if HS_LLVM_VERSION < 1700
 #include "llvm/Support/Host.h"
+#else
+#include "llvm/TargetParser/Host.h"
+#endif
 
 #include "support.h"
 
