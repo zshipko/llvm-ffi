@@ -179,8 +179,6 @@ module LLVM.FFI.Core
     , mDNodeInContext
     , mDNode
     , getMDString
---    , getMDNodeNumOperands
---    , getMDNodeOperand
     , getNamedMetadataNumOperands
     , getNamedMetadataOperands
 
@@ -1273,14 +1271,6 @@ mDNode = Raw.mDNode
 
 getMDString :: ValueRef -> Ptr CUInt -> IO CString
 getMDString = Raw.getMDString
-
-{-
-getMDNodeNumOperands :: ValueRef -> IO CInt
-getMDNodeNumOperands = Raw.getMDNodeNumOperands
-
-getMDNodeOperand :: ValueRef -> CUInt -> IO (Ptr ValueRef)
-getMDNodeOperand = Raw.getMDNodeOperand
--}
 
 getNamedMetadataNumOperands :: ModuleRef -> CString -> IO CUInt
 getNamedMetadataNumOperands = Raw.getNamedMetadataNumOperands
