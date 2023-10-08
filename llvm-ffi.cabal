@@ -312,6 +312,7 @@ Library
                 Cxx-Options: -DHS_LLVM_VERSION=900
                 CPP-Options: -DHS_LLVM_VERSION=900
               Else
+                -- taken from llvm-config --cxxflags
                 Cxx-Options: -std=c++14
                 If flag(llvm1000)
                   If flag(pkgConfig)
