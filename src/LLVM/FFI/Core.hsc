@@ -211,7 +211,6 @@ module LLVM.FFI.Core
     , constNeg
     , constNUWNeg
     , constNSWNeg
-    , constFNeg
     , constNot
     , constAdd
     , constNSWAdd
@@ -1361,9 +1360,6 @@ constNSWNeg = Raw.constNSWNeg
 
 constNUWNeg :: ValueRef -> IO ValueRef
 constNUWNeg = Raw.constNUWNeg
-
-constFNeg :: ValueRef -> IO ValueRef
-constFNeg = Raw.constFNeg
 
 constNot :: ValueRef -> IO ValueRef
 constNot = Raw.constNot
