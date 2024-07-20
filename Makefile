@@ -13,8 +13,10 @@ test:
 	make avx-test
 
 # llvm-config-7 --cxxflags lacks the "-std=c++11" option and thus compilation fails
+# ToDo: for LLVM-17 we need to adapt to new optimizer interface
+# ToDo: for LLVM-16 we need to adapt to opaque pointers
 avx-test:
-	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 17 16 15 14 13))
+	(cd ctest; make $(patsubst %, avx-instruction-selection-%, 15 14 13))
 
 test%:
 	runhaskell Setup clean
