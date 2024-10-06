@@ -625,6 +625,7 @@ hostTriple          = (#const_str LLVM_HOST_TRIPLE)
 
 data TypeKind
     = VoidTypeKind
+    | HalfTypeKind
     | FloatTypeKind
     | DoubleTypeKind
     | X86_FP80TypeKind
